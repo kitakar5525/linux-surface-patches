@@ -1,0 +1,32 @@
+From 84c036b3ecea847b6c79a18e243fdca261dcb758 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 7 Mar 2019 03:48:26 +0900
+Subject: [PATCH] platform/x86: intel_pmc_core: Quirk to ignore XTAL shutdown:
+ Add SB1
+
+---
+ drivers/platform/x86/intel_pmc_core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
+index 72cabfc23..35d7e9261 100644
+--- a/drivers/platform/x86/intel_pmc_core.c
++++ b/drivers/platform/x86/intel_pmc_core.c
+@@ -848,6 +848,14 @@ static const struct dmi_system_id pmc_core_dmi_table[]  = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "HP Elite x2 1013 G3"),
+ 		},
+ 	},
++	{
++	.callback = quirk_xtal_ignore,
++	.ident = "Surface Book",
++	.matches = {
++		DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++		DMI_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
++		},
++	},
+ 	{}
+ };
+ 
+-- 
+2.21.0
+

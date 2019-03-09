@@ -1,0 +1,60 @@
+From fee051607aa49f9300379d8f556f776603fa36b5 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Fri, 8 Feb 2019 21:50:21 +0900
+Subject: [PATCH] mwifiex: change parameters permission
+
+---
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c |  2 +-
+ drivers/net/wireless/marvell/mwifiex/main.c     | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index 7376ffa82..c402b6381 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -23,7 +23,7 @@
+ #include "wmm.h"
+ 
+ static char *reg_alpha2;
+-module_param(reg_alpha2, charp, 0);
++module_param(reg_alpha2, charp, 0444);
+ 
+ static const struct ieee80211_iface_limit mwifiex_ap_sta_limits[] = {
+ 	{
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index 13e49a3ae..82cb75938 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -28,24 +28,24 @@
+ #define MFG_FIRMWARE	"mwifiex_mfg.bin"
+ 
+ static unsigned int debug_mask = MWIFIEX_DEFAULT_DEBUG_MASK;
+-module_param(debug_mask, uint, 0);
++module_param(debug_mask, uint, 0444);
+ MODULE_PARM_DESC(debug_mask, "bitmap for debug flags");
+ 
+ const char driver_version[] = "mwifiex " VERSION " (%s) ";
+ static char *cal_data_cfg;
+-module_param(cal_data_cfg, charp, 0);
++module_param(cal_data_cfg, charp, 0444);
+ 
+ static unsigned short driver_mode;
+-module_param(driver_mode, ushort, 0);
++module_param(driver_mode, ushort, 0444);
+ MODULE_PARM_DESC(driver_mode,
+ 		 "station=0x1(default), ap-sta=0x3, station-p2p=0x5, ap-sta-p2p=0x7");
+ 
+ bool mfg_mode;
+-module_param(mfg_mode, bool, 0);
++module_param(mfg_mode, bool, 0444);
+ MODULE_PARM_DESC(mfg_mode, "manufacturing mode enable:1, disable:0");
+ 
+ bool aggr_ctrl;
+-module_param(aggr_ctrl, bool, 0000);
++module_param(aggr_ctrl, bool, 0444);
+ MODULE_PARM_DESC(aggr_ctrl, "usb tx aggregation enable:1, disable:0");
+ 
+ /*
+-- 
+2.20.1
+
