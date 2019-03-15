@@ -1,7 +1,7 @@
-From 783199a943eb6dea3d81a621b96c8ddf33ad618e Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Sat, 9 Mar 2019 18:40:30 +0900
-Subject: [PATCH] ipts-500
+From 7547125aadd16d7931493f81a43f96adb9a95579 Mon Sep 17 00:00:00 2001
+From: Jake Day <jake@ninebysix.com>
+Date: Wed, 13 Mar 2019 15:23:07 -0400
+Subject: [PATCH 05/11] ipts
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -70,7 +70,7 @@ Subject: [PATCH] ipts-500
  create mode 100644 include/linux/intel_ipts_if.h
 
 diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-index 19b5fe501..402e5b151 100644
+index 19b5fe5016bf..402e5b15173b 100644
 --- a/drivers/gpu/drm/i915/Makefile
 +++ b/drivers/gpu/drm/i915/Makefile
 @@ -160,6 +160,9 @@ i915-y += dvo_ch7017.o \
@@ -84,17 +84,17 @@ index 19b5fe501..402e5b151 100644
  i915-$(CONFIG_DRM_I915_CAPTURE_ERROR) += i915_gpu_error.o
  i915-$(CONFIG_DRM_I915_SELFTEST) += \
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index b310a897a..eb095be71 100644
+index b310a897a4ad..cfad40f65513 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -53,6 +53,7 @@
- #include "i915_vgpu.h"
+@@ -54,6 +54,7 @@
  #include "intel_drv.h"
  #include "intel_uc.h"
-+#include "intel_ipts.h"
  #include "intel_workarounds.h"
++#include "intel_ipts.h"
  
  static struct drm_driver driver;
+ 
 @@ -709,6 +710,9 @@ static int i915_load_modeset_init(struct drm_device *dev)
  
  	intel_init_ipc(dev_priv);
@@ -136,7 +136,7 @@ index b310a897a..eb095be71 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index b1c319671..192f6cef0 100644
+index b1c31967194b..192f6cef0b81 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
 @@ -3114,6 +3114,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
@@ -150,7 +150,7 @@ index b1c319671..192f6cef0 100644
  __i915_gem_context_lookup_rcu(struct drm_i915_file_private *file_priv, u32 id)
  {
 diff --git a/drivers/gpu/drm/i915/i915_gem_context.c b/drivers/gpu/drm/i915/i915_gem_context.c
-index 371c07087..ece9ba353 100644
+index 371c07087095..ece9ba353a1b 100644
 --- a/drivers/gpu/drm/i915/i915_gem_context.c
 +++ b/drivers/gpu/drm/i915/i915_gem_context.c
 @@ -532,6 +532,18 @@ static bool needs_preempt_context(struct drm_i915_private *i915)
@@ -173,7 +173,7 @@ index 371c07087..ece9ba353 100644
  {
  	struct i915_gem_context *ctx;
 diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-index d447d7d50..9d2d88cf2 100644
+index d447d7d508f4..9d2d88cf2340 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
 @@ -36,6 +36,7 @@
@@ -205,7 +205,7 @@ index d447d7d50..9d2d88cf2 100644
  			GT_RENDER_USER_INTERRUPT << GEN8_BCS_IRQ_SHIFT |
  			GT_CONTEXT_SWITCH_INTERRUPT << GEN8_BCS_IRQ_SHIFT,
 diff --git a/drivers/gpu/drm/i915/i915_params.c b/drivers/gpu/drm/i915/i915_params.c
-index 2e0356561..ff3a9924d 100644
+index 2e0356561839..ff3a9924d719 100644
 --- a/drivers/gpu/drm/i915/i915_params.c
 +++ b/drivers/gpu/drm/i915/i915_params.c
 @@ -141,7 +141,10 @@ i915_param_named_unsafe(edp_vswing, int, 0400,
@@ -221,7 +221,7 @@ index 2e0356561..ff3a9924d 100644
  i915_param_named(guc_log_level, int, 0400,
  	"GuC firmware logging level. Requires GuC to be loaded. "
 diff --git a/drivers/gpu/drm/i915/i915_params.h b/drivers/gpu/drm/i915/i915_params.h
-index 7e56c516c..208f0c056 100644
+index 7e56c516c815..208f0c056529 100644
 --- a/drivers/gpu/drm/i915/i915_params.h
 +++ b/drivers/gpu/drm/i915/i915_params.h
 @@ -45,7 +45,7 @@ struct drm_printer;
@@ -244,7 +244,7 @@ index 7e56c516c..208f0c056 100644
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
 diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
-index 22a74608c..866afd18a 100644
+index 22a74608c6e4..866afd18abfa 100644
 --- a/drivers/gpu/drm/i915/intel_dp.c
 +++ b/drivers/gpu/drm/i915/intel_dp.c
 @@ -2903,8 +2903,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
@@ -259,7 +259,7 @@ index 22a74608c..866afd18a 100644
  		ret = drm_dp_dpcd_writeb(&intel_dp->aux, DP_SET_POWER,
  					 DP_SET_POWER_D3);
 diff --git a/drivers/gpu/drm/i915/intel_guc.h b/drivers/gpu/drm/i915/intel_guc.h
-index 0f1c4f9eb..b99cbafe9 100644
+index 0f1c4f9ebfd8..b99cbafe91f3 100644
 --- a/drivers/gpu/drm/i915/intel_guc.h
 +++ b/drivers/gpu/drm/i915/intel_guc.h
 @@ -66,6 +66,7 @@ struct intel_guc {
@@ -271,7 +271,7 @@ index 0f1c4f9eb..b99cbafe9 100644
  	struct guc_preempt_work preempt_work[I915_NUM_ENGINES];
  	struct workqueue_struct *preempt_wq;
 diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
-index 1570dcbe2..d75c997cd 100644
+index 1570dcbe249c..d75c997cdd8a 100644
 --- a/drivers/gpu/drm/i915/intel_guc_submission.c
 +++ b/drivers/gpu/drm/i915/intel_guc_submission.c
 @@ -88,12 +88,17 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
@@ -404,7 +404,7 @@ index 1570dcbe2..d75c997cd 100644
  #include "selftests/intel_guc.c"
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_guc_submission.h b/drivers/gpu/drm/i915/intel_guc_submission.h
-index 169c54568..245a8de1d 100644
+index 169c54568340..245a8de1df2a 100644
 --- a/drivers/gpu/drm/i915/intel_guc_submission.h
 +++ b/drivers/gpu/drm/i915/intel_guc_submission.h
 @@ -83,5 +83,9 @@ void intel_guc_submission_disable(struct intel_guc *guc);
@@ -419,7 +419,7 @@ index 169c54568..245a8de1d 100644
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 new file mode 100644
-index 000000000..b276a2f78
+index 000000000000..b276a2f7839c
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -0,0 +1,657 @@
@@ -1082,7 +1082,7 @@ index 000000000..b276a2f78
 +}
 diff --git a/drivers/gpu/drm/i915/intel_ipts.h b/drivers/gpu/drm/i915/intel_ipts.h
 new file mode 100644
-index 000000000..45d7d1273
+index 000000000000..45d7d1273adf
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.h
 @@ -0,0 +1,36 @@
@@ -1123,7 +1123,7 @@ index 000000000..45d7d1273
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index eab9341a5..51c38de2f 100644
+index eab9341a5152..51c38de2fb74 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -164,9 +164,6 @@
@@ -1174,7 +1174,7 @@ index eab9341a5..51c38de2f 100644
  					    struct intel_context *ce)
  {
 diff --git a/drivers/gpu/drm/i915/intel_lrc.h b/drivers/gpu/drm/i915/intel_lrc.h
-index f5a5502ec..e4a343711 100644
+index f5a5502ecf70..e4a3437119d6 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.h
 +++ b/drivers/gpu/drm/i915/intel_lrc.h
 @@ -104,4 +104,12 @@ void intel_lr_context_resume(struct drm_i915_private *dev_priv);
@@ -1191,7 +1191,7 @@ index f5a5502ec..e4a343711 100644
 +
  #endif /* _INTEL_LRC_H_ */
 diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
-index e6cd7b55c..08c116e88 100644
+index e6cd7b55c018..08c116e885ad 100644
 --- a/drivers/gpu/drm/i915/intel_panel.c
 +++ b/drivers/gpu/drm/i915/intel_panel.c
 @@ -34,6 +34,7 @@
@@ -1223,7 +1223,7 @@ index e6cd7b55c..08c116e88 100644
  
  static void pch_enable_backlight(const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index dca0a3a90..719a0360e 100644
+index dca0a3a90fb8..719a0360e40c 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -173,6 +173,7 @@ struct mt_device {
@@ -1299,7 +1299,7 @@ index dca0a3a90..719a0360e 100644
  
  	INIT_LIST_HEAD(&td->applications);
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index f417b06e1..960cce957 100644
+index f417b06e11c5..960cce957278 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
 @@ -528,6 +528,7 @@ source "drivers/misc/ti-st/Kconfig"
@@ -1311,7 +1311,7 @@ index f417b06e1..960cce957 100644
  source "drivers/misc/mic/Kconfig"
  source "drivers/misc/genwqe/Kconfig"
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index e39ccbbc1..7038b3968 100644
+index e39ccbbc1b3a..7038b3968a09 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
 @@ -44,6 +44,7 @@ obj-y				+= lis3lv02d/
@@ -1324,7 +1324,7 @@ index e39ccbbc1..7038b3968 100644
  obj-$(CONFIG_SRAM)		+= sram.o
 diff --git a/drivers/misc/ipts/Kconfig b/drivers/misc/ipts/Kconfig
 new file mode 100644
-index 000000000..360ed3861
+index 000000000000..360ed3861b82
 --- /dev/null
 +++ b/drivers/misc/ipts/Kconfig
 @@ -0,0 +1,9 @@
@@ -1339,7 +1339,7 @@ index 000000000..360ed3861
 +	  Intel Kabylake
 diff --git a/drivers/misc/ipts/Makefile b/drivers/misc/ipts/Makefile
 new file mode 100644
-index 000000000..1783e9cf1
+index 000000000000..1783e9cf13c9
 --- /dev/null
 +++ b/drivers/misc/ipts/Makefile
 @@ -0,0 +1,13 @@
@@ -1358,7 +1358,7 @@ index 000000000..1783e9cf1
 +intel-ipts-$(CONFIG_DEBUG_FS) += ipts-dbgfs.o
 diff --git a/drivers/misc/ipts/ipts-binary-spec.h b/drivers/misc/ipts/ipts-binary-spec.h
 new file mode 100644
-index 000000000..87d4bc413
+index 000000000000..87d4bc4133c4
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-binary-spec.h
 @@ -0,0 +1,118 @@
@@ -1482,7 +1482,7 @@ index 000000000..87d4bc413
 +#endif /* _IPTS_BINARY_SPEC_H */
 diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
 new file mode 100644
-index 000000000..1c5c92f7d
+index 000000000000..1c5c92f7d4ba
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-dbgfs.c
 @@ -0,0 +1,152 @@
@@ -1640,7 +1640,7 @@ index 000000000..1c5c92f7d
 +}
 diff --git a/drivers/misc/ipts/ipts-gfx.c b/drivers/misc/ipts/ipts-gfx.c
 new file mode 100644
-index 000000000..51727770e
+index 000000000000..51727770e75d
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-gfx.c
 @@ -0,0 +1,184 @@
@@ -1830,7 +1830,7 @@ index 000000000..51727770e
 +}
 diff --git a/drivers/misc/ipts/ipts-gfx.h b/drivers/misc/ipts/ipts-gfx.h
 new file mode 100644
-index 000000000..03a5f3551
+index 000000000000..03a5f3551ddf
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-gfx.h
 @@ -0,0 +1,24 @@
@@ -1860,7 +1860,7 @@ index 000000000..03a5f3551
 +#endif // _IPTS_GFX_H_
 diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
 new file mode 100644
-index 000000000..e85844dc1
+index 000000000000..e85844dc1158
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-hid.c
 @@ -0,0 +1,456 @@
@@ -2322,7 +2322,7 @@ index 000000000..e85844dc1
 +}
 diff --git a/drivers/misc/ipts/ipts-hid.h b/drivers/misc/ipts/ipts-hid.h
 new file mode 100644
-index 000000000..f1b22c912
+index 000000000000..f1b22c912df7
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-hid.h
 @@ -0,0 +1,34 @@
@@ -2362,7 +2362,7 @@ index 000000000..f1b22c912
 +#endif /* _IPTS_HID_H_ */
 diff --git a/drivers/misc/ipts/ipts-kernel.c b/drivers/misc/ipts/ipts-kernel.c
 new file mode 100644
-index 000000000..86fd359d2
+index 000000000000..86fd359d2eed
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-kernel.c
 @@ -0,0 +1,1050 @@
@@ -3418,7 +3418,7 @@ index 000000000..86fd359d2
 +}
 diff --git a/drivers/misc/ipts/ipts-kernel.h b/drivers/misc/ipts/ipts-kernel.h
 new file mode 100644
-index 000000000..0e7f1393b
+index 000000000000..0e7f1393b807
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-kernel.h
 @@ -0,0 +1,23 @@
@@ -3447,7 +3447,7 @@ index 000000000..0e7f1393b
 +#endif
 diff --git a/drivers/misc/ipts/ipts-mei-msgs.h b/drivers/misc/ipts/ipts-mei-msgs.h
 new file mode 100644
-index 000000000..8ca146800
+index 000000000000..8ca146800a47
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-mei-msgs.h
 @@ -0,0 +1,585 @@
@@ -4038,7 +4038,7 @@ index 000000000..8ca146800
 +#endif // _IPTS_MEI_MSGS_H_
 diff --git a/drivers/misc/ipts/ipts-mei.c b/drivers/misc/ipts/ipts-mei.c
 new file mode 100644
-index 000000000..199e49cb8
+index 000000000000..199e49cb8d70
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-mei.c
 @@ -0,0 +1,282 @@
@@ -4326,7 +4326,7 @@ index 000000000..199e49cb8
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/misc/ipts/ipts-msg-handler.c b/drivers/misc/ipts/ipts-msg-handler.c
 new file mode 100644
-index 000000000..8b214f975
+index 000000000000..8b214f975c03
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-msg-handler.c
 @@ -0,0 +1,431 @@
@@ -4763,7 +4763,7 @@ index 000000000..8b214f975
 +}
 diff --git a/drivers/misc/ipts/ipts-msg-handler.h b/drivers/misc/ipts/ipts-msg-handler.h
 new file mode 100644
-index 000000000..15038814d
+index 000000000000..15038814dfec
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-msg-handler.h
 @@ -0,0 +1,32 @@
@@ -4801,7 +4801,7 @@ index 000000000..15038814d
 +#endif /* _IPTS_MSG_HANDLER_H */
 diff --git a/drivers/misc/ipts/ipts-resource.c b/drivers/misc/ipts/ipts-resource.c
 new file mode 100644
-index 000000000..47607ef7c
+index 000000000000..47607ef7c461
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-resource.c
 @@ -0,0 +1,277 @@
@@ -5084,7 +5084,7 @@ index 000000000..47607ef7c
 +}
 diff --git a/drivers/misc/ipts/ipts-resource.h b/drivers/misc/ipts/ipts-resource.h
 new file mode 100644
-index 000000000..7d66ac72b
+index 000000000000..7d66ac72b475
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-resource.h
 @@ -0,0 +1,30 @@
@@ -5120,7 +5120,7 @@ index 000000000..7d66ac72b
 +#endif // _IPTS_RESOURCE_H_
 diff --git a/drivers/misc/ipts/ipts-sensor-regs.h b/drivers/misc/ipts/ipts-sensor-regs.h
 new file mode 100644
-index 000000000..96812b0eb
+index 000000000000..96812b0eb980
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-sensor-regs.h
 @@ -0,0 +1,700 @@
@@ -5826,7 +5826,7 @@ index 000000000..96812b0eb
 +#endif // _TOUCH_SENSOR_REGS_H
 diff --git a/drivers/misc/ipts/ipts-state.h b/drivers/misc/ipts/ipts-state.h
 new file mode 100644
-index 000000000..39a2eaf5f
+index 000000000000..39a2eaf5f004
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-state.h
 @@ -0,0 +1,29 @@
@@ -5861,7 +5861,7 @@ index 000000000..39a2eaf5f
 +#endif // _IPTS_STATE_H_
 diff --git a/drivers/misc/ipts/ipts.h b/drivers/misc/ipts/ipts.h
 new file mode 100644
-index 000000000..1fcd02146
+index 000000000000..1fcd02146b50
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts.h
 @@ -0,0 +1,200 @@
@@ -6066,7 +6066,7 @@ index 000000000..1fcd02146
 +
 +#endif // _IPTS_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index bb1ee9834..2bbffe8aa 100644
+index bb1ee9834a02..2bbffe8aad40 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -6078,7 +6078,7 @@ index bb1ee9834..2bbffe8aa 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 3ab946ad3..c37daa561 100644
+index 3ab946ad3257..c37daa561486 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -6091,7 +6091,7 @@ index 3ab946ad3..c37daa561 100644
  	{MEI_PCI_DEVICE(MEI_DEV_ID_LBG, MEI_ME_PCH12_CFG)},
 diff --git a/include/linux/intel_ipts_if.h b/include/linux/intel_ipts_if.h
 new file mode 100644
-index 000000000..f329bbfb8
+index 000000000000..f329bbfb8079
 --- /dev/null
 +++ b/include/linux/intel_ipts_if.h
 @@ -0,0 +1,75 @@
@@ -6171,5 +6171,5 @@ index 000000000..f329bbfb8
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.21.0
+2.19.1
 

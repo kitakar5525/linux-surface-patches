@@ -1,6 +1,6 @@
-From 4d0dce7a14b4f49fb73eda46aa0dc7803b973a5a Mon Sep 17 00:00:00 2001
+From 7ad2c2a1732dfd2b90cb9aa769858ceb5bc57f0b Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 7 Mar 2019 11:56:20 -0500
+Date: Wed, 13 Mar 2019 15:16:08 -0400
 Subject: [PATCH 04/11] cameras
 
 ---
@@ -21,10 +21,10 @@ Subject: [PATCH 04/11] cameras
  create mode 100644 drivers/staging/ov5693/ov5693.h
 
 diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-index 361abbc00486..d18650bab283 100644
+index b62cbd800111..6461ed3af344 100644
 --- a/drivers/media/usb/uvc/uvc_driver.c
 +++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -2357,6 +2357,46 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
+@@ -2391,6 +2391,46 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
   * though they are compliant.
   */
  static const struct usb_device_id uvc_ids[] = {
@@ -72,10 +72,10 @@ index 361abbc00486..d18650bab283 100644
  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
  				| USB_DEVICE_ID_MATCH_INT_INFO,
 diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index ab0cbe8815b1..96c4c669a93f 100644
+index 5868631e8f1b..c6414b3858f2 100644
 --- a/drivers/staging/Makefile
 +++ b/drivers/staging/Makefile
-@@ -53,3 +53,4 @@ obj-$(CONFIG_SOC_MT7621)	+= mt7621-dts/
+@@ -51,3 +51,4 @@ obj-$(CONFIG_SOC_MT7621)	+= mt7621-dts/
  obj-$(CONFIG_STAGING_GASKET_FRAMEWORK)	+= gasket/
  obj-$(CONFIG_XIL_AXIS_FIFO)	+= axis-fifo/
  obj-$(CONFIG_EROFS_FS)		+= erofs/

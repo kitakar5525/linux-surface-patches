@@ -1,7 +1,7 @@
-From ae59b263fc62f2292c2e68a2f791adf0d4b00ce0 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Sat, 9 Mar 2019 18:39:04 +0900
-Subject: [PATCH] surface-acpi-500
+From a7077570b66e06f433f56256431c071e1944d632 Mon Sep 17 00:00:00 2001
+From: Jake Day <jake@ninebysix.com>
+Date: Wed, 13 Mar 2019 14:49:26 -0400
+Subject: [PATCH 01/11] surface-acpi
 
 ---
  drivers/acpi/acpica/dsopcode.c      |    2 +-
@@ -14,7 +14,7 @@ Subject: [PATCH] surface-acpi-500
  create mode 100644 drivers/platform/x86/surface_acpi.c
 
 diff --git a/drivers/acpi/acpica/dsopcode.c b/drivers/acpi/acpica/dsopcode.c
-index 78f9de260..0cd858520 100644
+index 78f9de260d5f..0cd858520f5b 100644
 --- a/drivers/acpi/acpica/dsopcode.c
 +++ b/drivers/acpi/acpica/dsopcode.c
 @@ -123,7 +123,7 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
@@ -27,17 +27,17 @@ index 78f9de260..0cd858520 100644
  		bit_count = (u32) length_desc->integer.value;
  
 diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index e5798f157..5849695be 100644
+index e5798f15793a..55abd9e035a0 100644
 --- a/drivers/acpi/acpica/exfield.c
 +++ b/drivers/acpi/acpica/exfield.c
-@@ -97,6 +97,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
- 	acpi_status status;
+@@ -98,6 +98,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
  	union acpi_operand_object *buffer_desc;
  	void *buffer;
-+	u8 field_flags;
  	u32 buffer_length;
++	u8 field_flags;
  
  	ACPI_FUNCTION_TRACE_PTR(ex_read_data_from_field, obj_desc);
+ 
 @@ -146,11 +147,16 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
  	 * Note: Field.length is in bits.
  	 */
@@ -59,7 +59,7 @@ index e5798f157..5849695be 100644
  		buffer_desc = acpi_ut_create_buffer_object(buffer_length);
  		if (!buffer_desc) {
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index b5e9db85e..e57a27dd2 100644
+index b5e9db85e881..e57a27dd2ead 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -622,6 +622,62 @@ config THINKPAD_ACPI_HOTKEY_POLL
@@ -126,7 +126,7 @@ index b5e9db85e..e57a27dd2 100644
  	tristate "Thinkpad Hard Drive Active Protection System (hdaps)"
  	depends on INPUT
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index ce8da260c..8412fe7a1 100644
+index ce8da260c223..8412fe7a169d 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -39,6 +39,7 @@ obj-$(CONFIG_TC1100_WMI)	+= tc1100-wmi.o
@@ -139,7 +139,7 @@ index ce8da260c..8412fe7a1 100644
  obj-$(CONFIG_FUJITSU_TABLET)	+= fujitsu-tablet.o
 diff --git a/drivers/platform/x86/surface_acpi.c b/drivers/platform/x86/surface_acpi.c
 new file mode 100644
-index 000000000..b2d0f4f19
+index 000000000000..b2d0f4f19647
 --- /dev/null
 +++ b/drivers/platform/x86/surface_acpi.c
 @@ -0,0 +1,2731 @@
@@ -2875,7 +2875,7 @@ index 000000000..b2d0f4f19
 +MODULE_DESCRIPTION("ACPI/Platform Drivers for Microsoft Surface Devices");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index a0ac16ee6..0dd242ff2 100644
+index a0ac16ee6575..0dd242ff24d1 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
 @@ -558,8 +558,7 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
@@ -2997,5 +2997,5 @@ index a0ac16ee6..0dd242ff2 100644
  		return -ENODEV;
  
 -- 
-2.21.0
+2.19.1
 

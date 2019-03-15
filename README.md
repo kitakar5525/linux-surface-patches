@@ -22,7 +22,7 @@ See also:
 ## Status for 4.19
 
 jakeday patches
-- [updating patches · jakeday/linux-surface@e09d9e1](https://github.com/jakeday/linux-surface/commit/e09d9e11f58281aec3780849cdaf9336579a4169)
+- [adding support for 5.0 kernel · jakeday/linux-surface@5c2a640](https://github.com/jakeday/linux-surface/commit/5c2a640308d7628f0af341531e078c996b1ba917)
 
 Improve s0ix
 - 4416-01-5525-ipu_patches-419.patch, [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
@@ -40,8 +40,7 @@ Surface 3 sound fix for OEMB devices
 ## Status for 5.00
 
 jakeday patches
-- [updating patches · jakeday/linux-surface@e09d9e1](https://github.com/jakeday/linux-surface/commit/e09d9e11f58281aec3780849cdaf9336579a4169)
-- [Porting patches to Linux 5.0 (surface-acpi, ipts) · Issue #417 · jakeday/linux-surface](https://github.com/jakeday/linux-surface/issues/417)
+- [adding support for 5.0 kernel · jakeday/linux-surface@5c2a640](https://github.com/jakeday/linux-surface/commit/5c2a640308d7628f0af341531e078c996b1ba917)
 
 Improve s0ix
 - [[1/1] ipu3-cio2: Allow probe to succeed if there are no sensors connected - Patchwork](https://patchwork.kernel.org/patch/10714257/)
