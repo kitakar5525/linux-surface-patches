@@ -1,0 +1,92 @@
+From 177f3955b715e1e3fdfe53160fdf05d4c2bdd02f Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Sat, 16 Feb 2019 15:19:42 +0900
+Subject: [PATCH] ipts: add module params for debugging
+
+---
+ drivers/gpu/drm/i915/i915_params.c          | 15 +++++++++++++++
+ drivers/gpu/drm/i915/i915_params.h          |  5 ++++-
+ drivers/gpu/drm/i915/intel_guc_submission.c | 11 ++++++++---
+ 3 files changed, 27 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_params.c b/drivers/gpu/drm/i915/i915_params.c
+index 84415814c..d9ee778ff 100644
+--- a/drivers/gpu/drm/i915/i915_params.c
++++ b/drivers/gpu/drm/i915/i915_params.c
+@@ -150,6 +150,21 @@ i915_param_named_unsafe(enable_guc, int, 0400,
+ i915_param_named_unsafe(enable_ipts, int, 0400,
+ 	"Enable IPTS Touchscreen and Pen support (default: 1)");
+ 
++i915_param_named_unsafe(ipts_guc_priority, int, 0400,
++	"IPTS GuC client priority. "
++	"0=GUC_CLIENT_PRIORITY_KMD_HIGH, "
++	"1=GUC_CLIENT_PRIORITY_HIGH [default], "
++	"2=GUC_CLIENT_PRIORITY_KMD_NORMAL, "
++	"3=GUC_CLIENT_PRIORITY_NORMAL, "
++	"4=GUC_CLIENT_PRIORITY_NUM");
++
++i915_param_named_unsafe(disable_priority_mechanism, bool, 0400,
++	"Disable priority mechanism. (default: 1)");
++
++i915_param_named_unsafe(enable_high_priority_PRIORITY_HIGH_only, bool, 0400,
++	"is_high_priority() returns true only if GuC client priority is GUC_CLIENT_PRIORITY_HIGH. "
++	"If disabled, it returns true when GuC client priority is GUC_CLIENT_PRIORITY_KMD_HIGH or GUC_CLIENT_PRIORITY_HIGH. (default: 1)");
++
+ i915_param_named(guc_log_level, int, 0400,
+ 	"GuC firmware logging level. Requires GuC to be loaded. "
+ 	"(-1=auto [default], 0=disable, 1..4=enable with verbosity min..max)");
+diff --git a/drivers/gpu/drm/i915/i915_params.h b/drivers/gpu/drm/i915/i915_params.h
+index 4ab800c3d..d7e82ea58 100644
+--- a/drivers/gpu/drm/i915/i915_params.h
++++ b/drivers/gpu/drm/i915/i915_params.h
+@@ -69,7 +69,10 @@ struct drm_printer;
+ 	param(bool, enable_dp_mst, true) \
+ 	param(bool, enable_dpcd_backlight, false) \
+ 	param(bool, enable_gvt, false) \
+-	param(int, enable_ipts, 1)
++	param(int, enable_ipts, 1) \
++	param(int, ipts_guc_priority, 1) \
++	param(bool, disable_priority_mechanism, 1) \
++	param(bool, enable_high_priority_PRIORITY_HIGH_only, 1)
+ 
+ #define MEMBER(T, member, ...) T member;
+ struct i915_params {
+diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
+index 2753f51eb..a4893d049 100644
+--- a/drivers/gpu/drm/i915/intel_guc_submission.c
++++ b/drivers/gpu/drm/i915/intel_guc_submission.c
+@@ -88,7 +88,12 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
+ 
+ static inline bool is_high_priority(struct intel_guc_client *client)
+ {
+-	return (client->priority == GUC_CLIENT_PRIORITY_HIGH);
++	if (i915_modparams.enable_high_priority_PRIORITY_HIGH_only) {
++		return (client->priority == GUC_CLIENT_PRIORITY_HIGH);
++	}
++
++	return (client->priority == GUC_CLIENT_PRIORITY_KMD_HIGH ||
++				 client->priority == GUC_CLIENT_PRIORITY_HIGH);
+ }
+ 
+ static inline bool is_high_priority_kmd(struct intel_guc_client *client)
+@@ -111,7 +116,7 @@ static int reserve_doorbell(struct intel_guc_client *client)
+ 	 * priority contexts, the second half for high-priority ones.
+ 	 */
+ 	offset = 0;
+-	if (IS_SKYLAKE(dev_priv) || IS_KABYLAKE(dev_priv)) {
++	if (i915_modparams.disable_priority_mechanism) {
+ 		end = GUC_NUM_DOORBELLS;
+ 	}
+ 	else {
+@@ -1356,7 +1361,7 @@ int i915_guc_ipts_submission_enable(struct drm_i915_private *dev_priv,
+ 	/* client for execbuf submission */
+ 	client = guc_client_alloc(dev_priv,
+ 				  INTEL_INFO(dev_priv)->ring_mask,
+-				  IS_SKYLAKE(dev_priv) || IS_KABYLAKE(dev_priv) ? GUC_CLIENT_PRIORITY_HIGH : GUC_CLIENT_PRIORITY_NORMAL,
++				  i915_modparams.ipts_guc_priority,
+ 				  ctx);
+ 	if (IS_ERR(client)) {
+ 		DRM_ERROR("Failed to create normal GuC client!\n");
+-- 
+2.20.1
+
