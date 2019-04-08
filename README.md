@@ -32,6 +32,9 @@ Improve s0ix on Cherry Trail on 4.19 (these two patches are merged into 4.20)
 - [platform/x86: Add Intel AtomISP2 dummy / power-management driver · torvalds/linux@49ad712](https://github.com/torvalds/linux/commit/49ad712afa88c502831d37f7089d98eac441fb80)
 - [pwm: lpss: Add ACPI HID for second PWM controller on Cherry Trail dev… · torvalds/linux@1688c87](https://github.com/torvalds/linux/commit/1688c8717118f37191d824862a006c8373d261de)
 
+Add quirk for Surface SAM I2C address space
+- [qzed/linux-surface-sam-hid: Experimental Linux drivers for Surface SAM over HID.](https://github.com/qzed/linux-surface-sam-hid)
+
 Surface 3 sound fix for OEMB devices
 - 5525-sound-add-dmi-match-OEMB-for-affected-surface-3.patch
 
@@ -46,6 +49,9 @@ Improve s0ix
 - [[1/1] ipu3-cio2: Allow probe to succeed if there are no sensors connected - Patchwork](https://patchwork.kernel.org/patch/10714257/)
 - [[v3,0/5] ICL support and other enhancements for PMC Core - Patchwork](https://patchwork.kernel.org/cover/10812541/)
 
+Add quirk for Surface SAM I2C address space
+- [qzed/linux-surface-sam-hid: Experimental Linux drivers for Surface SAM over HID.](https://github.com/qzed/linux-surface-sam-hid)
+
 Surface 3 sound fix for OEMB devices
 - 5525-sound-add-dmi-match-OEMB-for-affected-surface-3.patch
 
@@ -58,6 +64,9 @@ base jakeday patches
 
 Surface 3 sound fix for OEMB devices
 - 5525-sound-add-dmi-match-OEMB-for-affected-surface-3.patch
+
+Add quirk for Surface SAM I2C address space
+- [qzed/linux-surface-sam-hid: Experimental Linux drivers for Surface SAM over HID.](https://github.com/qzed/linux-surface-sam-hid)
 
 ### merged into 5.1rc
 
