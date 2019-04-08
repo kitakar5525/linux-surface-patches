@@ -33,6 +33,7 @@ Improve s0ix on Cherry Trail on 4.19 (these two patches are merged into 4.20)
 - [pwm: lpss: Add ACPI HID for second PWM controller on Cherry Trail dev… · torvalds/linux@1688c87](https://github.com/torvalds/linux/commit/1688c8717118f37191d824862a006c8373d261de)
 
 Add quirk for Surface SAM I2C address space
+- [i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper · torvalds/linux@0d5102f](https://github.com/torvalds/linux/commit/0d5102fe85302aa06a3e5fd8e63b09294aed4c48)
 - [qzed/linux-surface-sam-hid: Experimental Linux drivers for Surface SAM over HID.](https://github.com/qzed/linux-surface-sam-hid)
 
 Surface 3 sound fix for OEMB devices
