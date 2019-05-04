@@ -1,0 +1,601 @@
+From d2e9376a1af30664834976effaebc502143fa886 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Fri, 15 Feb 2019 03:42:04 +0900
+Subject: [PATCH] ipts: disable C_ASSERT because of a reason "redefinition of
+ typedef '__C_ASSERT__' is a C11 feature"
+
+---
+ drivers/misc/ipts/ipts-mei-msgs.h    | 62 +++++++++++------------
+ drivers/misc/ipts/ipts-sensor-regs.h | 74 ++++++++++++++--------------
+ 2 files changed, 68 insertions(+), 68 deletions(-)
+
+diff --git a/drivers/misc/ipts/ipts-mei-msgs.h b/drivers/misc/ipts/ipts-mei-msgs.h
+index 8ca14680..15c3daea 100644
+--- a/drivers/misc/ipts/ipts-mei-msgs.h
++++ b/drivers/misc/ipts/ipts-mei-msgs.h
+@@ -30,9 +30,9 @@
+ 
+ 
+ // define C_ASSERT macro to check structure size and fail compile for unexpected mismatch
+-#ifndef C_ASSERT
+-#define C_ASSERT(e) typedef char __C_ASSERT__[(e)?1:-1]
+-#endif
++//#ifndef C_ASSERT
++//#define C_ASSERT(e) typedef char __C_ASSERT__[(e)?1:-1]
++//#endif
+ 
+ 
+ // General Type Defines for compatibility with HID driver and BIOS
+@@ -128,7 +128,7 @@ typedef enum touch_status
+     TOUCH_STATUS_QUIESCE_IO_IN_PROGRESS,    // 19 Indicates that command cannot be complete until ongoing Quiesce I/O flow has completed.
+     TOUCH_STATUS_MAX                        // 20 Invalid value, never returned
+ } touch_status_t;
+-C_ASSERT(sizeof(touch_status_t) == 4);
++//C_ASSERT(sizeof(touch_status_t) == 4);
+ 
+ 
+ 
+@@ -146,14 +146,14 @@ typedef enum touch_sensor_mode
+     TOUCH_SENSOR_MODE_SENSOR_DEBUG = 4, // Used like TOUCH_SENSOR_MODE_HID but data coming from sensor is not necessarily a HID packet.
+     TOUCH_SENSOR_MODE_MAX               // Invalid value
+ } touch_sensor_mode_t;
+-C_ASSERT(sizeof(touch_sensor_mode_t) == 4);
++//C_ASSERT(sizeof(touch_sensor_mode_t) == 4);
+ 
+ typedef struct touch_sensor_set_mode_cmd_data
+ {
+     touch_sensor_mode_t	sensor_mode;     // Indicate desired sensor mode
+     u32					Reserved[3];    // For future expansion
+ } touch_sensor_set_mode_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_mode_cmd_data_t) == 16);
++//C_ASSERT(sizeof(touch_sensor_set_mode_cmd_data_t) == 16);
+ 
+ 
+ #define TOUCH_SENSOR_MAX_DATA_BUFFERS   16
+@@ -179,7 +179,7 @@ typedef struct touch_sensor_set_mem_window_cmd_data
+     u16  work_queue_size;                                              // Size in bytes of the entire GuC Work Queue
+     u32  reserved[8];                                                // For future expansion
+ } touch_sensor_set_mem_window_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_mem_window_cmd_data_t) == 320);
++//C_ASSERT(sizeof(touch_sensor_set_mem_window_cmd_data_t) == 320);
+ 
+ 
+ #define TOUCH_SENSOR_QUIESCE_FLAG_GUC_RESET BIT0   // indicates GuC got reset and ME must re-read GuC data such as TailOffset and Doorbell Cookie values
+@@ -189,7 +189,7 @@ typedef struct touch_sensor_quiesce_io_cmd_data
+     u32  quiesce_flags;   // Optionally set TOUCH_SENSOR_QUIESCE_FLAG_GUC_RESET
+     u32  reserved[2];
+ } touch_sensor_quiesce_io_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_quiesce_io_cmd_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_quiesce_io_cmd_data_t) == 12);
+ 
+ 
+ typedef struct touch_sensor_feedback_ready_cmd_data
+@@ -200,7 +200,7 @@ typedef struct touch_sensor_feedback_ready_cmd_data
+     u32  transaction_id;  // Transaction ID that was originally passed to host in TOUCH_HID_PRIVATE_DATA. Used to track round trip of a given transaction for performance measurements.
+     u32  reserved2[2];   // For future expansion
+ } touch_sensor_feedback_ready_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_feedback_ready_cmd_data_t) == 16);
++//C_ASSERT(sizeof(touch_sensor_feedback_ready_cmd_data_t) == 16);
+ 
+ 
+ #define TOUCH_DEFAULT_DOZE_TIMER_SECONDS    30
+@@ -214,7 +214,7 @@ typedef enum touch_freq_override
+     TOUCH_FREQ_OVERRIDE_50MHZ,  // Force frequency to 50MHz (not currently supported)
+     TOUCH_FREQ_OVERRIDE_MAX     // Invalid value
+ } touch_freq_override_t;
+-C_ASSERT(sizeof(touch_freq_override_t) == 4);
++//C_ASSERT(sizeof(touch_freq_override_t) == 4);
+ 
+ typedef enum touch_spi_io_mode_override
+ {
+@@ -224,7 +224,7 @@ typedef enum touch_spi_io_mode_override
+     TOUCH_SPI_IO_MODE_OVERRIDE_QUAD,    // Force Quad I/O
+     TOUCH_SPI_IO_MODE_OVERRIDE_MAX      // Invalid value
+ } touch_spi_io_mode_override_t;
+-C_ASSERT(sizeof(touch_spi_io_mode_override_t) == 4);
++//C_ASSERT(sizeof(touch_spi_io_mode_override_t) == 4);
+ 
+ // Debug Policy bits used by TOUCH_POLICY_DATA.DebugOverride
+ #define TOUCH_DBG_POLICY_OVERRIDE_STARTUP_TIMER_DIS BIT0    // Disable sensor startup timer
+@@ -243,13 +243,13 @@ typedef struct touch_policy_data
+     u32                      reserved2;          // For future expansion
+     u32                      debug_override;      // Normally all bits will be zero. Bits will be defined as needed for enabling special debug features
+ } touch_policy_data_t;
+-C_ASSERT(sizeof(touch_policy_data_t) == 16);
++//C_ASSERT(sizeof(touch_policy_data_t) == 16);
+ 
+ typedef struct touch_sensor_set_policies_cmd_data
+ {
+     touch_policy_data_t           policy_data;         // Contains the desired policy to be set
+ } touch_sensor_set_policies_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_policies_cmd_data_t) == 16);
++//C_ASSERT(sizeof(touch_sensor_set_policies_cmd_data_t) == 16);
+ 
+ 
+ typedef enum touch_sensor_reset_type
+@@ -258,14 +258,14 @@ typedef enum touch_sensor_reset_type
+     TOUCH_SENSOR_RESET_TYPE_SOFT,   // Software Reset using command written over SPI interface
+     TOUCH_SENSOR_RESET_TYPE_MAX     // Invalid value
+ } touch_sensor_reset_type_t;
+-C_ASSERT(sizeof(touch_sensor_reset_type_t) == 4);
++//C_ASSERT(sizeof(touch_sensor_reset_type_t) == 4);
+ 
+ typedef struct touch_sensor_reset_cmd_data
+ {
+     touch_sensor_reset_type_t reset_type;  // Indicate desired reset type
+     u32                  reserved;   // For future expansion
+ } touch_sensor_reset_cmd_data_t;
+-C_ASSERT(sizeof(touch_sensor_reset_cmd_data_t) == 8);
++//C_ASSERT(sizeof(touch_sensor_reset_cmd_data_t) == 8);
+ 
+ 
+ //
+@@ -284,7 +284,7 @@ typedef struct touch_sensor_msg_h2m
+         touch_sensor_reset_cmd_data_t           reset_cmd_data;
+     } h2m_data;
+ } touch_sensor_msg_h2m_t;
+-C_ASSERT(sizeof(touch_sensor_msg_h2m_t) == 324);
++//C_ASSERT(sizeof(touch_sensor_msg_h2m_t) == 324);
+ 
+ 
+ //*******************************************************************
+@@ -301,7 +301,7 @@ typedef enum touch_spi_io_mode
+     TOUCH_SPI_IO_MODE_QUAD,         // Sensor set for Quad I/O SPI
+     TOUCH_SPI_IO_MODE_MAX           // Invalid value
+ } touch_spi_io_mode_t;
+-C_ASSERT(sizeof(touch_spi_io_mode_t) == 4);
++//C_ASSERT(sizeof(touch_spi_io_mode_t) == 4);
+ 
+ //
+ // TOUCH_SENSOR_GET_DEVICE_INFO_RSP code is sent in response to TOUCH_SENSOR_GET_DEVICE_INFO_CMD. This code will be followed
+@@ -339,7 +339,7 @@ typedef struct touch_sensor_get_device_info_rsp_data
+     u8               reserved1;              // For future expansion
+     u32              reserved2[2];           // For future expansion
+ } touch_sensor_get_device_info_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_get_device_info_rsp_data_t) == 44);
++//C_ASSERT(sizeof(touch_sensor_get_device_info_rsp_data_t) == 44);
+ 
+ 
+ //
+@@ -355,7 +355,7 @@ typedef struct touch_sensor_set_mode_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_set_mode_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_mode_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_set_mode_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -373,7 +373,7 @@ typedef struct touch_sensor_set_mem_window_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_set_mem_window_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_mem_window_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_set_mem_window_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -390,7 +390,7 @@ typedef struct touch_sensor_quiesce_io_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_quiesce_io_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_quiesce_io_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_quiesce_io_rsp_data_t) == 12);
+ 
+ 
+ // Reset Reason values used in TOUCH_SENSOR_HID_READY_FOR_DATA_RSP_DATA
+@@ -401,7 +401,7 @@ typedef enum touch_reset_reason
+     TOUCH_RESET_REASON_HECI_REQUEST,        // Reset was requested via TOUCH_SENSOR_RESET_CMD
+     TOUCH_RESET_REASON_MAX
+ } touch_reset_reason_t;
+-C_ASSERT(sizeof(touch_reset_reason_t) == 4);
++//C_ASSERT(sizeof(touch_reset_reason_t) == 4);
+ 
+ //
+ // TOUCH_SENSOR_HID_READY_FOR_DATA_RSP code is sent in response to TOUCH_SENSOR_HID_READY_FOR_DATA_CMD. This code will be followed
+@@ -426,7 +426,7 @@ typedef struct touch_sensor_hid_ready_for_data_rsp_data
+     u8           reserved1[2];           // For future expansion
+     u32          reserved2[5];           // For future expansion
+ } touch_sensor_hid_ready_for_data_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_hid_ready_for_data_rsp_data_t) == 28);
++//C_ASSERT(sizeof(touch_sensor_hid_ready_for_data_rsp_data_t) == 28);
+ 
+ 
+ //
+@@ -447,7 +447,7 @@ typedef struct touch_sensor_feedback_ready_rsp_data
+     u8           reserved1[3];   // For future expansion
+     u32          reserved2[6];   // For future expansion
+ } touch_sensor_feedback_ready_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_feedback_ready_rsp_data_t) == 28);
++//C_ASSERT(sizeof(touch_sensor_feedback_ready_rsp_data_t) == 28);
+ 
+ 
+ //
+@@ -464,7 +464,7 @@ typedef struct touch_sensor_clear_mem_window_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_clear_mem_window_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_clear_mem_window_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_clear_mem_window_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -484,7 +484,7 @@ typedef struct touch_sensor_notify_dev_ready_rsp_data
+     touch_err_reg_t   err_reg;         // Value of sensor Error Register, field is only valid for Status == TOUCH_STATUS_SENSOR_FAIL_FATAL or TOUCH_STATUS_SENSOR_FAIL_NONFATAL
+     u32          reserved[2];    // For future expansion
+ } touch_sensor_notify_dev_ready_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_notify_dev_ready_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_notify_dev_ready_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -500,7 +500,7 @@ typedef struct touch_sensor_set_policies_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_set_policies_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_set_policies_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_set_policies_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -515,7 +515,7 @@ typedef struct touch_sensor_get_policies_rsp_data
+ {
+     touch_policy_data_t   policy_data;         // Contains the current policy
+ } touch_sensor_get_policies_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_get_policies_rsp_data_t) == 16);
++//C_ASSERT(sizeof(touch_sensor_get_policies_rsp_data_t) == 16);
+ 
+ 
+ //
+@@ -534,7 +534,7 @@ typedef struct touch_sensor_reset_rsp_data
+ {
+     u32          reserved[3];    // For future expansion
+ } touch_sensor_reset_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_reset_rsp_data_t) == 12);
++//C_ASSERT(sizeof(touch_sensor_reset_rsp_data_t) == 12);
+ 
+ 
+ //
+@@ -550,7 +550,7 @@ typedef struct touch_sensor_read_all_regs_rsp_data
+     touch_reg_block_t sensor_regs; // Returns first 64 bytes of register space used for normal touch operation. Does not include test mode register.
+     u32          reserved[4];
+ } touch_sensor_read_all_regs_rsp_data_t;
+-C_ASSERT(sizeof(touch_sensor_read_all_regs_rsp_data_t) == 80);
++//C_ASSERT(sizeof(touch_sensor_read_all_regs_rsp_data_t) == 80);
+ 
+ //
+ // ME to Host Message
+@@ -575,7 +575,7 @@ typedef struct touch_sensor_msg_m2h
+ 	touch_sensor_read_all_regs_rsp_data_t       read_all_regs_rsp_data;
+     } m2h_data;
+ } touch_sensor_msg_m2h_t;
+-C_ASSERT(sizeof(touch_sensor_msg_m2h_t) == 88);
++//C_ASSERT(sizeof(touch_sensor_msg_m2h_t) == 88);
+ 
+ 
+ #define TOUCH_MSG_SIZE_MAX_BYTES    (MAX(sizeof(touch_sensor_msg_m2h_t), sizeof(touch_sensor_msg_h2m_t)))
+diff --git a/drivers/misc/ipts/ipts-sensor-regs.h b/drivers/misc/ipts/ipts-sensor-regs.h
+index 96812b0e..f4dc0f56 100644
+--- a/drivers/misc/ipts/ipts-sensor-regs.h
++++ b/drivers/misc/ipts/ipts-sensor-regs.h
+@@ -20,9 +20,9 @@
+ #pragma pack(1)
+ 
+ // define C_ASSERT macro to check structure size and fail compile for unexpected mismatch
+-#ifndef C_ASSERT
+-#define C_ASSERT(e) typedef char __C_ASSERT__[(e)?1:-1]
+-#endif
++//#ifndef C_ASSERT
++//#define C_ASSERT(e) typedef char __C_ASSERT__[(e)?1:-1]
++//#endif
+ 
+ //
+ // Compatibility versions for this header file
+@@ -48,7 +48,7 @@ typedef enum touch_sts_reg_int_type
+     TOUCH_STS_REG_INT_TYPE_GET_FEATURES,    // Get Features response data available
+     TOUCH_STS_REG_INT_TYPE_MAX
+ } touch_sts_reg_int_type_t;
+-C_ASSERT(sizeof(touch_sts_reg_int_type_t) == 4);
++//C_ASSERT(sizeof(touch_sts_reg_int_type_t) == 4);
+ 
+ typedef enum touch_sts_reg_pwr_state
+ {
+@@ -58,7 +58,7 @@ typedef enum touch_sts_reg_pwr_state
+     TOUCH_STS_REG_PWR_STATE_SENSING,    // Sensing
+     TOUCH_STS_REG_PWR_STATE_MAX
+ } touch_sts_reg_pwr_state_t;
+-C_ASSERT(sizeof(touch_sts_reg_pwr_state_t) == 4);
++//C_ASSERT(sizeof(touch_sts_reg_pwr_state_t) == 4);
+ 
+ typedef enum touch_sts_reg_init_state
+ {
+@@ -68,7 +68,7 @@ typedef enum touch_sts_reg_init_state
+     TOUCH_STS_REG_INIT_STATE_INIT_ERROR,        // Error info in TOUCH_ERR_REG
+     TOUCH_STS_REG_INIT_STATE_MAX
+ } touch_sts_reg_init_state_t;
+-C_ASSERT(sizeof(touch_sts_reg_init_state_t) == 4);
++//C_ASSERT(sizeof(touch_sts_reg_init_state_t) == 4);
+ 
+ #define TOUCH_SYNC_BYTE_VALUE   0x5A
+ 
+@@ -94,7 +94,7 @@ typedef union touch_sts_reg
+         u32  sync_byte            :8;
+     } fields;
+ } touch_sts_reg_t;
+-C_ASSERT(sizeof(touch_sts_reg_t) == 4);
++//C_ASSERT(sizeof(touch_sts_reg_t) == 4);
+ 
+ 
+ //
+@@ -129,7 +129,7 @@ typedef union touch_frame_char_reg
+         u32  reserved            :3;
+     } fields;
+ } touch_frame_char_reg_t;
+-C_ASSERT(sizeof(touch_frame_char_reg_t) == 4);
++//C_ASSERT(sizeof(touch_frame_char_reg_t) == 4);
+ 
+ 
+ //
+@@ -152,7 +152,7 @@ typedef union touch_err_reg
+         u32  vendor_errors        :16;
+     } fields;
+ } touch_err_reg_t;
+-C_ASSERT(sizeof(touch_err_reg_t) == 4);
++//C_ASSERT(sizeof(touch_err_reg_t) == 4);
+ 
+ 
+ //
+@@ -170,7 +170,7 @@ C_ASSERT(sizeof(touch_err_reg_t) == 4);
+ 
+ // expected value is "$TIC" or 0x43495424
+ typedef u32  touch_id_reg_t;
+-C_ASSERT(sizeof(touch_id_reg_t) == 4);
++//C_ASSERT(sizeof(touch_id_reg_t) == 4);
+ 
+ 
+ //
+@@ -199,7 +199,7 @@ typedef union touch_data_sz_reg
+         u32  reserved            :12;
+     } fields;
+ } touch_data_sz_reg_t;
+-C_ASSERT(sizeof(touch_data_sz_reg_t) == 4);
++//C_ASSERT(sizeof(touch_data_sz_reg_t) == 4);
+ 
+ 
+ //
+@@ -219,7 +219,7 @@ typedef enum touch_caps_reg_read_delay_time
+     TOUCH_CAPS_REG_READ_DELAY_TIME_500uS,
+     TOUCH_CAPS_REG_READ_DELAY_TIME_1mS,
+ } touch_caps_reg_read_delay_time_t;
+-C_ASSERT(sizeof(touch_caps_reg_read_delay_time_t) == 4);
++//C_ASSERT(sizeof(touch_caps_reg_read_delay_time_t) == 4);
+ 
+ #define TOUCH_BULK_DATA_MAX_WRITE_INCREMENT 64
+ 
+@@ -262,7 +262,7 @@ typedef union touch_caps_reg
+         u32  max_touch_points      :8;
+     } fields;
+ } touch_caps_reg_t;
+-C_ASSERT(sizeof(touch_caps_reg_t) == 4);
++//C_ASSERT(sizeof(touch_caps_reg_t) == 4);
+ 
+ 
+ //
+@@ -281,7 +281,7 @@ typedef enum touch_cfg_reg_bulk_xfer_size
+     TOUCH_CFG_REG_BULK_XFER_SIZE_64B,       // Bulk Data Transfer Size is 64 bytes
+     TOUCH_CFG_REG_BULK_XFER_SIZE_MAX
+ } touch_cfg_reg_bulk_xfer_size_t;
+-C_ASSERT(sizeof(touch_cfg_reg_bulk_xfer_size_t) == 4);
++//C_ASSERT(sizeof(touch_cfg_reg_bulk_xfer_size_t) == 4);
+ 
+ // Frequency values used by TOUCH_CFG_REG and TOUCH_SENSOR_GET_DEVICE_INFO_RSP_DATA.
+ typedef enum touch_freq
+@@ -291,7 +291,7 @@ typedef enum touch_freq
+     TOUCH_FREQ_30MHZ,       // Sensor set for 30MHz operation (25MHz on Atom)
+     TOUCH_FREQ_MAX          // Invalid value
+ } touch_freq_t;
+-C_ASSERT(sizeof(touch_freq_t) == 4);
++//C_ASSERT(sizeof(touch_freq_t) == 4);
+ 
+ typedef union touch_cfg_reg
+ {
+@@ -319,7 +319,7 @@ typedef union touch_cfg_reg
+         u32  reserved            :23;
+     } fields;
+ } touch_cfg_reg_t;
+-C_ASSERT(sizeof(touch_cfg_reg_t) == 4);
++//C_ASSERT(sizeof(touch_cfg_reg_t) == 4);
+ 
+ 
+ //
+@@ -336,7 +336,7 @@ typedef enum touch_cmd_reg_code
+     TOUCH_CMD_REG_CODE_GEN_TEST_PACKETS,    // Generate Test Packets according to value in TOUCH_TEST_CTRL_REG
+     TOUCH_CMD_REG_CODE_MAX
+ } touch_cmd_reg_code_t;
+-C_ASSERT(sizeof(touch_cmd_reg_code_t) == 4);
++//C_ASSERT(sizeof(touch_cmd_reg_code_t) == 4);
+ 
+ typedef union touch_cmd_reg
+ {
+@@ -350,7 +350,7 @@ typedef union touch_cmd_reg
+         u32  reserved    :24;
+     } fields;
+ } touch_cmd_reg_t;
+-C_ASSERT(sizeof(touch_cmd_reg_t) == 4);
++//C_ASSERT(sizeof(touch_cmd_reg_t) == 4);
+ 
+ 
+ //
+@@ -370,7 +370,7 @@ typedef enum touch_pwr_mgmt_ctrl_reg_cmd
+     TOUCH_PWR_MGMT_CTRL_REG_CMD_SENSING,    // Sensing - not typically set by FW
+     TOUCH_PWR_MGMT_CTRL_REG_CMD_MAX         // Values will result in no change to the power state of the Touch IC
+ } touch_pwr_mgmt_ctrl_reg_cmd_t;
+-C_ASSERT(sizeof(touch_pwr_mgmt_ctrl_reg_cmd_t) == 4);
++//C_ASSERT(sizeof(touch_pwr_mgmt_ctrl_reg_cmd_t) == 4);
+ 
+ typedef union touch_pwr_mgmt_ctrl_reg
+ {
+@@ -384,7 +384,7 @@ typedef union touch_pwr_mgmt_ctrl_reg
+         u32  reserved            :29;
+     } fields;
+ } touch_pwr_mgmt_ctrl_reg_t;
+-C_ASSERT(sizeof(touch_pwr_mgmt_ctrl_reg_t) == 4);
++//C_ASSERT(sizeof(touch_pwr_mgmt_ctrl_reg_t) == 4);
+ 
+ 
+ //
+@@ -406,7 +406,7 @@ typedef union touch_ven_hw_info_reg
+         u32  device_id            :16;
+     } fields;
+ } touch_ven_hw_info_reg_t;
+-C_ASSERT(sizeof(touch_ven_hw_info_reg_t) == 4);
++//C_ASSERT(sizeof(touch_ven_hw_info_reg_t) == 4);
+ 
+ 
+ //
+@@ -417,7 +417,7 @@ C_ASSERT(sizeof(touch_ven_hw_info_reg_t) == 4);
+ #define TOUCH_HW_REV_REG_OFFSET             0x2C
+ 
+ typedef u32  touch_hw_rev_reg_t;   // bit definition is vendor specific
+-C_ASSERT(sizeof(touch_hw_rev_reg_t) == 4);
++//C_ASSERT(sizeof(touch_hw_rev_reg_t) == 4);
+ 
+ 
+ //
+@@ -428,7 +428,7 @@ C_ASSERT(sizeof(touch_hw_rev_reg_t) == 4);
+ #define TOUCH_FW_REV_REG_OFFSET             0x30
+ 
+ typedef u32  touch_fw_rev_reg_t;    // bit definition is vendor specific
+-C_ASSERT(sizeof(touch_fw_rev_reg_t) == 4);
++//C_ASSERT(sizeof(touch_fw_rev_reg_t) == 4);
+ 
+ 
+ //
+@@ -458,7 +458,7 @@ typedef union touch_compat_rev_reg
+         u8   kernel_compat_ver;
+     } fields;
+ } touch_compat_rev_reg_t;
+-C_ASSERT(sizeof(touch_compat_rev_reg_t) == 4);
++//C_ASSERT(sizeof(touch_compat_rev_reg_t) == 4);
+ 
+ 
+ //
+@@ -487,7 +487,7 @@ typedef struct touch_reg_block
+     u32                  reserved1;      // 0x38
+     u32                  reserved2;      // 0x3C
+ } touch_reg_block_t;
+-C_ASSERT(sizeof(touch_reg_block_t) == 64);
++//C_ASSERT(sizeof(touch_reg_block_t) == 64);
+ 
+ 
+ //
+@@ -513,7 +513,7 @@ typedef union touch_test_ctrl_reg
+         u32  num_test_frames       :16;
+     } fields;
+ } touch_test_ctrl_reg_t;
+-C_ASSERT(sizeof(touch_test_ctrl_reg_t) == 4);
++//C_ASSERT(sizeof(touch_test_ctrl_reg_t) == 4);
+ 
+ 
+ //
+@@ -548,7 +548,7 @@ typedef enum touch_raw_data_types
+     TOUCH_RAW_DATA_TYPE_GET_FEATURES,
+     TOUCH_RAW_DATA_TYPE_MAX
+ } touch_raw_data_types_t;
+-C_ASSERT(sizeof(touch_raw_data_types_t) == 4);
++//C_ASSERT(sizeof(touch_raw_data_types_t) == 4);
+ 
+ // Private data structure. Kernels must copy to HID driver buffer
+ typedef struct touch_hid_private_data
+@@ -556,7 +556,7 @@ typedef struct touch_hid_private_data
+     u32  transaction_id;
+     u8   reserved[28];
+ } touch_hid_private_data_t;
+-C_ASSERT(sizeof(touch_hid_private_data_t) == 32);
++//C_ASSERT(sizeof(touch_hid_private_data_t) == 32);
+ 
+ // This is the data structure sent from the PCH FW to the EU kernel
+ typedef struct touch_raw_data_hdr
+@@ -575,7 +575,7 @@ typedef struct touch_raw_data_hdr
+     touch_hid_private_data_t  hid_private_data;     // Private data structure. Kernels must copy to HID
+                                                 // driver buffer
+ } touch_raw_data_hdr_t;
+-C_ASSERT(sizeof(touch_raw_data_hdr_t) == 64);
++//C_ASSERT(sizeof(touch_raw_data_hdr_t) == 64);
+ 
+ typedef struct touch_raw_data
+ {
+@@ -594,7 +594,7 @@ typedef enum touch_err_types
+     TOUCH_RAW_DATA_ERROR = 0,
+     TOUCH_RAW_ERROR_MAX
+ } touch_err_types_t;
+-C_ASSERT(sizeof(touch_err_types_t) == 4);
++//C_ASSERT(sizeof(touch_err_types_t) == 4);
+ 
+ typedef union touch_me_fw_error
+ {
+@@ -607,7 +607,7 @@ typedef union touch_me_fw_error
+         u32 reserved                    : 30;
+     } fields;
+ } touch_me_fw_error_t;
+-C_ASSERT(sizeof(touch_me_fw_error_t) == 4);
++//C_ASSERT(sizeof(touch_me_fw_error_t) == 4);
+ 
+ typedef struct touch_error
+ {
+@@ -616,7 +616,7 @@ typedef struct touch_error
+     touch_me_fw_error_t	touch_me_fw_error;
+     touch_err_reg_t	touch_error_register; // Contains the value copied from the Touch Error Reg
+ } touch_error_t;
+-C_ASSERT(sizeof(touch_error_t) == 12);
++//C_ASSERT(sizeof(touch_error_t) == 12);
+ 
+ // Enumeration used in TOUCH_FEEDBACK_BUFFER
+ typedef enum touch_feedback_cmd_types
+@@ -630,7 +630,7 @@ typedef enum touch_feedback_cmd_types
+     TOUCH_FEEDBACK_CMD_TYPE_HARD_RESET,
+     TOUCH_FEEDBACK_CMD_TYPE_MAX
+ } touch_feedback_cmd_types_t;
+-C_ASSERT(sizeof(touch_feedback_cmd_types_t) == 4);
++//C_ASSERT(sizeof(touch_feedback_cmd_types_t) == 4);
+ 
+ // Enumeration used in TOUCH_FEEDBACK_HDR
+ typedef enum touch_feedback_data_types
+@@ -642,7 +642,7 @@ typedef enum touch_feedback_data_types
+     TOUCH_FEEDBACK_DATA_TYPE_STORE_DATA,    // This is calibration data to be written to system flash
+     TOUCH_FEEDBACK_DATA_TYPE_MAX
+ } touch_feedback_data_types_t;
+-C_ASSERT(sizeof(touch_feedback_data_types_t) == 4);
++//C_ASSERT(sizeof(touch_feedback_data_types_t) == 4);
+ 
+ // This is the data structure sent from the EU kernels back to the ME FW.
+ // In addition to "feedback" data, the FW can execute a "command" described by the command type parameter.
+@@ -657,7 +657,7 @@ typedef struct touch_feedback_hdr
+     u32  spi_offest;          // The offset from TOUCH_DATA_WINDOW_OFFSET at which to write the Payload data. Maximum offset is 0x1EFFF.
+     u8   reserved[40];       // Padding to extend header to full 64 bytes and allow for growth
+ } touch_feedback_hdr_t;
+-C_ASSERT(sizeof(touch_feedback_hdr_t) == 64);
++//C_ASSERT(sizeof(touch_feedback_hdr_t) == 64);
+ 
+ typedef struct touch_feedback_buffer
+ {
+@@ -680,14 +680,14 @@ typedef enum touch_write_data_type
+     TOUCH_WRITE_DATA_TYPE_NO_DATA_USE_DEFAULTS,
+     TOUCH_WRITE_DATA_TYPE_MAX
+ } touch_write_data_type_t;
+-C_ASSERT(sizeof(touch_write_data_type_t) == 4);
++//C_ASSERT(sizeof(touch_write_data_type_t) == 4);
+ 
+ typedef struct touch_write_hdr
+ {
+     u32  write_data_type;   // Use values from TOUCH_WRITE_DATA_TYPE
+     u32  write_data_len;    // This field designates the amount of data to follow
+ } touch_write_hdr_t;
+-C_ASSERT(sizeof(touch_write_hdr_t) == 8);
++//C_ASSERT(sizeof(touch_write_hdr_t) == 8);
+ 
+ typedef struct touch_write_data
+ {
+-- 
+2.20.1
+
