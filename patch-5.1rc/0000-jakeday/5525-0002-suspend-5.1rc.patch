@@ -1,27 +1,26 @@
-From f8a2a73d8f60e6d87e57aadb70cedfa1869be50f Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Tue, 19 Mar 2019 03:52:14 +0900
-Subject: [PATCH] suspend-510rc
+From b272d86b53b195d2370f9e0f8e8f38ae85fced93 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 4 May 2019 21:10:08 +0900
+Subject: [PATCH] suspend-5.1rc
 
 ---
- drivers/nvme/host/nvme.h |  6 ++++++
+ drivers/nvme/host/nvme.h |  5 +++++
  drivers/nvme/host/pci.c  | 10 +++++++++-
  drivers/pci/quirks.c     |  4 ++++
  include/linux/pci_ids.h  |  2 ++
  kernel/power/suspend.c   | 11 +++++++++++
  kernel/sysctl.c          |  9 +++++++++
- 6 files changed, 41 insertions(+), 1 deletion(-)
+ 6 files changed, 40 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 527d64545..6358065a9 100644
+index 527d64545..6be72cc74 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -92,6 +92,12 @@ enum nvme_quirks {
+@@ -92,6 +92,11 @@ enum nvme_quirks {
  	 * Broken Write Zeroes.
  	 */
  	NVME_QUIRK_DISABLE_WRITE_ZEROES		= (1 << 9),
 +
-+	
 +	/*
 +	 * Do not disable nvme when suspending (s2idle)
 +	 */
@@ -66,7 +65,7 @@ index a90cf5d63..de5d5a2b1 100644
  	{ PCI_DEVICE(PCI_VENDOR_ID_APPLE, 0x2001) },
  	{ PCI_DEVICE(PCI_VENDOR_ID_APPLE, 0x2003) },
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index a59ad09ce..e4b82e48c 100644
+index a077f67fe..f8be23932 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -1357,6 +1357,10 @@ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_AL, PCI_ANY_ID,
@@ -121,10 +120,10 @@ index 0bd595a0b..a8385e889 100644
  	pm_notifier_call_chain(PM_POST_SUSPEND);
  	pm_restore_console();
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index e5da394d1..5da376f2e 100644
+index c9ec050bc..155e94652 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -320,7 +320,16 @@ static int min_extfrag_threshold;
+@@ -321,7 +321,16 @@ static int min_extfrag_threshold;
  static int max_extfrag_threshold = 1000;
  #endif
  

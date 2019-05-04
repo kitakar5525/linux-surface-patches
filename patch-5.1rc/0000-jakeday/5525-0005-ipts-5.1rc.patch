@@ -1,7 +1,7 @@
-From 931292e55006a66b4743609f1014735e60271bd3 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Tue, 19 Mar 2019 04:14:21 +0900
-Subject: [PATCH] ipts-510rc
+From a45c9aaac84d72acfee7d74adbb0c7b158f2df70 Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Sat, 4 May 2019 21:20:49 +0900
+Subject: [PATCH] ipts-5.1rc
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -136,10 +136,10 @@ index 9df65d386..5cd6c967d 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 9adc7bb9e..17d06cf12 100644
+index a67a63b5a..dcb51f687 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -3114,6 +3114,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
+@@ -3115,6 +3115,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
  void i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj,
  					 struct sg_table *pages);
  
@@ -244,10 +244,10 @@ index 3f14e9881..e314a2414 100644
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
 diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
-index cf709835f..de9ac810d 100644
+index 48da4a969..c332d0686 100644
 --- a/drivers/gpu/drm/i915/intel_dp.c
 +++ b/drivers/gpu/drm/i915/intel_dp.c
-@@ -2923,8 +2923,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
+@@ -2874,8 +2874,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
  		return;
  
  	if (mode != DRM_MODE_DPMS_ON) {
