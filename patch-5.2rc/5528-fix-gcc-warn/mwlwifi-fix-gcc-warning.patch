@@ -1,0 +1,127 @@
+From 8c1913cb93cbda4e74ef65e1768bcb121313ba6c Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 14 Feb 2019 01:47:17 +0900
+Subject: [PATCH] mwlwifi: fix gcc warning
+
+---
+ drivers/net/wireless/marvell/mwlwifi/debugfs.c         |  2 +-
+ drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c       | 10 +++++++---
+ drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c   |  2 +-
+ drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c     |  2 +-
+ drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c |  2 +-
+ 5 files changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwlwifi/debugfs.c b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
+index e375806a7..e8f6d8a99 100644
+--- a/drivers/net/wireless/marvell/mwlwifi/debugfs.c
++++ b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
+@@ -1366,7 +1366,7 @@ static ssize_t mwl_debugfs_regrdwr_read(struct file *file, char __user *ubuf,
+ 				 priv->reg_value);
+ 	else
+ 		len += scnprintf(p + len, size - len,
+-				 "error: %d(%u 0x%08x 0x%08x)\n",
++				 "error: %ld(%u 0x%08x 0x%08x)\n",
+ 				 ret, priv->reg_type, priv->reg_offset,
+ 				 priv->reg_value);
+ 
+diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
+index ff943d6fe..be329f860 100644
+--- a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
++++ b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
+@@ -873,6 +873,7 @@ static __le16 mwl_fwcmd_parse_cal_cfg(const u8 *src, size_t len, u8 *dst)
+ 	u8 *dptr;
+ 	char byte_str[3];
+ 	long res;
++	int ret_kstrtol = -1;
+ 
+ 	ptr = src;
+ 	dptr = dst;
+@@ -887,12 +888,13 @@ static __le16 mwl_fwcmd_parse_cal_cfg(const u8 *src, size_t len, u8 *dst)
+ 		if (isxdigit(*ptr)) {
+ 			byte_str[0] = *ptr++;
+ 			byte_str[1] = *ptr++;
+-			kstrtol(byte_str, 16, &res);
++			ret_kstrtol = kstrtol(byte_str, 16, &res);
+ 			*dptr++ = res;
+ 		} else {
+ 			ptr++;
+ 		}
+ 	}
++	pr_info("ret_kstrtol: %d\n", ret_kstrtol);
+ 
+ 	return cpu_to_le16(dptr - dst);
+ }
+@@ -904,6 +906,7 @@ static u16 mwl_fwcmd_parse_txpwrlmt_cfg(const u8 *src, size_t len,
+ 	u8 *dptr;
+ 	char byte_str[3];
+ 	long res;
++	int ret_kstrtol = -1;
+ 
+ 	ptr = src;
+ 	dptr = dst;
+@@ -918,12 +921,13 @@ static u16 mwl_fwcmd_parse_txpwrlmt_cfg(const u8 *src, size_t len,
+ 		if (isxdigit(*ptr)) {
+ 			byte_str[0] = *ptr++;
+ 			byte_str[1] = *ptr++;
+-			kstrtol(byte_str, 16, &res);
++			ret_kstrtol = kstrtol(byte_str, 16, &res);
+ 			*dptr++ = res;
+ 		} else {
+ 			ptr++;
+ 		}
+ 	}
++	pr_info("ret_kstrtol: %d\n", ret_kstrtol);
+ 
+ 	return (ptr - src);
+ }
+@@ -3598,7 +3602,7 @@ int mwl_fwcmd_get_fw_core_dump(struct ieee80211_hw *hw,
+ 	core_dump->size_kb = pcmd->cmd_data.coredump.size_kb;
+ 	core_dump->flags = pcmd->cmd_data.coredump.flags;
+ 	memcpy(buff,
+-	       (const void *)((u32)pcmd +
++	       (const void *)((u64)pcmd +
+ 	       sizeof(struct hostcmd_cmd_get_fw_core_dump) -
+ 	       sizeof(struct hostcmd_cmd_get_fw_core_dump_)),
+ 	       MAX_CORE_DUMP_BUFFER);
+diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
+index da55913c0..35542edc8 100644
+--- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
++++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
+@@ -1312,7 +1312,7 @@ static void pcie_bf_mimo_ctrl_decode(struct mwl_priv *priv,
+ 		filp_close(fp_data, current->files);
+ 	} else {
+ 		wiphy_err(priv->hw->wiphy, "Error opening %s! %x\n",
+-			  filename, (unsigned int)fp_data);
++			  filename, (unsigned int)((u64)fp_data));
+ 	}
+ 
+ 	set_fs(oldfs);
+diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
+index dd77589ef..34925396e 100644
+--- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
++++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
+@@ -155,7 +155,7 @@ static int pcie_txbd_ring_create(struct mwl_priv *priv)
+ 	}
+ 	pcie_priv->txbd_ring_vbase = mem;
+ 	wiphy_info(priv->hw->wiphy,
+-		   "TX ring: - base: %p, pbase: 0x%x, len: %d\n",
++		   "TX ring: - base: %p, pbase: 0x%llx, len: %d\n",
+ 		   pcie_priv->txbd_ring_vbase,
+ 		   pcie_priv->txbd_ring_pbase,
+ 		   pcie_priv->txbd_ring_size);
+diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
+index 6758cde36..2d3231e90 100644
+--- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
++++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
+@@ -335,7 +335,7 @@ int pcie_tx_init_ndp(struct ieee80211_hw *hw)
+ 
+ 	if (sizeof(struct pcie_tx_ctrl_ndp) >
+ 	    sizeof(tx_info->status.status_driver_data)) {
+-		wiphy_err(hw->wiphy, "driver data is not enough: %d (%d)\n",
++		wiphy_err(hw->wiphy, "driver data is not enough: %lu (%lu)\n",
+ 			  sizeof(struct pcie_tx_ctrl_ndp),
+ 			  sizeof(tx_info->status.status_driver_data));
+ 		return -ENOMEM;
+-- 
+2.20.1
+
