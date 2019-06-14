@@ -1,6 +1,6 @@
-From 43ba9ee40098a29dd1db695e7c0d2ade71666419 Mon Sep 17 00:00:00 2001
+From 2a6337d5e11ff46a01b0c5a2e32ee2deb6eec812 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:41:59 -0400
+Date: Thu, 6 Jun 2019 13:42:13 -0400
 Subject: [PATCH 10/12] surface-dock
 
 ---

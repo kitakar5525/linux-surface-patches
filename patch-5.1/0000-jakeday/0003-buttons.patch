@@ -1,6 +1,6 @@
-From 18655a338f67c8c5bcb96f7f48802537a08dac94 Mon Sep 17 00:00:00 2001
+From 84dad3e0dc3463df79007844c490071666871a98 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:40:42 -0400
+Date: Thu, 6 Jun 2019 13:40:42 -0400
 Subject: [PATCH 03/12] buttons
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 03/12] buttons
  2 files changed, 159 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index 55cd6e0b409c..ad4d591cf179 100644
+index bb458beecb43..e35580655cd0 100644
 --- a/drivers/input/misc/soc_button_array.c
 +++ b/drivers/input/misc/soc_button_array.c
 @@ -29,6 +29,17 @@ struct soc_button_info {
@@ -30,7 +30,7 @@ index 55cd6e0b409c..ad4d591cf179 100644
  /*
   * Some of the buttons like volume up/down are auto repeat, while others
   * are not. To support both, we register two platform devices, and put
-@@ -310,6 +321,7 @@ static int soc_button_probe(struct platform_device *pdev)
+@@ -314,6 +325,7 @@ static int soc_button_probe(struct platform_device *pdev)
  {
  	struct device *dev = &pdev->dev;
  	const struct acpi_device_id *id;
@@ -38,7 +38,7 @@ index 55cd6e0b409c..ad4d591cf179 100644
  	struct soc_button_info *button_info;
  	struct soc_button_data *priv;
  	struct platform_device *pd;
-@@ -320,18 +332,19 @@ static int soc_button_probe(struct platform_device *pdev)
+@@ -324,18 +336,19 @@ static int soc_button_probe(struct platform_device *pdev)
  	if (!id)
  		return -ENODEV;
  
@@ -67,7 +67,7 @@ index 55cd6e0b409c..ad4d591cf179 100644
  	}
  
  	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-@@ -357,12 +370,32 @@ static int soc_button_probe(struct platform_device *pdev)
+@@ -361,12 +374,32 @@ static int soc_button_probe(struct platform_device *pdev)
  	if (!priv->children[0] && !priv->children[1])
  		return -ENODEV;
  
@@ -101,7 +101,7 @@ index 55cd6e0b409c..ad4d591cf179 100644
  /*
   * Definition of buttons on the tablet. The ACPI index of each button
   * is defined in section 2.8.7.2 of "Windows ACPI Design Guide for SoC
-@@ -377,9 +410,85 @@ static struct soc_button_info soc_button_PNP0C40[] = {
+@@ -381,9 +414,85 @@ static struct soc_button_info soc_button_PNP0C40[] = {
  	{ }
  };
  

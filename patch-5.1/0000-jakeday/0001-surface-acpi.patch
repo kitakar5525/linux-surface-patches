@@ -1,6 +1,6 @@
-From 65b2e85e725ef3280ea555710e0c3a5c2afbbbe9 Mon Sep 17 00:00:00 2001
+From e69519a8701cd692f2c84371b1abc0bfbc64b70c Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:40:13 -0400
+Date: Thu, 6 Jun 2019 13:40:15 -0400
 Subject: [PATCH 01/12] surface-acpi
 
 ---
@@ -14,7 +14,7 @@ Subject: [PATCH 01/12] surface-acpi
  create mode 100644 drivers/platform/x86/surface_acpi.c
 
 diff --git a/drivers/acpi/acpica/dsopcode.c b/drivers/acpi/acpica/dsopcode.c
-index 78f9de260d5f..0cd858520f5b 100644
+index 10f32b62608e..7b2a4987f050 100644
 --- a/drivers/acpi/acpica/dsopcode.c
 +++ b/drivers/acpi/acpica/dsopcode.c
 @@ -123,7 +123,7 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
@@ -27,10 +27,10 @@ index 78f9de260d5f..0cd858520f5b 100644
  		bit_count = (u32) length_desc->integer.value;
  
 diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index e5798f15793a..55abd9e035a0 100644
+index d3d2dbfba680..0b7f617a6e9b 100644
 --- a/drivers/acpi/acpica/exfield.c
 +++ b/drivers/acpi/acpica/exfield.c
-@@ -98,6 +98,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
+@@ -109,6 +109,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
  	union acpi_operand_object *buffer_desc;
  	void *buffer;
  	u32 buffer_length;
@@ -38,7 +38,7 @@ index e5798f15793a..55abd9e035a0 100644
  
  	ACPI_FUNCTION_TRACE_PTR(ex_read_data_from_field, obj_desc);
  
-@@ -146,11 +147,16 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
+@@ -157,11 +158,16 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
  	 * Note: Field.length is in bits.
  	 */
  	buffer_length =
@@ -59,7 +59,7 @@ index e5798f15793a..55abd9e035a0 100644
  		buffer_desc = acpi_ut_create_buffer_object(buffer_length);
  		if (!buffer_desc) {
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index b5e9db85e881..a00b5f6b23ce 100644
+index a1ed13183559..501d06d4f196 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -622,6 +622,103 @@ config THINKPAD_ACPI_HOTKEY_POLL
@@ -167,7 +167,7 @@ index b5e9db85e881..a00b5f6b23ce 100644
  	tristate "Thinkpad Hard Drive Active Protection System (hdaps)"
  	depends on INPUT
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index ce8da260c223..8412fe7a169d 100644
+index 86cb76677bc8..be1ce92a365d 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -39,6 +39,7 @@ obj-$(CONFIG_TC1100_WMI)	+= tc1100-wmi.o
