@@ -1,4 +1,4 @@
-From 095c96c687c0a5140d580b1da1c342a5708ff149 Mon Sep 17 00:00:00 2001
+From 5ed82828b63c41fd68df41a9c9ee133c48aa3b9a Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Wed, 19 Jun 2019 20:07:29 +0900
 Subject: [PATCH] ipts: add debugfs entry for printing debug information
@@ -8,7 +8,7 @@ Subject: [PATCH] ipts: add debugfs entry for printing debug information
  1 file changed, 52 insertions(+)
 
 diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
-index 1c5c92f7d..b3db19f53 100644
+index 1c5c92f7d..06d976953 100644
 --- a/drivers/misc/ipts/ipts-dbgfs.c
 +++ b/drivers/misc/ipts/ipts-dbgfs.c
 @@ -20,9 +20,13 @@
@@ -51,7 +51,7 @@ index 1c5c92f7d..b3db19f53 100644
 +	// pr_info(">> == DB s:%x, c:%x ==\n", *db, *(db+1));
 +	// pr_info(">> == WQ h:%u, t:%u ==\n", *head, *tail);
 +
-+	if (cnt < sizeof(ipts_status_fmt) - 3)
++	if (cnt < sizeof(ipts_debug_fmt) - 3)
 +		return -EINVAL;
 +	
 +	len = scnprintf(dbg_info, 1024, ipts_debug_fmt,
