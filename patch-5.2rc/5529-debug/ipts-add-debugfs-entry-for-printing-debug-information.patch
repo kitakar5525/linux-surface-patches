@@ -1,0 +1,92 @@
+From 095c96c687c0a5140d580b1da1c342a5708ff149 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 19 Jun 2019 20:07:29 +0900
+Subject: [PATCH] ipts: add debugfs entry for printing debug information
+
+---
+ drivers/misc/ipts/ipts-dbgfs.c | 52 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+
+diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
+index 1c5c92f7d..b3db19f53 100644
+--- a/drivers/misc/ipts/ipts-dbgfs.c
++++ b/drivers/misc/ipts/ipts-dbgfs.c
+@@ -20,9 +20,13 @@
+ #include "ipts-sensor-regs.h"
+ #include "ipts-msg-handler.h"
+ #include "ipts-state.h"
++#include "../mei/mei_dev.h"
+ 
+ const char sensor_mode_fmt[] = "sensor mode : %01d\n";
+ const char ipts_status_fmt[] = "sensor mode : %01d\nipts state : %01d\n";
++const char ipts_debug_fmt[] = ">> tdt : fw status : %s\n"
++							  ">> == DB s:%x, c:%x ==\n"
++							  ">> == WQ h:%u, t:%u ==\n";
+ 
+ static ssize_t ipts_dbgfs_mode_read(struct file *fp, char __user *ubuf,
+ 						size_t cnt, loff_t *ppos)
+@@ -112,6 +116,47 @@ static const struct file_operations ipts_status_dbgfs_fops = {
+         .llseek = generic_file_llseek,
+ };
+ 
++static ssize_t ipts_dbgfs_debug_read(struct file *fp, char __user *ubuf,
++						size_t cnt, loff_t *ppos)
++{
++	ipts_info_t *ipts = fp->private_data;
++	char dbg_info[1024];
++	int len = 0;
++
++	char fw_sts_str[MEI_FW_STATUS_STR_SZ];
++	u32 *db, *head, *tail;
++	intel_ipts_wq_info_t* wq_info;
++
++	wq_info = &ipts->resource.wq_info;
++
++	mei_fw_status_str(ipts->cldev->bus, fw_sts_str, MEI_FW_STATUS_STR_SZ);
++	// pr_info(">> tdt : fw status : %s\n", fw_sts_str);
++
++	db = (u32*)wq_info->db_addr;
++	head = (u32*)wq_info->wq_head_addr;
++	tail = (u32*)wq_info->wq_tail_addr;
++	// pr_info(">> == DB s:%x, c:%x ==\n", *db, *(db+1));
++	// pr_info(">> == WQ h:%u, t:%u ==\n", *head, *tail);
++
++	if (cnt < sizeof(ipts_status_fmt) - 3)
++		return -EINVAL;
++	
++	len = scnprintf(dbg_info, 1024, ipts_debug_fmt,
++							fw_sts_str,
++							*db, *(db+1),
++							*head, *tail);
++	if (len < 0)
++		return -EIO;
++
++	return simple_read_from_buffer(ubuf, cnt, ppos, dbg_info, len);
++}
++
++static const struct file_operations ipts_debug_dbgfs_fops = {
++        .open = simple_open,
++        .read = ipts_dbgfs_debug_read,
++        .llseek = generic_file_llseek,
++};
++
+ void ipts_dbgfs_deregister(ipts_info_t* ipts)
+ {
+ 	if (!ipts->dbgfs_dir)
+@@ -143,6 +188,13 @@ int ipts_dbgfs_register(ipts_info_t* ipts, const char *name)
+                 goto err;
+         }
+ 
++        f = debugfs_create_file("debug", S_IRUSR, dir,
++                                ipts, &ipts_debug_dbgfs_fops);
++        if (!f) {
++                ipts_err(ipts, "debugfs debug creation failed\n");
++                goto err;
++        }
++
+ 	ipts->dbgfs_dir = dir;
+ 
+ 	return 0;
+-- 
+2.22.0
+
