@@ -1,7 +1,7 @@
 From cd6724517bb424764c4012def25817370172cf0b Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Mon, 20 May 2019 15:01:25 +0900
-Subject: [PATCH] ipts: add module params for debugging
+Subject: [PATCH] i915: ipts: add module params for debugging
 
 ---
  drivers/gpu/drm/i915/i915_params.c          | 15 +++++++++++++++
