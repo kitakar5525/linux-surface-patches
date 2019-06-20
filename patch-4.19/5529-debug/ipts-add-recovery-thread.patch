@@ -1,0 +1,114 @@
+From e60997744d05e44a3b6b442a9412179134033765 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
+Date: Thu, 20 Jun 2019 16:19:15 +0900
+Subject: [PATCH] ipts: add recovery thread
+
+---
+ drivers/misc/ipts/ipts-mei.c | 65 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 65 insertions(+)
+
+diff --git a/drivers/misc/ipts/ipts-mei.c b/drivers/misc/ipts/ipts-mei.c
+index 199e49cb8..33f4dffee 100644
+--- a/drivers/misc/ipts/ipts-mei.c
++++ b/drivers/misc/ipts/ipts-mei.c
+@@ -20,6 +20,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/kthread.h>
+ #include <linux/intel_ipts_if.h>
++#include <linux/delay.h>
+ 
+ #include "ipts.h"
+ #include "ipts-hid.h"
+@@ -27,11 +28,22 @@
+ #include "ipts-mei-msgs.h"
+ #include "ipts-binary-spec.h"
+ #include "ipts-state.h"
++#include "../mei/mei_dev.h"
+ 
+ #define IPTS_DRIVER_NAME	"ipts"
+ #define IPTS_MEI_UUID		UUID_LE(0x3e8d0870, 0x271a, 0x4208, \
+ 				0x8e, 0xb5, 0x9a, 0xcb, 0x94, 0x02, 0xae, 0x04)
+ 
++static bool enable_recovery_thread = false;
++module_param(enable_recovery_thread, bool, 0400);
++MODULE_PARM_DESC(enable_recovery_thread,
++		"Enable recovery thread (fix crashes automatically) (default:false)");
++
++static int recovery_sleep_msec = 1000;
++module_param(recovery_sleep_msec, int, 0600);
++MODULE_PARM_DESC(recovery_sleep_msec,
++		"Recovery thread sleep in millisecond (default:1000)");
++
+ static struct mei_cl_device_id ipts_mei_cl_tbl[] = {
+ 	{ "", IPTS_MEI_UUID, MEI_CL_VERSION_ANY},
+ 	{}
+@@ -158,6 +170,58 @@ static int ipts_mei_cl_event_thread(void *data)
+ 	return 0;
+ }
+ 
++static struct task_struct *recovery_thread;
++
++static int ipts_recovery_thread(void *data)
++{
++	ipts_info_t *ipts = (ipts_info_t *)data;
++	char fw_sts_str[MEI_FW_STATUS_STR_SZ];
++
++	pr_info("ipts: >> start recovery thread\n");
++
++	while (!kthread_should_stop() && enable_recovery_thread) {
++		mei_fw_status_str(ipts->cldev->bus, fw_sts_str, MEI_FW_STATUS_STR_SZ);
++
++		/*
++		 * When the touch crash happens, the sixth number (zero-based) of `fw_status`
++		 * will become '7'.
++		 * 
++		 * For example:
++		 * 	Before the crash:
++		 * 	A280545D 00990000 583E5805 CAFC0000 00000000 00000000
++		 * 	After the crash:
++		 * 	A280547D 00200000 4A474A41 214B0000 00000000 00000000
++		 * 
++		 * Touch and pen issue persists · Issue #374 · jakeday/linux-surface
++		 * https://github.com/jakeday/linux-surface/issues/374#issuecomment-500646040
++		 */
++		/*
++		 * TODO: One possible problem is...
++		 * the output of fw_status could be completely different between devices.
++		 * '7' could indicate another status on the other devices (?).
++		 */
++		if (fw_sts_str[6] == '7') {
++			ipts_err(ipts, "ME FW malfunction detected. Applying a workaround...");
++			ipts_err(ipts, "For more information, see https://github.com/jakeday/linux-surface/issues/374");
++			ipts_send_sensor_clear_mem_window_cmd(ipts);
++
++			/*
++			 * Need some amount of sleep for `fw_status` to be updated
++			 * Or this block will be called multiple times if `recovery_sleep_msec` is too low.
++			 *  (It is harmless, though.)
++			 */
++			msleep(1000);
++		}
++
++		/* sleep to lower CPU usage */
++		msleep(recovery_sleep_msec);
++	}
++
++	pr_info("ipts: >> end recovery_thread loop\n");
++
++	return 0;
++}
++
+ static void init_work_func(struct work_struct *work)
+ {
+ 	ipts_info_t *ipts = container_of(work, ipts_info_t, init_work);
+@@ -203,6 +267,7 @@ static int ipts_mei_cl_probe(struct mei_cl_device *cldev,
+ 
+ 	ipts->event_loop = kthread_run(ipts_mei_cl_event_thread, (void*)ipts,
+ 							"ipts_event_thread");
++	recovery_thread = kthread_run(ipts_recovery_thread, (void *)ipts, "ipts_recovery_thread");
+ 
+ 	if(ipts_dbgfs_register(ipts, "ipts"))
+ 		pr_debug("cannot register debugfs for IPTS\n");
+-- 
+2.22.0
+

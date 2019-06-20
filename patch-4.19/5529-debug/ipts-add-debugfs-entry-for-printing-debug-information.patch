@@ -1,7 +1,7 @@
 From 5ed82828b63c41fd68df41a9c9ee133c48aa3b9a Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Wed, 19 Jun 2019 20:07:29 +0900
-Subject: [PATCH] ipts: add debugfs entry for printing debug information
+Subject: ipts: add debugfs entry for printing debug information
 
 ---
  drivers/misc/ipts/ipts-dbgfs.c | 52 ++++++++++++++++++++++++++++++++++
