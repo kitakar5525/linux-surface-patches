@@ -1,7 +1,7 @@
-From 49341203210ccb8486f1f2c380e871cb9cd1aa33 Mon Sep 17 00:00:00 2001
+From cc3f36fa68ea5edf37e10f8dbb1c45002d6e0c14 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:42:35 -0400
-Subject: [PATCH 12/12] surface-lte
+Date: Thu, 27 Jun 2019 12:01:07 -0400
+Subject: [PATCH 11/11] surface-lte
 
 ---
  drivers/usb/serial/qcserial.c | 1 +

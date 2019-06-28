@@ -1,3 +1,74 @@
+From e37040bf8feafa87c1e24206312a0112c6c3b5e4 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Fri, 28 Jun 2019 17:44:06 +0900
+Subject: [PATCH 05/11] ipts
+
+---
+ drivers/gpu/drm/i915/Makefile               |    3 +
+ drivers/gpu/drm/i915/i915_drv.c             |   13 +
+ drivers/gpu/drm/i915/i915_drv.h             |    3 +
+ drivers/gpu/drm/i915/i915_gem_context.c     |   12 +
+ drivers/gpu/drm/i915/i915_irq.c             |    7 +-
+ drivers/gpu/drm/i915/i915_params.c          |    5 +-
+ drivers/gpu/drm/i915/i915_params.h          |    5 +-
+ drivers/gpu/drm/i915/intel_dp.c             |    4 +-
+ drivers/gpu/drm/i915/intel_guc.h            |    1 +
+ drivers/gpu/drm/i915/intel_guc_submission.c |   90 +-
+ drivers/gpu/drm/i915/intel_guc_submission.h |    4 +
+ drivers/gpu/drm/i915/intel_ipts.c           |  659 ++++++++++++
+ drivers/gpu/drm/i915/intel_ipts.h           |   36 +
+ drivers/gpu/drm/i915/intel_lrc.c            |   13 +-
+ drivers/gpu/drm/i915/intel_lrc.h            |    8 +
+ drivers/gpu/drm/i915/intel_panel.c          |    7 +
+ drivers/hid/hid-multitouch.c                |   22 +-
+ drivers/misc/Kconfig                        |    1 +
+ drivers/misc/Makefile                       |    1 +
+ drivers/misc/ipts/Kconfig                   |    9 +
+ drivers/misc/ipts/Makefile                  |   13 +
+ drivers/misc/ipts/ipts-binary-spec.h        |  118 +++
+ drivers/misc/ipts/ipts-dbgfs.c              |  152 +++
+ drivers/misc/ipts/ipts-gfx.c                |  184 ++++
+ drivers/misc/ipts/ipts-gfx.h                |   24 +
+ drivers/misc/ipts/ipts-hid.c                |  456 ++++++++
+ drivers/misc/ipts/ipts-hid.h                |   34 +
+ drivers/misc/ipts/ipts-kernel.c             | 1050 +++++++++++++++++++
+ drivers/misc/ipts/ipts-kernel.h             |   23 +
+ drivers/misc/ipts/ipts-mei-msgs.h           |  585 +++++++++++
+ drivers/misc/ipts/ipts-mei.c                |  282 +++++
+ drivers/misc/ipts/ipts-msg-handler.c        |  431 ++++++++
+ drivers/misc/ipts/ipts-msg-handler.h        |   32 +
+ drivers/misc/ipts/ipts-resource.c           |  277 +++++
+ drivers/misc/ipts/ipts-resource.h           |   30 +
+ drivers/misc/ipts/ipts-sensor-regs.h        |  700 +++++++++++++
+ drivers/misc/ipts/ipts-state.h              |   29 +
+ drivers/misc/ipts/ipts.h                    |  200 ++++
+ drivers/misc/mei/hw-me-regs.h               |    1 +
+ drivers/misc/mei/pci-me.c                   |    1 +
+ include/linux/intel_ipts_if.h               |   75 ++
+ 41 files changed, 5575 insertions(+), 25 deletions(-)
+ create mode 100644 drivers/gpu/drm/i915/intel_ipts.c
+ create mode 100644 drivers/gpu/drm/i915/intel_ipts.h
+ create mode 100644 drivers/misc/ipts/Kconfig
+ create mode 100644 drivers/misc/ipts/Makefile
+ create mode 100644 drivers/misc/ipts/ipts-binary-spec.h
+ create mode 100644 drivers/misc/ipts/ipts-dbgfs.c
+ create mode 100644 drivers/misc/ipts/ipts-gfx.c
+ create mode 100644 drivers/misc/ipts/ipts-gfx.h
+ create mode 100644 drivers/misc/ipts/ipts-hid.c
+ create mode 100644 drivers/misc/ipts/ipts-hid.h
+ create mode 100644 drivers/misc/ipts/ipts-kernel.c
+ create mode 100644 drivers/misc/ipts/ipts-kernel.h
+ create mode 100644 drivers/misc/ipts/ipts-mei-msgs.h
+ create mode 100644 drivers/misc/ipts/ipts-mei.c
+ create mode 100644 drivers/misc/ipts/ipts-msg-handler.c
+ create mode 100644 drivers/misc/ipts/ipts-msg-handler.h
+ create mode 100644 drivers/misc/ipts/ipts-resource.c
+ create mode 100644 drivers/misc/ipts/ipts-resource.h
+ create mode 100644 drivers/misc/ipts/ipts-sensor-regs.h
+ create mode 100644 drivers/misc/ipts/ipts-state.h
+ create mode 100644 drivers/misc/ipts/ipts.h
+ create mode 100644 include/linux/intel_ipts_if.h
+
 diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
 index fbcb0904f..1a273956b 100644
 --- a/drivers/gpu/drm/i915/Makefile
@@ -13,7 +84,7 @@ index fbcb0904f..1a273956b 100644
  i915-$(CONFIG_DRM_I915_CAPTURE_ERROR) += i915_gpu_error.o
  i915-$(CONFIG_DRM_I915_SELFTEST) += \
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index 1ad88e6d7..3194c967b 100644
+index 1ad88e6d7..f3a175bfe 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -63,6 +63,7 @@
@@ -29,7 +100,7 @@ index 1ad88e6d7..3194c967b 100644
  	intel_init_ipc(dev_priv);
  
 +	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
-+        intel_ipts_init(dev);
++		intel_ipts_init(dev);
 +
  	return 0;
  
@@ -59,7 +130,7 @@ index 1ad88e6d7..3194c967b 100644
  	enable_rpm_wakeref_asserts(dev_priv);
  
 +	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
-+        intel_ipts_resume(dev);
++		intel_ipts_resume(dev);
 +
  	return 0;
  }
@@ -348,10 +419,10 @@ index aa5e6749c..c9e5c14e7 100644
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 new file mode 100644
-index 000000000..32cce9a49
+index 000000000..133e2ab9b
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
-@@ -0,0 +1,657 @@
+@@ -0,0 +1,659 @@
 +/*
 + * Copyright  2016 Intel Corporation
 + *
@@ -529,7 +600,7 @@ index 000000000..32cce9a49
 +	struct i915_gem_context *ipts_ctx = NULL;
 +	struct drm_i915_private *dev_priv = to_i915(intel_ipts.dev);
 +	struct intel_context *ce = NULL;
-+	int pin_ret = 0;
++	int pin_ret;
 +	int ret = 0;
 +
 +	/* Initialize the context right away.*/
@@ -547,6 +618,7 @@ index 000000000..32cce9a49
 +		goto err_unlock;
 +	}
 +
++	pr_info("ipts: create_ipts_context: before ce = intel_context_lookup()\n");
 +	ce = intel_context_lookup(ipts_ctx, dev_priv->engine[RCS0]);
 +	if (IS_ERR(ce)) {
 +		DRM_ERROR("Failed to create intel context (error %ld)\n",
@@ -561,7 +633,7 @@ index 000000000..32cce9a49
 +		goto err_ctx;
 +	}
 +
-+	pin_ret = execlists_context_pin(ce);
++	pin_ret = __execlists_context_pin(ce, dev_priv->engine[RCS0]);
 +	if (pin_ret) {
 +		DRM_DEBUG("lr context pinning failed :  %d\n", pin_ret);
 +		goto err_ctx;
@@ -596,6 +668,7 @@ index 000000000..32cce9a49
 +
 +	ipts_ctx = intel_ipts.ipts_context;
 +
++	pr_info("ipts: destroy_ipts_context: before ce = intel_context_lookup()n");
 +	ce = intel_context_lookup(ipts_ctx, dev_priv->engine[RCS0]);
 +
 +	/* Initialize the context right away.*/
@@ -1052,12 +1125,12 @@ index 000000000..45d7d1273
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 4e0a351bf..1c841080c 100644
+index 11e5a8661..10e1d59a5 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -166,8 +166,6 @@
  
- #define ACTIVE_PRIORITY (I915_PRIORITY_NEWCLIENT | I915_PRIORITY_NOSEMAPHORE)
+ #define ACTIVE_PRIORITY (I915_PRIORITY_NOSEMAPHORE)
  
 -static int execlists_context_deferred_alloc(struct intel_context *ce,
 -					    struct intel_engine_cs *engine);
@@ -1091,16 +1164,16 @@ index 4e0a351bf..1c841080c 100644
  {
  	return __execlists_context_pin(ce, ce->engine);
  }
-@@ -2515,6 +2513,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
- 	if (ret)
- 		return ret;
+@@ -2520,6 +2518,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
+ 	engine->emit_flush = gen8_emit_flush_render;
+ 	engine->emit_fini_breadcrumb = gen8_emit_fini_breadcrumb_rcs;
  
 +	engine->irq_keep_mask |= GT_RENDER_PIPECTL_NOTIFY_INTERRUPT
-+							<< GEN8_RCS_IRQ_SHIFT;
++				<< GEN8_RCS_IRQ_SHIFT;
 +
- 	/* Override some for render ring. */
- 	engine->init_context = gen8_init_rcs_context;
- 	engine->emit_flush = gen8_emit_flush_render;
+ 	ret = logical_ring_init(engine);
+ 	if (ret)
+ 		return ret;
 @@ -2881,7 +2882,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
  		return i915_timeline_create(ctx->i915, NULL);
  }
@@ -1111,12 +1184,12 @@ index 4e0a351bf..1c841080c 100644
  {
  	struct drm_i915_gem_object *ctx_obj;
 diff --git a/drivers/gpu/drm/i915/intel_lrc.h b/drivers/gpu/drm/i915/intel_lrc.h
-index 84aa230ea..071da9336 100644
+index 84aa230ea..450d780d0 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.h
 +++ b/drivers/gpu/drm/i915/intel_lrc.h
-@@ -117,4 +117,11 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
- 
- u32 gen8_make_rpcs(struct drm_i915_private *i915, struct intel_sseu *ctx_sseu);
+@@ -115,6 +115,14 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
+ 							const char *prefix),
+ 				   unsigned int max);
  
 +int __execlists_context_pin(struct intel_context *ce,
 +			struct intel_engine_cs *engine);
@@ -1125,6 +1198,9 @@ index 84aa230ea..071da9336 100644
 +int execlists_context_deferred_alloc(struct intel_context *ce,
 +					    struct intel_engine_cs *engine);
 +
++
+ u32 gen8_make_rpcs(struct drm_i915_private *i915, struct intel_sseu *ctx_sseu);
+ 
  #endif /* _INTEL_LRC_H_ */
 diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
 index 4ab4ce656..2d3c523ba 100644
@@ -1159,10 +1235,10 @@ index 4ab4ce656..2d3c523ba 100644
  
  static void pch_enable_backlight(const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index c02d4cad1..1fb13dad7 100644
+index 5df5dd56e..595372db0 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -173,6 +173,7 @@ struct mt_device {
+@@ -169,6 +169,7 @@ struct mt_device {
  static void mt_post_parse_default_settings(struct mt_device *td,
  					   struct mt_application *app);
  static void mt_post_parse(struct mt_device *td, struct mt_application *app);
@@ -1170,7 +1246,7 @@ index c02d4cad1..1fb13dad7 100644
  
  /* classes of device behavior */
  #define MT_CLS_DEFAULT				0x0001
-@@ -792,8 +793,11 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
+@@ -795,8 +796,11 @@ static int mt_touch_input_mapping(struct hid_device *hdev, struct hid_input *hi,
  			app->scantime_logical_max = field->logical_maximum;
  			return 1;
  		case HID_DG_CONTACTCOUNT:
@@ -1184,7 +1260,7 @@ index c02d4cad1..1fb13dad7 100644
  			return 1;
  		case HID_DG_AZIMUTH:
  			/*
-@@ -1283,9 +1287,11 @@ static int mt_input_mapping(struct hid_device *hdev, struct hid_input *hi,
+@@ -1286,9 +1290,11 @@ static int mt_input_mapping(struct hid_device *hdev, struct hid_input *hi,
  	    field->application != HID_DG_TOUCHSCREEN &&
  	    field->application != HID_DG_PEN &&
  	    field->application != HID_DG_TOUCHPAD &&
@@ -1196,7 +1272,7 @@ index c02d4cad1..1fb13dad7 100644
  	    field->application != HID_GD_WIRELESS_RADIO_CTLS &&
  	    field->application != HID_GD_SYSTEM_MULTIAXIS &&
  	    !(field->application == HID_VD_ASUS_CUSTOM_MEDIA_KEYS &&
-@@ -1337,6 +1343,14 @@ static int mt_input_mapped(struct hid_device *hdev, struct hid_input *hi,
+@@ -1340,6 +1346,14 @@ static int mt_input_mapped(struct hid_device *hdev, struct hid_input *hi,
  	struct mt_device *td = hid_get_drvdata(hdev);
  	struct mt_report_data *rdata;
  
@@ -1211,7 +1287,7 @@ index c02d4cad1..1fb13dad7 100644
  	rdata = mt_find_report_data(td, field->report);
  	if (rdata && rdata->is_mt_collection) {
  		/* We own these mappings, tell hid-input to ignore them */
-@@ -1548,12 +1562,13 @@ static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
+@@ -1551,12 +1565,13 @@ static int mt_input_configured(struct hid_device *hdev, struct hid_input *hi)
  		/* already handled by hid core */
  		break;
  	case HID_DG_TOUCHSCREEN:
@@ -1226,7 +1302,7 @@ index c02d4cad1..1fb13dad7 100644
  		break;
  	case HID_VD_ASUS_CUSTOM_MEDIA_KEYS:
  		suffix = "Custom Media Keys";
-@@ -1669,6 +1684,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -1672,6 +1687,7 @@ static int mt_probe(struct hid_device *hdev, const struct hid_device_id *id)
  	td->hdev = hdev;
  	td->mtclass = *mtclass;
  	td->inputmode_value = MT_INPUTMODE_TOUCHSCREEN;
@@ -1235,10 +1311,10 @@ index c02d4cad1..1fb13dad7 100644
  
  	INIT_LIST_HEAD(&td->applications);
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 6a0365b23..375f649cb 100644
+index 85fc77148..b697f05ea 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
-@@ -499,6 +499,7 @@ source "drivers/misc/ti-st/Kconfig"
+@@ -500,6 +500,7 @@ source "drivers/misc/ti-st/Kconfig"
  source "drivers/misc/lis3lv02d/Kconfig"
  source "drivers/misc/altera-stapl/Kconfig"
  source "drivers/misc/mei/Kconfig"
@@ -6106,3 +6182,6 @@ index 000000000..f329bbfb8
 +void intel_ipts_disconnect(uint64_t gfx_handle);
 +
 +#endif // INTEL_IPTS_IF_H
+-- 
+2.22.0
+

@@ -1,7 +1,7 @@
-From f2aae4bbd6842ac44f0d7223bb3ffc11da881b00 Mon Sep 17 00:00:00 2001
+From 4f605a61290465fd640994cf139b41c290b24b01 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:41:37 -0400
-Subject: [PATCH 08/12] wifi
+Date: Thu, 27 Jun 2019 12:00:30 -0400
+Subject: [PATCH 08/11] wifi
 
 ---
  drivers/net/wireless/marvell/mwifiex/11n_aggr.c |  3 +--

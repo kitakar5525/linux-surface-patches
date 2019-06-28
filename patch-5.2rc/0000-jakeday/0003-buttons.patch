@@ -1,7 +1,7 @@
-From 18655a338f67c8c5bcb96f7f48802537a08dac94 Mon Sep 17 00:00:00 2001
+From 757cc109d54d051052f1cc0808b8549023c3b324 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:40:42 -0400
-Subject: [PATCH 03/12] buttons
+Date: Thu, 27 Jun 2019 11:59:37 -0400
+Subject: [PATCH 03/11] buttons
 
 ---
  drivers/input/misc/soc_button_array.c     | 133 ++++++++++++++++++++--
@@ -9,10 +9,10 @@ Subject: [PATCH 03/12] buttons
  2 files changed, 159 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index 55cd6e0b409c..ad4d591cf179 100644
+index 5e59f8e57..08c30aa85 100644
 --- a/drivers/input/misc/soc_button_array.c
 +++ b/drivers/input/misc/soc_button_array.c
-@@ -29,6 +29,17 @@ struct soc_button_info {
+@@ -25,6 +25,17 @@ struct soc_button_info {
  	bool wakeup;
  };
  
@@ -190,10 +190,10 @@ index 55cd6e0b409c..ad4d591cf179 100644
  };
  
 diff --git a/drivers/platform/x86/surfacepro3_button.c b/drivers/platform/x86/surfacepro3_button.c
-index 1b491690ce07..eaec30380b11 100644
+index 47c6d0004..0e2c7dfaf 100644
 --- a/drivers/platform/x86/surfacepro3_button.c
 +++ b/drivers/platform/x86/surfacepro3_button.c
-@@ -24,6 +24,12 @@
+@@ -20,6 +20,12 @@
  #define SURFACE_BUTTON_OBJ_NAME		"VGBI"
  #define SURFACE_BUTTON_DEVICE_NAME	"Surface Pro 3/4 Buttons"
  
@@ -206,7 +206,7 @@ index 1b491690ce07..eaec30380b11 100644
  #define SURFACE_BUTTON_NOTIFY_TABLET_MODE	0xc8
  
  #define SURFACE_BUTTON_NOTIFY_PRESS_POWER	0xc6
-@@ -146,6 +152,34 @@ static int surface_button_resume(struct device *dev)
+@@ -142,6 +148,34 @@ static int surface_button_resume(struct device *dev)
  }
  #endif
  
@@ -241,7 +241,7 @@ index 1b491690ce07..eaec30380b11 100644
  static int surface_button_add(struct acpi_device *device)
  {
  	struct surface_button *button;
-@@ -158,6 +192,10 @@ static int surface_button_add(struct acpi_device *device)
+@@ -154,6 +188,10 @@ static int surface_button_add(struct acpi_device *device)
  	    strlen(SURFACE_BUTTON_OBJ_NAME)))
  		return -ENODEV;
  
@@ -253,5 +253,5 @@ index 1b491690ce07..eaec30380b11 100644
  	if (!button)
  		return -ENOMEM;
 -- 
-2.19.1
+2.22.0
 

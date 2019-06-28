@@ -1,7 +1,7 @@
-From 84dad3e0dc3463df79007844c490071666871a98 Mon Sep 17 00:00:00 2001
+From f1592214e7b2d2f04c0ac6940aca265342fb9f5a Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:40:42 -0400
-Subject: [PATCH 03/12] buttons
+Date: Thu, 27 Jun 2019 11:59:37 -0400
+Subject: [PATCH 03/11] buttons
 
 ---
  drivers/input/misc/soc_button_array.c     | 133 ++++++++++++++++++++--

@@ -1,7 +1,7 @@
-From 6ef0eb31d638d21f92f3dc81ff62d1943e4fe174 Mon Sep 17 00:00:00 2001
+From 410d43a5ddedb69a5fc400ed23b37964c41476b8 Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Tue, 5 Mar 2019 20:37:23 +0900
-Subject: [PATCH] ipts: revert suspend/resume mechanism
+Date: Fri, 28 Jun 2019 17:59:38 +0900
+Subject: [PATCH] ipts-revert-suspend-resume-mechanism.patch
 
 ---
  drivers/gpu/drm/i915/i915_drv.c   |  6 ------
@@ -10,10 +10,20 @@ Subject: [PATCH] ipts: revert suspend/resume mechanism
  3 files changed, 18 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index eb095be71..ad28cbec5 100644
+index f3a175bfe..0fabf3ef2 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -1913,9 +1913,6 @@ static int i915_drm_suspend(struct drm_device *dev)
+@@ -724,9 +724,6 @@ static int i915_load_modeset_init(struct drm_device *dev)
+ 
+ 	intel_init_ipc(dev_priv);
+ 
+-	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
+-		intel_ipts_init(dev);
+-
+ 	return 0;
+ 
+ cleanup_gem:
+@@ -2057,9 +2054,6 @@ static int i915_drm_suspend(struct drm_device *dev)
  	struct pci_dev *pdev = dev_priv->drm.pdev;
  	pci_power_t opregion_target_state;
  
@@ -23,21 +33,11 @@ index eb095be71..ad28cbec5 100644
  	disable_rpm_wakeref_asserts(dev_priv);
  
  	/* We do a lot of poking in a lot of registers, make sure they work
-@@ -2110,9 +2107,6 @@ static int i915_drm_resume(struct drm_device *dev)
- 
- 	enable_rpm_wakeref_asserts(dev_priv);
- 
--	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
--        intel_ipts_resume(dev);
--
- 	return 0;
- }
- 
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index b276a2f78..9899c91e4 100644
+index 133e2ab9b..6f9db885a 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
-@@ -645,13 +645,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
+@@ -647,13 +647,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
  		cancel_delayed_work(&intel_ipts.reacquire_db_work);
  	}
  }
@@ -65,5 +65,5 @@ index 45d7d1273..a6965d102 100644
  int intel_ipts_notify_complete(void);
  
 -- 
-2.21.0
+2.22.0
 

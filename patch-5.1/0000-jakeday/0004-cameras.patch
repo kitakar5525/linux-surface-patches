@@ -1,7 +1,7 @@
-From 37339e1807907478a17fc0f978002f6e52c9a01f Mon Sep 17 00:00:00 2001
+From 147cefea68fbb517c8d3b28e9ae5b68f5436163b Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:40:52 -0400
-Subject: [PATCH 04/12] cameras
+Date: Thu, 27 Jun 2019 11:59:48 -0400
+Subject: [PATCH 04/11] cameras
 
 ---
  drivers/media/usb/uvc/uvc_driver.c |   40 +

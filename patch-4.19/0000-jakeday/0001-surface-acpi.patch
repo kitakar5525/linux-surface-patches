@@ -1,7 +1,7 @@
-From 10039747e796d3b91ce5d32ccaef5f61c0001abb Mon Sep 17 00:00:00 2001
+From 7f076647666f2fb8a04f573ab46b17ddd674590b Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:33:54 -0400
-Subject: [PATCH 01/12] surface-acpi
+Date: Wed, 26 Jun 2019 20:42:34 -0400
+Subject: [PATCH 01/11] surface-acpi
 
 ---
  drivers/acpi/acpica/dsopcode.c      |    2 +-
@@ -201,7 +201,7 @@ index dc29af4d8e2f..2250a32a5527 100644
  obj-$(CONFIG_FUJITSU_TABLET)	+= fujitsu-tablet.o
 diff --git a/drivers/platform/x86/surface_acpi.c b/drivers/platform/x86/surface_acpi.c
 new file mode 100644
-index 000000000000..ab793f6774a0
+index 000000000000..b57ab7111e90
 --- /dev/null
 +++ b/drivers/platform/x86/surface_acpi.c
 @@ -0,0 +1,3828 @@
@@ -1595,7 +1595,7 @@ index 000000000000..ab793f6774a0
 +static bool surfacegen5_idma_filter(struct dma_chan *chan, void *param)
 +{
 +	// see dw8250_idma_filter
-+	return param == chan->device->dev->parent;
++	return param == chan->device->dev;
 +}
 +
 +static int surfacegen5_ssh_check_dma(struct serdev_device *serdev)

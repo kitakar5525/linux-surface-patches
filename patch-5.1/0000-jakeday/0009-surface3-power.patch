@@ -1,7 +1,7 @@
-From 6179098feb5e463e496d0049be30cc3cdd5768ed Mon Sep 17 00:00:00 2001
+From 0b3563fe32169e8d1a0bc5107366a8b0955c598b Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:42:01 -0400
-Subject: [PATCH 09/12] surface3-power
+Date: Thu, 27 Jun 2019 12:00:43 -0400
+Subject: [PATCH 09/11] surface3-power
 
 ---
  drivers/platform/x86/Kconfig          |   7 +

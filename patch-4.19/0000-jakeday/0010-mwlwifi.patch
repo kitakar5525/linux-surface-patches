@@ -1,7 +1,7 @@
-From 0fde5c18106ae169eeceed14675a1942f31e31c0 Mon Sep 17 00:00:00 2001
+From 160f5c45ad9028b29cec81111d2c371aa2d79e4d Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
-Date: Thu, 6 Jun 2019 13:42:24 -0400
-Subject: [PATCH 11/12] mwlwifi
+Date: Wed, 26 Jun 2019 20:44:34 -0400
+Subject: [PATCH 10/11] mwlwifi
 
 ---
  drivers/net/wireless/marvell/Kconfig          |    1 +
