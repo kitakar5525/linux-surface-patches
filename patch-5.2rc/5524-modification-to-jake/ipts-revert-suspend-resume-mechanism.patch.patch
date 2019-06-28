@@ -1,16 +1,16 @@
-From 410d43a5ddedb69a5fc400ed23b37964c41476b8 Mon Sep 17 00:00:00 2001
+From 1c56c4e641a14807a007608e1fb7982d740c41e7 Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Fri, 28 Jun 2019 17:59:38 +0900
 Subject: [PATCH] ipts-revert-suspend-resume-mechanism.patch
 
 ---
- drivers/gpu/drm/i915/i915_drv.c   |  6 ------
+ drivers/gpu/drm/i915/i915_drv.c   |  9 ---------
  drivers/gpu/drm/i915/intel_ipts.c | 10 ----------
  drivers/gpu/drm/i915/intel_ipts.h |  2 --
- 3 files changed, 18 deletions(-)
+ 3 files changed, 21 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index f3a175bfe..0fabf3ef2 100644
+index f3a175bfe..aba48295f 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -724,9 +724,6 @@ static int i915_load_modeset_init(struct drm_device *dev)
@@ -33,6 +33,16 @@ index f3a175bfe..0fabf3ef2 100644
  	disable_rpm_wakeref_asserts(dev_priv);
  
  	/* We do a lot of poking in a lot of registers, make sure they work
+@@ -2256,9 +2250,6 @@ static int i915_drm_resume(struct drm_device *dev)
+ 
+ 	enable_rpm_wakeref_asserts(dev_priv);
+ 
+-	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
+-		intel_ipts_resume(dev);
+-
+ 	return 0;
+ }
+ 
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 index 133e2ab9b..6f9db885a 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
