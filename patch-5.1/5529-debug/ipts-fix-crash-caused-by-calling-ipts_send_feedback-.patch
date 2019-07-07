@@ -1,6 +1,6 @@
-From dda8df10d97357797b7053792717afa422694960 Mon Sep 17 00:00:00 2001
+From 4239d1728736d4355e2fb2e4562b1a61e756ed13 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 4 Jul 2019 17:19:32 +0900
+Date: Mon, 8 Jul 2019 06:42:08 +0900
 Subject: [PATCH] ipts: fix crash caused by calling ipts_send_feedback()
  repeatedly
 
@@ -14,7 +14,7 @@ Let's comment out these lines for now.
  1 file changed, 16 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
-index e85844dc1..1d4682e74 100644
+index e85844dc1..81f815c94 100644
 --- a/drivers/misc/ipts/ipts-hid.c
 +++ b/drivers/misc/ipts/ipts-hid.c
 @@ -350,7 +350,7 @@ static int handle_outputs(ipts_info_t *ipts, int parallel_idx)
@@ -39,7 +39,7 @@ index e85844dc1..1d4682e74 100644
 +	 * Calling the "ipts_send_feedback" function repeatedly seems to be
 +	 * what is causing touch to crash on some platforms, especially on
 +	 * Surface Pro 4 and Surface Book 1.
-+	 * 
++	 *
 +	 * Let's comment out these lines for now.
 +	 *
 +	 * Touch and pen issue persists · Issue #374 · jakeday/linux-surface
