@@ -1,3 +1,8 @@
+From c90eed3512f993627fd1a11e51319ad5fd852217 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 13 Feb 2019 18:01:32 +0900
+Subject: [PATCH] 4416-02-01-5525-ipu_patches
+
 From
 - [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
 
@@ -30,13 +35,6 @@ Concatenated below patchset:
 0022-platform-x86-intel_pmc_core-Decode-Snoop-Non-Snoop-L.patch
 0023-platform-x86-intel_pmc_core-convert-to-DEFINE_SHOW_A.patch
 0024-platform-x86-intel_telemetry-convert-to-DEFINE_SHOW_.patch
-
-
-
-From c90eed3512f993627fd1a11e51319ad5fd852217 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Wed, 13 Feb 2019 18:01:32 +0900
-Subject: [PATCH] 4416-02-01-5525-ipu_patches
 
 ---
  Documentation/media/uapi/v4l/meta-formats.rst |    1 +
