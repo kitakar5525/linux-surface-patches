@@ -16,9 +16,3 @@ See also:
 	- Indicate that the patch is made/modified by me
 - 4416-*552?
 	- Indicate that the patch is from another person and modified by me
-
-
-
-## patch-5.2rc
-
-Currently, ipts patch is broken. Boot with `i915.enable_ipts=0`.
