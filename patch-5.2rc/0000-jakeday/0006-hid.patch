@@ -1,4 +1,4 @@
-From 76cbf7ea6eb84932c6053275b4019fb6a58a6765 Mon Sep 17 00:00:00 2001
+From 7dd57f1f6fa5f256c75860255c0407fa67e41faa Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
 Date: Thu, 27 Jun 2019 12:00:08 -0400
 Subject: [PATCH 06/11] hid
@@ -11,10 +11,10 @@ Subject: [PATCH 06/11] hid
  4 files changed, 86 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index eac0c54c5..004279737 100644
+index b032d3899..21df9dbed 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -818,11 +818,22 @@
+@@ -821,11 +821,22 @@
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_3KV1 0x0732
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_600  0x0750
  #define USB_DEVICE_ID_MS_COMFORT_MOUSE_4500	0x076c
@@ -57,10 +57,10 @@ index 8b3a922bd..0290a1688 100644
  		.driver_data = MS_PRESENTER },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, 0x091B),
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 595372db0..c204c30be 100644
+index 55639df49..e51f83880 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -1979,6 +1979,63 @@ static const struct hid_device_id mt_devices[] = {
+@@ -1983,6 +1983,63 @@ static const struct hid_device_id mt_devices[] = {
  		HID_USB_DEVICE(USB_VENDOR_ID_LG,
  			USB_DEVICE_ID_LG_MELFAS_MT) },
  
@@ -125,10 +125,10 @@ index 595372db0..c204c30be 100644
  	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
  		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index e5ca6fe2c..7b847557e 100644
+index 671a28572..00165f9b4 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
-@@ -110,6 +110,17 @@ static const struct hid_device_id hid_quirks[] = {
+@@ -111,6 +111,17 @@ static const struct hid_device_id hid_quirks[] = {
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_SURFACE_PRO_2), HID_QUIRK_NO_INIT_REPORTS },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TOUCH_COVER_2), HID_QUIRK_NO_INIT_REPORTS },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TYPE_COVER_2), HID_QUIRK_NO_INIT_REPORTS },
