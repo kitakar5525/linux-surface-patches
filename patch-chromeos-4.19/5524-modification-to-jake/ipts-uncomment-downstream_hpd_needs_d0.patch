@@ -1,17 +1,17 @@
-From ab8d1b218da2ee582a8a7069dfe7dd8553b929e0 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From 0db814f90812956611d4156778363a644957f14e Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Wed, 13 Feb 2019 23:34:14 +0900
-Subject: [PATCH] ipts: uncomment downstream_hpd_needs_d0
+Subject: [PATCH 20/32] ipts: uncomment downstream_hpd_needs_d0
 
 ---
  drivers/gpu/drm/i915/intel_dp.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
-index 7cec187da..2b0a5ccbe 100644
+index 6099e9fab962..75b61a7cc6ff 100644
 --- a/drivers/gpu/drm/i915/intel_dp.c
 +++ b/drivers/gpu/drm/i915/intel_dp.c
-@@ -2798,8 +2798,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
+@@ -2799,8 +2799,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
  		return;
  
  	if (mode != DRM_MODE_DPMS_ON) {
@@ -23,5 +23,5 @@ index 7cec187da..2b0a5ccbe 100644
  		ret = drm_dp_dpcd_writeb(&intel_dp->aux, DP_SET_POWER,
  					 DP_SET_POWER_D3);
 -- 
-2.20.1
+2.22.0
 

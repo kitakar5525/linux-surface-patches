@@ -1,7 +1,8 @@
-From c8f5671cfe82a9b048786f47bf656dab0bc15ea2 Mon Sep 17 00:00:00 2001
+From 7c91864120aaf5b9c39c17b9baa75f7731ce9ea6 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Mon, 8 Jul 2019 09:32:48 +0900
-Subject: [PATCH] surface3-wmi: add DMI_MATCH OEMB for broken DMI Surface 3
+Subject: [PATCH 24/32] surface3-wmi: add DMI_MATCH OEMB for broken DMI Surface
+ 3
 
 Patch for Surface 3 which is suffering from "OEMB" problem.
 ---
@@ -9,7 +10,7 @@ Patch for Surface 3 which is suffering from "OEMB" problem.
  1 file changed, 6 insertions(+)
 
 diff --git a/drivers/platform/x86/surface3-wmi.c b/drivers/platform/x86/surface3-wmi.c
-index 25b17699..865fdc07 100644
+index 25b176996cb7..865fdc0724f5 100644
 --- a/drivers/platform/x86/surface3-wmi.c
 +++ b/drivers/platform/x86/surface3-wmi.c
 @@ -41,6 +41,12 @@ static const struct dmi_system_id surface3_dmi_table[] = {

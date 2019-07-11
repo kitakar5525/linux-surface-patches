@@ -1,7 +1,7 @@
-From fee051607aa49f9300379d8f556f776603fa36b5 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From d7c012429bf80ad81a8b96d4955e3ce82bd82747 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Fri, 8 Feb 2019 21:50:21 +0900
-Subject: [PATCH] mwifiex: change parameters permission
+Subject: [PATCH 22/32] mwifiex: change parameters permission
 
 ---
  drivers/net/wireless/marvell/mwifiex/cfg80211.c |  2 +-
@@ -9,7 +9,7 @@ Subject: [PATCH] mwifiex: change parameters permission
  2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index 7376ffa82..c402b6381 100644
+index 615c9b77449b..86b52a8945a5 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 @@ -23,7 +23,7 @@
@@ -22,7 +22,7 @@ index 7376ffa82..c402b6381 100644
  static const struct ieee80211_iface_limit mwifiex_ap_sta_limits[] = {
  	{
 diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index 13e49a3ae..82cb75938 100644
+index 13e49a3ae812..82cb75938da3 100644
 --- a/drivers/net/wireless/marvell/mwifiex/main.c
 +++ b/drivers/net/wireless/marvell/mwifiex/main.c
 @@ -28,24 +28,24 @@
@@ -56,5 +56,5 @@ index 13e49a3ae..82cb75938 100644
  
  /*
 -- 
-2.20.1
+2.22.0
 

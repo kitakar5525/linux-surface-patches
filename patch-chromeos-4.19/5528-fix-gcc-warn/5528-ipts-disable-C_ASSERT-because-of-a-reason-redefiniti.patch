@@ -1,8 +1,8 @@
-From d2e9376a1af30664834976effaebc502143fa886 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From e1bf5ce6f235064004226fb593818216cdc09cde Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Fri, 15 Feb 2019 03:42:04 +0900
-Subject: [PATCH] ipts: disable C_ASSERT because of a reason "redefinition of
- typedef '__C_ASSERT__' is a C11 feature"
+Subject: [PATCH 25/32] ipts: disable C_ASSERT because of a reason
+ "redefinition of typedef '__C_ASSERT__' is a C11 feature"
 
 ---
  drivers/misc/ipts/ipts-mei-msgs.h    | 62 +++++++++++------------
@@ -10,7 +10,7 @@ Subject: [PATCH] ipts: disable C_ASSERT because of a reason "redefinition of
  2 files changed, 68 insertions(+), 68 deletions(-)
 
 diff --git a/drivers/misc/ipts/ipts-mei-msgs.h b/drivers/misc/ipts/ipts-mei-msgs.h
-index 8ca14680..15c3daea 100644
+index 8ca146800a47..15c3daeae47e 100644
 --- a/drivers/misc/ipts/ipts-mei-msgs.h
 +++ b/drivers/misc/ipts/ipts-mei-msgs.h
 @@ -30,9 +30,9 @@
@@ -275,7 +275,7 @@ index 8ca14680..15c3daea 100644
  
  #define TOUCH_MSG_SIZE_MAX_BYTES    (MAX(sizeof(touch_sensor_msg_m2h_t), sizeof(touch_sensor_msg_h2m_t)))
 diff --git a/drivers/misc/ipts/ipts-sensor-regs.h b/drivers/misc/ipts/ipts-sensor-regs.h
-index 96812b0e..f4dc0f56 100644
+index 96812b0eb980..f4dc0f564825 100644
 --- a/drivers/misc/ipts/ipts-sensor-regs.h
 +++ b/drivers/misc/ipts/ipts-sensor-regs.h
 @@ -20,9 +20,9 @@
@@ -597,5 +597,5 @@ index 96812b0e..f4dc0f56 100644
  typedef struct touch_write_data
  {
 -- 
-2.20.1
+2.22.0
 

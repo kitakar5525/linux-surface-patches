@@ -1,7 +1,7 @@
-From 8c1913cb93cbda4e74ef65e1768bcb121313ba6c Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From 2463626d68c21544a72d4dd61ac4251d7f536850 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Thu, 14 Feb 2019 01:47:17 +0900
-Subject: [PATCH] mwlwifi: fix gcc warning
+Subject: [PATCH 27/32] mwlwifi: fix gcc warning
 
 ---
  drivers/net/wireless/marvell/mwlwifi/debugfs.c         |  2 +-
@@ -12,7 +12,7 @@ Subject: [PATCH] mwlwifi: fix gcc warning
  5 files changed, 11 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwlwifi/debugfs.c b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
-index e375806a7..e8f6d8a99 100644
+index e375806a7111..e8f6d8a99943 100644
 --- a/drivers/net/wireless/marvell/mwlwifi/debugfs.c
 +++ b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
 @@ -1366,7 +1366,7 @@ static ssize_t mwl_debugfs_regrdwr_read(struct file *file, char __user *ubuf,
@@ -25,7 +25,7 @@ index e375806a7..e8f6d8a99 100644
  				 priv->reg_value);
  
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
-index ff943d6fe..be329f860 100644
+index ff943d6fe447..6550fe1d9b7e 100644
 --- a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
 @@ -873,6 +873,7 @@ static __le16 mwl_fwcmd_parse_cal_cfg(const u8 *src, size_t len, u8 *dst)
@@ -84,7 +84,7 @@ index ff943d6fe..be329f860 100644
  	       sizeof(struct hostcmd_cmd_get_fw_core_dump_)),
  	       MAX_CORE_DUMP_BUFFER);
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
-index da55913c0..35542edc8 100644
+index da55913c0570..35542edc8e58 100644
 --- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
 @@ -1312,7 +1312,7 @@ static void pcie_bf_mimo_ctrl_decode(struct mwl_priv *priv,
@@ -97,7 +97,7 @@ index da55913c0..35542edc8 100644
  
  	set_fs(oldfs);
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
-index dd77589ef..34925396e 100644
+index dd77589ef5a6..34925396ec0d 100644
 --- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
 @@ -155,7 +155,7 @@ static int pcie_txbd_ring_create(struct mwl_priv *priv)
@@ -110,7 +110,7 @@ index dd77589ef..34925396e 100644
  		   pcie_priv->txbd_ring_pbase,
  		   pcie_priv->txbd_ring_size);
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
-index 6758cde36..2d3231e90 100644
+index 6758cde363c6..2d3231e90e4e 100644
 --- a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
 @@ -335,7 +335,7 @@ int pcie_tx_init_ndp(struct ieee80211_hw *hw)
@@ -123,5 +123,5 @@ index 6758cde36..2d3231e90 100644
  			  sizeof(tx_info->status.status_driver_data));
  		return -ENOMEM;
 -- 
-2.20.1
+2.22.0
 

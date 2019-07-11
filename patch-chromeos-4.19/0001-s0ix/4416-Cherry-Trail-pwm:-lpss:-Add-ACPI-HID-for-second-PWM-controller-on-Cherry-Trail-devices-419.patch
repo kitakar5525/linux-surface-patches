@@ -1,8 +1,8 @@
-From 1688c8717118f37191d824862a006c8373d261de Mon Sep 17 00:00:00 2001
+From f61c13490cdf408dc050a465b49161252ac2fff9 Mon Sep 17 00:00:00 2001
 From: Hans de Goede <hdegoede@redhat.com>
 Date: Fri, 12 Oct 2018 12:12:25 +0200
-Subject: [PATCH] pwm: lpss: Add ACPI HID for second PWM controller on Cherry
- Trail devices
+Subject: [PATCH 15/32] pwm: lpss: Add ACPI HID for second PWM controller on
+ Cherry Trail devices
 
 The second PWM controller on Cherry Trail devices uses a separate ACPI
 HID: "80862289", add this so that the driver will properly bind to the
@@ -19,7 +19,7 @@ Signed-off-by: Thierry Reding <thierry.reding@gmail.com>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/pwm/pwm-lpss-platform.c b/drivers/pwm/pwm-lpss-platform.c
-index 5561b9e190f84..7304f36ee715a 100644
+index 5561b9e190f8..7304f36ee715 100644
 --- a/drivers/pwm/pwm-lpss-platform.c
 +++ b/drivers/pwm/pwm-lpss-platform.c
 @@ -81,6 +81,7 @@ static SIMPLE_DEV_PM_OPS(pwm_lpss_platform_pm_ops,
@@ -30,3 +30,6 @@ index 5561b9e190f84..7304f36ee715a 100644
  	{ "80865AC8", (unsigned long)&pwm_lpss_bxt_info },
  	{ },
  };
+-- 
+2.22.0
+

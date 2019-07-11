@@ -1,7 +1,7 @@
-From 6ef0eb31d638d21f92f3dc81ff62d1943e4fe174 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From 1e15ad6f9ec1efad28e319a73fa6bd1da950120d Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Tue, 5 Mar 2019 20:37:23 +0900
-Subject: [PATCH] ipts: revert suspend/resume mechanism
+Subject: [PATCH 19/32] ipts: revert suspend/resume mechanism
 
 ---
  drivers/gpu/drm/i915/i915_drv.c   |  6 ------
@@ -10,10 +10,10 @@ Subject: [PATCH] ipts: revert suspend/resume mechanism
  3 files changed, 18 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index eb095be71..ad28cbec5 100644
+index 2e56034f6823..d92ec4ddda9b 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -1913,9 +1913,6 @@ static int i915_drm_suspend(struct drm_device *dev)
+@@ -1906,9 +1906,6 @@ static int i915_drm_suspend(struct drm_device *dev)
  	struct pci_dev *pdev = dev_priv->drm.pdev;
  	pci_power_t opregion_target_state;
  
@@ -23,7 +23,7 @@ index eb095be71..ad28cbec5 100644
  	disable_rpm_wakeref_asserts(dev_priv);
  
  	/* We do a lot of poking in a lot of registers, make sure they work
-@@ -2110,9 +2107,6 @@ static int i915_drm_resume(struct drm_device *dev)
+@@ -2108,9 +2105,6 @@ static int i915_drm_resume(struct drm_device *dev)
  
  	enable_rpm_wakeref_asserts(dev_priv);
  
@@ -34,7 +34,7 @@ index eb095be71..ad28cbec5 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index b276a2f78..9899c91e4 100644
+index b276a2f7839c..9899c91e4925 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -645,13 +645,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
@@ -52,7 +52,7 @@ index b276a2f78..9899c91e4 100644
 -	intel_ipts_cleanup(dev);
 -}
 diff --git a/drivers/gpu/drm/i915/intel_ipts.h b/drivers/gpu/drm/i915/intel_ipts.h
-index 45d7d1273..a6965d102 100644
+index 45d7d1273adf..a6965d102417 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.h
 +++ b/drivers/gpu/drm/i915/intel_ipts.h
 @@ -28,8 +28,6 @@ struct drm_device;
@@ -65,5 +65,5 @@ index 45d7d1273..a6965d102 100644
  int intel_ipts_notify_complete(void);
  
 -- 
-2.21.0
+2.22.0
 

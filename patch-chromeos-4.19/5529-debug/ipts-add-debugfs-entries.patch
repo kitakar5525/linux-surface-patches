@@ -1,7 +1,7 @@
-From 8e2b654b2a118c29b6d17f074bf52e1a8f8da014 Mon Sep 17 00:00:00 2001
+From 392a429ad6b6d80d7298c807517d8cecd2e3668b Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Thu, 20 Jun 2019 16:19:15 +0900
-Subject: [PATCH] ipts: add debugfs entries
+Subject: [PATCH 31/32] ipts: add debugfs entries
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -17,7 +17,7 @@ Add three debugfs entries:
  2 files changed, 149 insertions(+)
 
 diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
-index 1c5c92f7d..232ac9bd7 100644
+index 1c5c92f7d4ba..232ac9bd72f3 100644
 --- a/drivers/misc/ipts/ipts-dbgfs.c
 +++ b/drivers/misc/ipts/ipts-dbgfs.c
 @@ -20,9 +20,13 @@
@@ -193,7 +193,7 @@ index 1c5c92f7d..232ac9bd7 100644
  
  	return 0;
 diff --git a/drivers/misc/ipts/ipts-msg-handler.h b/drivers/misc/ipts/ipts-msg-handler.h
-index 15038814d..f37d9ad9a 100644
+index 15038814dfec..f37d9ad9af8c 100644
 --- a/drivers/misc/ipts/ipts-msg-handler.h
 +++ b/drivers/misc/ipts/ipts-msg-handler.h
 @@ -28,5 +28,6 @@ int ipts_send_feedback(ipts_info_t *ipts, int buffer_idx, u32 transaction_id);

@@ -1,7 +1,7 @@
-From 1d1ba68b6186ed4ee456334335f1f2e4fed52d22 Mon Sep 17 00:00:00 2001
+From 347745eaa72d29880d6292e347d9d4e6f44fe763 Mon Sep 17 00:00:00 2001
 From: Jake Day <jake@ninebysix.com>
 Date: Tue, 30 Apr 2019 20:49:42 -0400
-Subject: [PATCH 06/12] hid
+Subject: [PATCH 06/32] hid
 
 ---
  drivers/hid/hid-ids.h        | 21 +++++++++----
@@ -11,10 +11,10 @@ Subject: [PATCH 06/12] hid
  4 files changed, 86 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index 97d33b8ed36c..bd7066157b00 100644
+index d0d4708c5213..4610777f7e3f 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
-@@ -801,11 +801,22 @@
+@@ -803,11 +803,22 @@
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_3KV1 0x0732
  #define USB_DEVICE_ID_MS_DIGITAL_MEDIA_600  0x0750
  #define USB_DEVICE_ID_MS_COMFORT_MOUSE_4500	0x076c
@@ -57,10 +57,10 @@ index 72d983626afd..133395b45022 100644
  		.driver_data = MS_PRESENTER },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, 0x091B),
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 831617c386e6..21337070068a 100644
+index 0f4ab4776c25..0e0ce017f8d8 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
-@@ -1978,6 +1978,63 @@ static const struct hid_device_id mt_devices[] = {
+@@ -1985,6 +1985,63 @@ static const struct hid_device_id mt_devices[] = {
  		HID_USB_DEVICE(USB_VENDOR_ID_LG,
  			USB_DEVICE_ID_LG_MELFAS_MT) },
  
@@ -125,7 +125,7 @@ index 831617c386e6..21337070068a 100644
  	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
  		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index 94088c0ed68a..391b882fd6e5 100644
+index d7656a4e98d3..82519d4429d7 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
 @@ -112,6 +112,17 @@ static const struct hid_device_id hid_quirks[] = {
@@ -147,5 +147,5 @@ index 94088c0ed68a..391b882fd6e5 100644
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MSI, USB_DEVICE_ID_MSI_GT683R_LED_PANEL), HID_QUIRK_NO_INIT_REPORTS },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MULTIPLE_1781, USB_DEVICE_ID_RAPHNET_4NES4SNES_OLD), HID_QUIRK_MULTI_INPUT },
 -- 
-2.19.1
+2.22.0
 

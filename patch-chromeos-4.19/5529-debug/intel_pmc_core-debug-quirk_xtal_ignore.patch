@@ -1,17 +1,17 @@
-From c4d7425b4a89d81d3b6b42f7bf3e585f99a1d61e Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From dfd9b3b04f0b0ba0a2acae5139cafea99e7e8826 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Tue, 5 Feb 2019 02:03:38 +0900
-Subject: [PATCH] intel_pmc_core-debug-quirk_xtal_ignore
+Subject: [PATCH 30/32] intel_pmc_core-debug-quirk_xtal_ignore
 
 ---
  drivers/platform/x86/intel_pmc_core.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
-index 64fa7c889..38cfe2b9d 100644
+index d38b4c6b9d5f..14f42ffe01ad 100644
 --- a/drivers/platform/x86/intel_pmc_core.c
 +++ b/drivers/platform/x86/intel_pmc_core.c
-@@ -839,6 +839,7 @@ int quirk_xtal_ignore(const struct dmi_system_id *id)
+@@ -841,6 +841,7 @@ static int quirk_xtal_ignore(const struct dmi_system_id *id)
  	/* Low Voltage Mode Enable */
  	value &= ~SPT_PMC_VRIC1_SLPS0LVEN;
  	pmc_core_reg_write(pmcdev, pmcdev->map->pm_vric1_offset, value);
@@ -20,5 +20,5 @@ index 64fa7c889..38cfe2b9d 100644
  }
  
 -- 
-2.20.1
+2.22.0
 
