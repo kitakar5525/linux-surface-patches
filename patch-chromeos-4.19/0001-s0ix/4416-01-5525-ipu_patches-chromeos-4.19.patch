@@ -1,14 +1,13 @@
-From c90eed3512f993627fd1a11e51319ad5fd852217 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Wed, 13 Feb 2019 18:01:32 +0900
-Subject: [PATCH] 4416-02-01-5525-ipu_patches
+From e60f683156eab877e892c60dd1fbc92306a6c3cf Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 11 Jul 2019 10:37:26 +0900
+Subject: [PATCH 13/32] 4416-02-01-5525-ipu_patches-chromeos-4.19
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 From
-- [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
-
-Modified to match firmware location on Arch Linux
--#define IMGU_FW_NAME			"ipu3-fw.bin"
-+#define IMGU_FW_NAME			"intel/ipu3-fw.bin"
+・ [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
 
 Concatenated below patchset:
 0001-v4l-Add-Intel-IPU3-meta-buffer-formats.patch
@@ -36,12 +35,16 @@ Concatenated below patchset:
 0023-platform-x86-intel_pmc_core-convert-to-DEFINE_SHOW_A.patch
 0024-platform-x86-intel_telemetry-convert-to-DEFINE_SHOW_.patch
 
+Modified to match firmware location on Arch Linux
+-#define IMGU_FW_NAME			"ipu3-fw.bin"
++#define IMGU_FW_NAME			"intel/ipu3-fw.bin"
+
+Modified to follow latest Chromium OS kernel chromeos-4.19
 ---
  Documentation/media/uapi/v4l/meta-formats.rst |    1 +
  .../media/uapi/v4l/pixfmt-meta-intel-ipu3.rst |  181 +
  Documentation/media/v4l-drivers/index.rst     |    1 +
  Documentation/media/v4l-drivers/ipu3.rst      |  326 +
- .../media/common/videobuf2/videobuf2-v4l2.c   |    1 +
  drivers/media/pci/intel/ipu3/Kconfig          |   16 +
  drivers/media/pci/intel/ipu3/Makefile         |   12 +
  drivers/media/pci/intel/ipu3/ipu3-abi.h       | 2011 ++++
@@ -63,16 +66,9 @@ Concatenated below patchset:
  drivers/media/pci/intel/ipu3/ipu3-v4l2.c      | 1436 +++
  drivers/media/pci/intel/ipu3/ipu3.c           |  834 ++
  drivers/media/pci/intel/ipu3/ipu3.h           |  169 +
- drivers/media/v4l2-core/v4l2-compat-ioctl32.c |    2 +
- drivers/media/v4l2-core/v4l2-dev.c            |   12 +-
- drivers/media/v4l2-core/v4l2-ioctl.c          |   25 +
- drivers/platform/x86/intel_pmc_core.c         |  180 +-
- drivers/platform/x86/intel_pmc_core.h         |   68 +-
  .../platform/x86/intel_telemetry_debugfs.c    |   42 +-
- include/media/v4l2-ioctl.h                    |   17 +
  include/uapi/linux/intel-ipu3.h               | 2827 +++++
- include/uapi/linux/videodev2.h                |    6 +
- 35 files changed, 24876 insertions(+), 91 deletions(-)
+ 27 files changed, 24619 insertions(+), 37 deletions(-)
  create mode 100644 Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst
  create mode 100644 Documentation/media/v4l-drivers/ipu3.rst
  create mode 100644 drivers/media/pci/intel/ipu3/ipu3-abi.h
@@ -96,7 +92,7 @@ Concatenated below patchset:
  create mode 100644 include/uapi/linux/intel-ipu3.h
 
 diff --git a/Documentation/media/uapi/v4l/meta-formats.rst b/Documentation/media/uapi/v4l/meta-formats.rst
-index 0c4e1ecf..b887fca7 100644
+index 0c4e1ecf5879..b887fca74008 100644
 --- a/Documentation/media/uapi/v4l/meta-formats.rst
 +++ b/Documentation/media/uapi/v4l/meta-formats.rst
 @@ -12,6 +12,7 @@ These formats are used for the :ref:`metadata` interface only.
@@ -109,7 +105,7 @@ index 0c4e1ecf..b887fca7 100644
      pixfmt-meta-vsp1-hgt
 diff --git a/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst b/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst
 new file mode 100644
-index 00000000..23b945bd
+index 000000000000..23b945bdad2a
 --- /dev/null
 +++ b/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst
 @@ -0,0 +1,181 @@
@@ -295,7 +291,7 @@ index 00000000..23b945bd
 +
 +.. kernel-doc:: include/uapi/linux/intel-ipu3.h
 diff --git a/Documentation/media/v4l-drivers/index.rst b/Documentation/media/v4l-drivers/index.rst
-index 679238e7..179a393b 100644
+index 679238e786a7..179a393bef92 100644
 --- a/Documentation/media/v4l-drivers/index.rst
 +++ b/Documentation/media/v4l-drivers/index.rst
 @@ -44,6 +44,7 @@ For more details see the file COPYING in the source distribution of Linux.
@@ -308,7 +304,7 @@ index 679238e7..179a393b 100644
  	meye
 diff --git a/Documentation/media/v4l-drivers/ipu3.rst b/Documentation/media/v4l-drivers/ipu3.rst
 new file mode 100644
-index 00000000..045bf422
+index 000000000000..045bf4222b1a
 --- /dev/null
 +++ b/Documentation/media/v4l-drivers/ipu3.rst
 @@ -0,0 +1,326 @@
@@ -638,20 +634,8 @@ index 00000000..045bf422
 +.. [#f3] http://git.ideasonboard.org/?p=media-ctl.git;a=summary
 +
 +.. [#f4] ImgU limitation requires an additional 16x16 for all input resolutions
-diff --git a/drivers/media/common/videobuf2/videobuf2-v4l2.c b/drivers/media/common/videobuf2/videobuf2-v4l2.c
-index 886a2d8d..0ef7eaeb 100644
---- a/drivers/media/common/videobuf2/videobuf2-v4l2.c
-+++ b/drivers/media/common/videobuf2/videobuf2-v4l2.c
-@@ -547,6 +547,7 @@ int vb2_create_bufs(struct vb2_queue *q, struct v4l2_create_buffers *create)
- 		requested_sizes[0] = f->fmt.sdr.buffersize;
- 		break;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
-+	case V4L2_BUF_TYPE_META_OUTPUT:
- 		requested_sizes[0] = f->fmt.meta.buffersize;
- 		break;
- 	default:
 diff --git a/drivers/media/pci/intel/ipu3/Kconfig b/drivers/media/pci/intel/ipu3/Kconfig
-index 715f7765..44ebcbb9 100644
+index 715f77651482..44ebcbb98c75 100644
 --- a/drivers/media/pci/intel/ipu3/Kconfig
 +++ b/drivers/media/pci/intel/ipu3/Kconfig
 @@ -15,3 +15,19 @@ config VIDEO_IPU3_CIO2
@@ -675,7 +659,7 @@ index 715f7765..44ebcbb9 100644
 +	  Say Y or M here if you have a Skylake/Kaby Lake SoC with a MIPI
 +	  camera.	The module will be called ipu3-imgu.
 diff --git a/drivers/media/pci/intel/ipu3/Makefile b/drivers/media/pci/intel/ipu3/Makefile
-index 20186e3f..60bd5dbb 100644
+index 20186e3ff2ae..60bd5dbb8ffb 100644
 --- a/drivers/media/pci/intel/ipu3/Makefile
 +++ b/drivers/media/pci/intel/ipu3/Makefile
 @@ -1 +1,13 @@
@@ -694,7 +678,7 @@ index 20186e3f..60bd5dbb 100644
 +obj-$(CONFIG_VIDEO_IPU3_IMGU) += ipu3-imgu.o
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-abi.h b/drivers/media/pci/intel/ipu3/ipu3-abi.h
 new file mode 100644
-index 00000000..21703da7
+index 000000000000..21703da7da75
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-abi.h
 @@ -0,0 +1,2011 @@
@@ -2710,10 +2694,10 @@ index 00000000..21703da7
 +
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-cio2.c b/drivers/media/pci/intel/ipu3/ipu3-cio2.c
-index ca1a4d8e..1046dd06 100644
+index a9300890fc33..6c492c24e843 100644
 --- a/drivers/media/pci/intel/ipu3/ipu3-cio2.c
 +++ b/drivers/media/pci/intel/ipu3/ipu3-cio2.c
-@@ -1736,6 +1736,7 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
+@@ -1738,6 +1738,7 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
  	void __iomem *const *iomap;
  	int r;
  
@@ -2721,7 +2705,7 @@ index ca1a4d8e..1046dd06 100644
  	cio2 = devm_kzalloc(&pci_dev->dev, sizeof(*cio2), GFP_KERNEL);
  	if (!cio2)
  		return -ENOMEM;
-@@ -1810,7 +1811,8 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
+@@ -1812,7 +1813,8 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
  
  	/* Register notifier for subdevices we care */
  	r = cio2_notifier_init(cio2);
@@ -2731,7 +2715,7 @@ index ca1a4d8e..1046dd06 100644
  		goto fail_cio2_queue_exit;
  
  	r = devm_request_irq(&pci_dev->dev, pci_dev->irq, cio2_irq,
-@@ -1823,6 +1825,7 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
+@@ -1825,6 +1827,7 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
  	pm_runtime_put_noidle(&pci_dev->dev);
  	pm_runtime_allow(&pci_dev->dev);
  
@@ -2739,7 +2723,7 @@ index ca1a4d8e..1046dd06 100644
  	return 0;
  
  fail:
-@@ -1978,6 +1981,7 @@ static int __maybe_unused cio2_suspend(struct device *dev)
+@@ -1980,6 +1983,7 @@ static int __maybe_unused cio2_suspend(struct device *dev)
  	struct cio2_queue *q = cio2->cur_queue;
  
  	dev_dbg(dev, "cio2 suspend\n");
@@ -2747,7 +2731,7 @@ index ca1a4d8e..1046dd06 100644
  	if (!cio2->streaming)
  		return 0;
  
-@@ -2006,6 +2010,7 @@ static int __maybe_unused cio2_resume(struct device *dev)
+@@ -2008,6 +2012,7 @@ static int __maybe_unused cio2_resume(struct device *dev)
  	struct cio2_queue *q = cio2->cur_queue;
  
  	dev_dbg(dev, "cio2 resume\n");
@@ -2757,7 +2741,7 @@ index ca1a4d8e..1046dd06 100644
  	/* Start stream */
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-fw.c b/drivers/media/pci/intel/ipu3/ipu3-css-fw.c
 new file mode 100644
-index 00000000..55861aa8
+index 000000000000..55861aa8fb03
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-fw.c
 @@ -0,0 +1,265 @@
@@ -3028,7 +3012,7 @@ index 00000000..55861aa8
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-fw.h b/drivers/media/pci/intel/ipu3/ipu3-css-fw.h
 new file mode 100644
-index 00000000..07d8bb8b
+index 000000000000..07d8bb8b25f3
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-fw.h
 @@ -0,0 +1,188 @@
@@ -3222,7 +3206,7 @@ index 00000000..07d8bb8b
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-params.c b/drivers/media/pci/intel/ipu3/ipu3-css-params.c
 new file mode 100644
-index 00000000..7843631a
+index 000000000000..7843631ac923
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-params.c
 @@ -0,0 +1,2936 @@
@@ -6164,7 +6148,7 @@ index 00000000..7843631a
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-params.h b/drivers/media/pci/intel/ipu3/ipu3-css-params.h
 new file mode 100644
-index 00000000..f3a0a471
+index 000000000000..f3a0a47117a4
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-params.h
 @@ -0,0 +1,28 @@
@@ -6198,7 +6182,7 @@ index 00000000..f3a0a471
 +#endif /*__IPU3_PARAMS_H */
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-pool.c b/drivers/media/pci/intel/ipu3/ipu3-css-pool.c
 new file mode 100644
-index 00000000..eab41c35
+index 000000000000..eab41c35f849
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-pool.c
 @@ -0,0 +1,136 @@
@@ -6340,7 +6324,7 @@ index 00000000..eab41c35
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-pool.h b/drivers/media/pci/intel/ipu3/ipu3-css-pool.h
 new file mode 100644
-index 00000000..71e48d13
+index 000000000000..71e48d13ac6a
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-pool.h
 @@ -0,0 +1,56 @@
@@ -6402,7 +6386,7 @@ index 00000000..71e48d13
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css.c b/drivers/media/pci/intel/ipu3/ipu3-css.c
 new file mode 100644
-index 00000000..753913c0
+index 000000000000..753913c06cee
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css.c
 @@ -0,0 +1,2407 @@
@@ -8815,7 +8799,7 @@ index 00000000..753913c0
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css.h b/drivers/media/pci/intel/ipu3/ipu3-css.h
 new file mode 100644
-index 00000000..11b14376
+index 000000000000..11b143769682
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css.h
 @@ -0,0 +1,215 @@
@@ -9036,7 +9020,7 @@ index 00000000..11b14376
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.c b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
 new file mode 100644
-index 00000000..93a393d4
+index 000000000000..93a393d4e15e
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
 @@ -0,0 +1,270 @@
@@ -9312,7 +9296,7 @@ index 00000000..93a393d4
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.h b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
 new file mode 100644
-index 00000000..b9d224a3
+index 000000000000..b9d224a33273
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
 @@ -0,0 +1,22 @@
@@ -9340,7 +9324,7 @@ index 00000000..b9d224a3
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.c b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
 new file mode 100644
-index 00000000..b66734a4
+index 000000000000..b66734a4ceb7
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
 @@ -0,0 +1,560 @@
@@ -9906,7 +9890,7 @@ index 00000000..b66734a4
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.h b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
 new file mode 100644
-index 00000000..8fe63b4c
+index 000000000000..8fe63b4c6e1c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
 @@ -0,0 +1,35 @@
@@ -9947,7 +9931,7 @@ index 00000000..8fe63b4c
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-tables.c b/drivers/media/pci/intel/ipu3/ipu3-tables.c
 new file mode 100644
-index 00000000..33451798
+index 000000000000..334517987eba
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-tables.c
 @@ -0,0 +1,9609 @@
@@ -19562,7 +19546,7 @@ index 00000000..33451798
 +};
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-tables.h b/drivers/media/pci/intel/ipu3/ipu3-tables.h
 new file mode 100644
-index 00000000..6563782c
+index 000000000000..6563782cbd22
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-tables.h
 @@ -0,0 +1,66 @@
@@ -19634,7 +19618,7 @@ index 00000000..6563782c
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-v4l2.c b/drivers/media/pci/intel/ipu3/ipu3-v4l2.c
 new file mode 100644
-index 00000000..40663834
+index 000000000000..40663834bd2c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-v4l2.c
 @@ -0,0 +1,1436 @@
@@ -21076,7 +21060,7 @@ index 00000000..40663834
 +EXPORT_SYMBOL_GPL(ipu3_v4l2_buffer_done);
 diff --git a/drivers/media/pci/intel/ipu3/ipu3.c b/drivers/media/pci/intel/ipu3/ipu3.c
 new file mode 100644
-index 00000000..dcf58afc
+index 000000000000..dcf58afcc180
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3.c
 @@ -0,0 +1,834 @@
@@ -21916,7 +21900,7 @@ index 00000000..dcf58afc
 +MODULE_DESCRIPTION("Intel ipu3_imgu PCI driver");
 diff --git a/drivers/media/pci/intel/ipu3/ipu3.h b/drivers/media/pci/intel/ipu3/ipu3.h
 new file mode 100644
-index 00000000..8abae6d3
+index 000000000000..8abae6d31747
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3.h
 @@ -0,0 +1,169 @@
@@ -22089,569 +22073,8 @@ index 00000000..8abae6d3
 +int imgu_s_stream(struct imgu_device *imgu, int enable);
 +
 +#endif
-diff --git a/drivers/media/v4l2-core/v4l2-compat-ioctl32.c b/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
-index 6481212f..ff84e807 100644
---- a/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
-+++ b/drivers/media/v4l2-core/v4l2-compat-ioctl32.c
-@@ -321,6 +321,7 @@ static int __get_v4l2_format32(struct v4l2_format __user *p64,
- 		return copy_in_user(&p64->fmt.sdr, &p32->fmt.sdr,
- 				    sizeof(p64->fmt.sdr)) ? -EFAULT : 0;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
-+	case V4L2_BUF_TYPE_META_OUTPUT:
- 		return copy_in_user(&p64->fmt.meta, &p32->fmt.meta,
- 				    sizeof(p64->fmt.meta)) ? -EFAULT : 0;
- 	default:
-@@ -390,6 +391,7 @@ static int __put_v4l2_format32(struct v4l2_format __user *p64,
- 		return copy_in_user(&p32->fmt.sdr, &p64->fmt.sdr,
- 				    sizeof(p64->fmt.sdr)) ? -EFAULT : 0;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
-+	case V4L2_BUF_TYPE_META_OUTPUT:
- 		return copy_in_user(&p32->fmt.meta, &p64->fmt.meta,
- 				    sizeof(p64->fmt.meta)) ? -EFAULT : 0;
- 	default:
-diff --git a/drivers/media/v4l2-core/v4l2-dev.c b/drivers/media/v4l2-core/v4l2-dev.c
-index 69e77593..cc3e9001 100644
---- a/drivers/media/v4l2-core/v4l2-dev.c
-+++ b/drivers/media/v4l2-core/v4l2-dev.c
-@@ -583,7 +583,8 @@ static void determine_valid_ioctls(struct video_device *vdev)
- 			       ops->vidioc_enum_fmt_vid_overlay ||
- 			       ops->vidioc_enum_fmt_meta_cap)) ||
- 		    (is_tx && (ops->vidioc_enum_fmt_vid_out ||
--			       ops->vidioc_enum_fmt_vid_out_mplane)))
-+			       ops->vidioc_enum_fmt_vid_out_mplane ||
-+			       ops->vidioc_enum_fmt_meta_out)))
- 			set_bit(_IOC_NR(VIDIOC_ENUM_FMT), valid_ioctls);
- 		if ((is_rx && (ops->vidioc_g_fmt_vid_cap ||
- 			       ops->vidioc_g_fmt_vid_cap_mplane ||
-@@ -591,7 +592,8 @@ static void determine_valid_ioctls(struct video_device *vdev)
- 			       ops->vidioc_g_fmt_meta_cap)) ||
- 		    (is_tx && (ops->vidioc_g_fmt_vid_out ||
- 			       ops->vidioc_g_fmt_vid_out_mplane ||
--			       ops->vidioc_g_fmt_vid_out_overlay)))
-+			       ops->vidioc_g_fmt_vid_out_overlay ||
-+			       ops->vidioc_g_fmt_meta_out)))
- 			 set_bit(_IOC_NR(VIDIOC_G_FMT), valid_ioctls);
- 		if ((is_rx && (ops->vidioc_s_fmt_vid_cap ||
- 			       ops->vidioc_s_fmt_vid_cap_mplane ||
-@@ -599,7 +601,8 @@ static void determine_valid_ioctls(struct video_device *vdev)
- 			       ops->vidioc_s_fmt_meta_cap)) ||
- 		    (is_tx && (ops->vidioc_s_fmt_vid_out ||
- 			       ops->vidioc_s_fmt_vid_out_mplane ||
--			       ops->vidioc_s_fmt_vid_out_overlay)))
-+			       ops->vidioc_s_fmt_vid_out_overlay ||
-+			       ops->vidioc_s_fmt_meta_out)))
- 			 set_bit(_IOC_NR(VIDIOC_S_FMT), valid_ioctls);
- 		if ((is_rx && (ops->vidioc_try_fmt_vid_cap ||
- 			       ops->vidioc_try_fmt_vid_cap_mplane ||
-@@ -607,7 +610,8 @@ static void determine_valid_ioctls(struct video_device *vdev)
- 			       ops->vidioc_try_fmt_meta_cap)) ||
- 		    (is_tx && (ops->vidioc_try_fmt_vid_out ||
- 			       ops->vidioc_try_fmt_vid_out_mplane ||
--			       ops->vidioc_try_fmt_vid_out_overlay)))
-+			       ops->vidioc_try_fmt_vid_out_overlay ||
-+			       ops->vidioc_try_fmt_meta_out)))
- 			 set_bit(_IOC_NR(VIDIOC_TRY_FMT), valid_ioctls);
- 		SET_VALID_IOCTL(ops, VIDIOC_OVERLAY, vidioc_overlay);
- 		SET_VALID_IOCTL(ops, VIDIOC_G_FBUF, vidioc_g_fbuf);
-diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index a4d3e94a..b69b1bd0 100644
---- a/drivers/media/v4l2-core/v4l2-ioctl.c
-+++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -194,6 +194,7 @@ const char *v4l2_type_names[] = {
- 	[V4L2_BUF_TYPE_SDR_CAPTURE]        = "sdr-cap",
- 	[V4L2_BUF_TYPE_SDR_OUTPUT]         = "sdr-out",
- 	[V4L2_BUF_TYPE_META_CAPTURE]       = "meta-cap",
-+	[V4L2_BUF_TYPE_META_OUTPUT]	   = "meta-out",
- };
- EXPORT_SYMBOL(v4l2_type_names);
- 
-@@ -368,6 +369,7 @@ static void v4l_print_format(const void *arg, bool write_only)
- 			(sdr->pixelformat >> 24) & 0xff);
- 		break;
- 	case V4L2_BUF_TYPE_META_CAPTURE:
-+	case V4L2_BUF_TYPE_META_OUTPUT:
- 		meta = &p->fmt.meta;
- 		pr_cont(", dataformat=%c%c%c%c, buffersize=%u\n",
- 			(meta->dataformat >>  0) & 0xff,
-@@ -1001,6 +1003,10 @@ static int check_fmt(struct file *file, enum v4l2_buf_type type)
- 		if (is_vid && is_rx && ops->vidioc_g_fmt_meta_cap)
- 			return 0;
- 		break;
-+	case V4L2_BUF_TYPE_META_OUTPUT:
-+		if (is_vid && is_tx && ops->vidioc_g_fmt_meta_out)
-+			return 0;
-+		break;
- 	default:
- 		break;
- 	}
-@@ -1295,6 +1301,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_META_FMT_VSP1_HGO:	descr = "R-Car VSP1 1-D Histogram"; break;
- 	case V4L2_META_FMT_VSP1_HGT:	descr = "R-Car VSP1 2-D Histogram"; break;
- 	case V4L2_META_FMT_UVC:		descr = "UVC payload header metadata"; break;
-+	case V4L2_META_FMT_IPU3_PARAMS:	descr = "IPU3 processing parameters"; break;
-+	case V4L2_META_FMT_IPU3_STAT_3A:	descr = "IPU3 3A statistics"; break;
- 
- 	default:
- 		/* Compressed formats */
-@@ -1409,6 +1417,11 @@ static int v4l_enum_fmt(const struct v4l2_ioctl_ops *ops,
- 			break;
- 		ret = ops->vidioc_enum_fmt_meta_cap(file, fh, arg);
- 		break;
-+	case V4L2_BUF_TYPE_META_OUTPUT:
-+		if (unlikely(!ops->vidioc_enum_fmt_meta_out))
-+			break;
-+		ret = ops->vidioc_enum_fmt_meta_out(file, fh, arg);
-+		break;
- 	}
- 	if (ret == 0)
- 		v4l_fill_fmtdesc(p);
-@@ -1487,6 +1500,8 @@ static int v4l_g_fmt(const struct v4l2_ioctl_ops *ops,
- 		return ops->vidioc_g_fmt_sdr_out(file, fh, arg);
- 	case V4L2_BUF_TYPE_META_CAPTURE:
- 		return ops->vidioc_g_fmt_meta_cap(file, fh, arg);
-+	case V4L2_BUF_TYPE_META_OUTPUT:
-+		return ops->vidioc_g_fmt_meta_out(file, fh, arg);
- 	}
- 	return -EINVAL;
- }
-@@ -1595,6 +1610,11 @@ static int v4l_s_fmt(const struct v4l2_ioctl_ops *ops,
- 			break;
- 		CLEAR_AFTER_FIELD(p, fmt.meta);
- 		return ops->vidioc_s_fmt_meta_cap(file, fh, arg);
-+	case V4L2_BUF_TYPE_META_OUTPUT:
-+		if (unlikely(!ops->vidioc_s_fmt_meta_out))
-+			break;
-+		CLEAR_AFTER_FIELD(p, fmt.meta);
-+		return ops->vidioc_s_fmt_meta_out(file, fh, arg);
- 	}
- 	return -EINVAL;
- }
-@@ -1682,6 +1702,11 @@ static int v4l_try_fmt(const struct v4l2_ioctl_ops *ops,
- 			break;
- 		CLEAR_AFTER_FIELD(p, fmt.meta);
- 		return ops->vidioc_try_fmt_meta_cap(file, fh, arg);
-+	case V4L2_BUF_TYPE_META_OUTPUT:
-+		if (unlikely(!ops->vidioc_try_fmt_meta_out))
-+			break;
-+		CLEAR_AFTER_FIELD(p, fmt.meta);
-+		return ops->vidioc_try_fmt_meta_out(file, fh, arg);
- 	}
- 	return -EINVAL;
- }
-diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
-index 2d272a3e..dca51060 100644
---- a/drivers/platform/x86/intel_pmc_core.c
-+++ b/drivers/platform/x86/intel_pmc_core.c
-@@ -21,6 +21,7 @@
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
- 
- #include <linux/acpi.h>
-+#include <linux/bitfield.h>
- #include <linux/debugfs.h>
- #include <linux/delay.h>
- #include <linux/io.h>
-@@ -110,10 +111,35 @@ static const struct pmc_bit_map spt_pfear_map[] = {
- 	{},
- };
- 
-+static const struct pmc_bit_map spt_ltr_show_map[] = {
-+	{"SOUTHPORT_A",		SPT_PMC_LTR_SPA},
-+	{"SOUTHPORT_B",		SPT_PMC_LTR_SPB},
-+	{"SATA",		SPT_PMC_LTR_SATA},
-+	{"GIGABIT_ETHERNET",	SPT_PMC_LTR_GBE},
-+	{"XHCI",		SPT_PMC_LTR_XHCI},
-+	{"ME",			SPT_PMC_LTR_ME},
-+	/* EVA is Enterprise Value Add, doesn't really exist on PCH */
-+	{"EVA",			SPT_PMC_LTR_EVA},
-+	{"SOUTHPORT_C",		SPT_PMC_LTR_SPC},
-+	{"HD_AUDIO",		SPT_PMC_LTR_AZ},
-+	{"LPSS",		SPT_PMC_LTR_LPSS},
-+	{"SOUTHPORT_D",		SPT_PMC_LTR_SPD},
-+	{"SOUTHPORT_E",		SPT_PMC_LTR_SPE},
-+	{"CAMERA",		SPT_PMC_LTR_CAM},
-+	{"ESPI",		SPT_PMC_LTR_ESPI},
-+	{"SCC",			SPT_PMC_LTR_SCC},
-+	{"ISH",			SPT_PMC_LTR_ISH},
-+	/* Below two cannot be used for LTR_IGNORE */
-+	{"CURRENT_PLATFORM",	SPT_PMC_LTR_CUR_PLT},
-+	{"AGGREGATED_SYSTEM",	SPT_PMC_LTR_CUR_ASLT},
-+	{}
-+};
-+
- static const struct pmc_reg_map spt_reg_map = {
- 	.pfear_sts = spt_pfear_map,
- 	.mphy_sts = spt_mphy_map,
- 	.pll_sts = spt_pll_map,
-+	.ltr_show_sts = spt_ltr_show_map,
- 	.slp_s0_offset = SPT_PMC_SLP_S0_RES_COUNTER_OFFSET,
- 	.ltr_ignore_offset = SPT_PMC_LTR_IGNORE_OFFSET,
- 	.regmap_length = SPT_PMC_MMIO_REG_LEN,
-@@ -121,6 +147,7 @@ static const struct pmc_reg_map spt_reg_map = {
- 	.ppfear_buckets = SPT_PPFEAR_NUM_ENTRIES,
- 	.pm_cfg_offset = SPT_PMC_PM_CFG_OFFSET,
- 	.pm_read_disable_bit = SPT_PMC_READ_DISABLE_BIT,
-+	.ltr_ignore_max = SPT_NUM_IP_IGN_ALLOWED,
- };
- 
- /* Cannonlake: PGD PFET Enable Ack Status Register(s) bitmap */
-@@ -252,10 +279,38 @@ static const struct pmc_bit_map *cnp_slps0_dbg_maps[] = {
- 	NULL,
- };
- 
-+static const struct pmc_bit_map cnp_ltr_show_map[] = {
-+	{"SOUTHPORT_A",		CNP_PMC_LTR_SPA},
-+	{"SOUTHPORT_B",		CNP_PMC_LTR_SPB},
-+	{"SATA",		CNP_PMC_LTR_SATA},
-+	{"GIGABIT_ETHERNET",	CNP_PMC_LTR_GBE},
-+	{"XHCI",		CNP_PMC_LTR_XHCI},
-+	{"ME",			CNP_PMC_LTR_ME},
-+	/* EVA is Enterprise Value Add, doesn't really exist on PCH */
-+	{"EVA",			CNP_PMC_LTR_EVA},
-+	{"SOUTHPORT_C",		CNP_PMC_LTR_SPC},
-+	{"HD_AUDIO",		CNP_PMC_LTR_AZ},
-+	{"CNV",			CNP_PMC_LTR_CNV},
-+	{"LPSS",		CNP_PMC_LTR_LPSS},
-+	{"SOUTHPORT_D",		CNP_PMC_LTR_SPD},
-+	{"SOUTHPORT_E",		CNP_PMC_LTR_SPE},
-+	{"CAMERA",		CNP_PMC_LTR_CAM},
-+	{"ESPI",		CNP_PMC_LTR_ESPI},
-+	{"SCC",			CNP_PMC_LTR_SCC},
-+	{"ISH",			CNP_PMC_LTR_ISH},
-+	{"UFSX2",		CNP_PMC_LTR_UFSX2},
-+	{"EMMC",		CNP_PMC_LTR_EMMC},
-+	/* Below two cannot be used for LTR_IGNORE */
-+	{"CURRENT_PLATFORM",	CNP_PMC_LTR_CUR_PLT},
-+	{"AGGREGATED_SYSTEM",	CNP_PMC_LTR_CUR_ASLT},
-+	{}
-+};
-+
- static const struct pmc_reg_map cnp_reg_map = {
- 	.pfear_sts = cnp_pfear_map,
- 	.slp_s0_offset = CNP_PMC_SLP_S0_RES_COUNTER_OFFSET,
- 	.slps0_dbg_maps = cnp_slps0_dbg_maps,
-+	.ltr_show_sts = cnp_ltr_show_map,
- 	.slps0_dbg_offset = CNP_PMC_SLPS0_DBG_OFFSET,
- 	.ltr_ignore_offset = CNP_PMC_LTR_IGNORE_OFFSET,
- 	.regmap_length = CNP_PMC_MMIO_REG_LEN,
-@@ -263,6 +318,7 @@ static const struct pmc_reg_map cnp_reg_map = {
- 	.ppfear_buckets = CNP_PPFEAR_NUM_ENTRIES,
- 	.pm_cfg_offset = CNP_PMC_PM_CFG_OFFSET,
- 	.pm_read_disable_bit = CNP_PMC_READ_DISABLE_BIT,
-+	.ltr_ignore_max = CNP_NUM_IP_IGN_ALLOWED,
- };
- 
- static inline u8 pmc_core_reg_read_byte(struct pmc_dev *pmcdev, int offset)
-@@ -320,7 +376,7 @@ static void pmc_core_display_map(struct seq_file *s, int index,
- 		   pf_map[index].bit_mask & pf_reg ? "Off" : "On");
- }
- 
--static int pmc_core_ppfear_sts_show(struct seq_file *s, void *unused)
-+static int pmc_core_ppfear_show(struct seq_file *s, void *unused)
- {
- 	struct pmc_dev *pmcdev = s->private;
- 	const struct pmc_bit_map *map = pmcdev->map->pfear_sts;
-@@ -338,18 +394,7 @@ static int pmc_core_ppfear_sts_show(struct seq_file *s, void *unused)
- 
- 	return 0;
- }
--
--static int pmc_core_ppfear_sts_open(struct inode *inode, struct file *file)
--{
--	return single_open(file, pmc_core_ppfear_sts_show, inode->i_private);
--}
--
--static const struct file_operations pmc_core_ppfear_ops = {
--	.open           = pmc_core_ppfear_sts_open,
--	.read           = seq_read,
--	.llseek         = seq_lseek,
--	.release        = single_release,
--};
-+DEFINE_SHOW_ATTRIBUTE(pmc_core_ppfear);
- 
- /* This function should return link status, 0 means ready */
- static int pmc_core_mtpmc_link_status(void)
-@@ -381,7 +426,7 @@ static int pmc_core_send_msg(u32 *addr_xram)
- 	return 0;
- }
- 
--static int pmc_core_mphy_pg_sts_show(struct seq_file *s, void *unused)
-+static int pmc_core_mphy_pg_show(struct seq_file *s, void *unused)
- {
- 	struct pmc_dev *pmcdev = s->private;
- 	const struct pmc_bit_map *map = pmcdev->map->mphy_sts;
-@@ -433,18 +478,7 @@ static int pmc_core_mphy_pg_sts_show(struct seq_file *s, void *unused)
- 	mutex_unlock(&pmcdev->lock);
- 	return err;
- }
--
--static int pmc_core_mphy_pg_sts_open(struct inode *inode, struct file *file)
--{
--	return single_open(file, pmc_core_mphy_pg_sts_show, inode->i_private);
--}
--
--static const struct file_operations pmc_core_mphy_pg_ops = {
--	.open           = pmc_core_mphy_pg_sts_open,
--	.read           = seq_read,
--	.llseek         = seq_lseek,
--	.release        = single_release,
--};
-+DEFINE_SHOW_ATTRIBUTE(pmc_core_mphy_pg);
- 
- static int pmc_core_pll_show(struct seq_file *s, void *unused)
- {
-@@ -480,18 +514,7 @@ static int pmc_core_pll_show(struct seq_file *s, void *unused)
- 	mutex_unlock(&pmcdev->lock);
- 	return err;
- }
--
--static int pmc_core_pll_open(struct inode *inode, struct file *file)
--{
--	return single_open(file, pmc_core_pll_show, inode->i_private);
--}
--
--static const struct file_operations pmc_core_pll_ops = {
--	.open           = pmc_core_pll_open,
--	.read           = seq_read,
--	.llseek         = seq_lseek,
--	.release        = single_release,
--};
-+DEFINE_SHOW_ATTRIBUTE(pmc_core_pll);
- 
- static ssize_t pmc_core_ltr_ignore_write(struct file *file, const char __user
- *userbuf, size_t count, loff_t *ppos)
-@@ -509,7 +532,7 @@ static ssize_t pmc_core_ltr_ignore_write(struct file *file, const char __user
- 		goto out_unlock;
- 	}
- 
--	if (val > NUM_IP_IGN_ALLOWED) {
-+	if (val > map->ltr_ignore_max) {
- 		err = -EINVAL;
- 		goto out_unlock;
- 	}
-@@ -592,6 +615,77 @@ static int pmc_core_slps0_dbg_show(struct seq_file *s, void *unused)
- }
- DEFINE_SHOW_ATTRIBUTE(pmc_core_slps0_dbg);
- 
-+static u32 convert_ltr_scale(u32 val)
-+{
-+	/*
-+	 * As per PCIE specification supporting document
-+	 * ECN_LatencyTolnReporting_14Aug08.pdf the Latency
-+	 * Tolerance Reporting data payload is encoded in a
-+	 * 3 bit scale and 10 bit value fields. Values are
-+	 * multiplied by the indicated scale to yield an absolute time
-+	 * value, expressible in a range from 1 nanosecond to
-+	 * 2^25*(2^10-1) = 34,326,183,936 nanoseconds.
-+	 *
-+	 * scale encoding is as follows:
-+	 *
-+	 * ----------------------------------------------
-+	 * |scale factor	|	Multiplier (ns)	|
-+	 * ----------------------------------------------
-+	 * |	0		|	1		|
-+	 * |	1		|	32		|
-+	 * |	2		|	1024		|
-+	 * |	3		|	32768		|
-+	 * |	4		|	1048576		|
-+	 * |	5		|	33554432	|
-+	 * |	6		|	Invalid		|
-+	 * |	7		|	Invalid		|
-+	 * ----------------------------------------------
-+	 */
-+	if (val > 5) {
-+		pr_warn("Invalid LTR scale factor.\n");
-+		return 0;
-+	}
-+
-+	return 1U << (5 * val);
-+}
-+
-+static int pmc_core_ltr_show(struct seq_file *s, void *unused)
-+{
-+	struct pmc_dev *pmcdev = s->private;
-+	const struct pmc_bit_map *map = pmcdev->map->ltr_show_sts;
-+	u64 decoded_snoop_ltr, decoded_non_snoop_ltr;
-+	u32 ltr_raw_data, scale, val;
-+	u16 snoop_ltr, nonsnoop_ltr;
-+	int index;
-+
-+	for (index = 0; map[index].name ; index++) {
-+		decoded_snoop_ltr = decoded_non_snoop_ltr = 0;
-+		ltr_raw_data = pmc_core_reg_read(pmcdev,
-+						 map[index].bit_mask);
-+		snoop_ltr = ltr_raw_data & ~MTPMC_MASK;
-+		nonsnoop_ltr = (ltr_raw_data >> 0x10) & ~MTPMC_MASK;
-+
-+		if (FIELD_GET(LTR_REQ_NONSNOOP, ltr_raw_data)) {
-+			scale = FIELD_GET(LTR_DECODED_SCALE, nonsnoop_ltr);
-+			val = FIELD_GET(LTR_DECODED_VAL, nonsnoop_ltr);
-+			decoded_non_snoop_ltr = val * convert_ltr_scale(scale);
-+		}
-+
-+		if (FIELD_GET(LTR_REQ_SNOOP, ltr_raw_data)) {
-+			scale = FIELD_GET(LTR_DECODED_SCALE, snoop_ltr);
-+			val = FIELD_GET(LTR_DECODED_VAL, snoop_ltr);
-+			decoded_snoop_ltr = val * convert_ltr_scale(scale);
-+		}
-+
-+		seq_printf(s, "%-32s\tLTR: RAW: 0x%-16x\tNon-Snoop(ns): %-16llu\tSnoop(ns): %-16llu\n",
-+			   map[index].name, ltr_raw_data,
-+			   decoded_non_snoop_ltr,
-+			   decoded_snoop_ltr);
-+	}
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(pmc_core_ltr);
-+
- static void pmc_core_dbgfs_unregister(struct pmc_dev *pmcdev)
- {
- 	debugfs_remove_recursive(pmcdev->dbgfs_dir);
-@@ -611,19 +705,21 @@ static int pmc_core_dbgfs_register(struct pmc_dev *pmcdev)
- 			    &pmc_core_dev_state);
- 
- 	debugfs_create_file("pch_ip_power_gating_status", 0444, dir, pmcdev,
--			    &pmc_core_ppfear_ops);
-+			    &pmc_core_ppfear_fops);
- 
- 	debugfs_create_file("ltr_ignore", 0644, dir, pmcdev,
- 			    &pmc_core_ltr_ignore_ops);
- 
-+	debugfs_create_file("ltr_show", 0644, dir, pmcdev, &pmc_core_ltr_fops);
-+
- 	if (pmcdev->map->pll_sts)
- 		debugfs_create_file("pll_status", 0444, dir, pmcdev,
--				    &pmc_core_pll_ops);
-+				    &pmc_core_pll_fops);
- 
- 	if (pmcdev->map->mphy_sts)
- 		debugfs_create_file("mphy_core_lanes_power_gating_status",
- 				    0444, dir, pmcdev,
--				    &pmc_core_mphy_pg_ops);
-+				    &pmc_core_mphy_pg_fops);
- 
- 	if (pmcdev->map->slps0_dbg_maps) {
- 		debugfs_create_file("slp_s0_debug_status", 0444,
-diff --git a/drivers/platform/x86/intel_pmc_core.h b/drivers/platform/x86/intel_pmc_core.h
-index 93a7e99e..7c1defdf 100644
---- a/drivers/platform/x86/intel_pmc_core.h
-+++ b/drivers/platform/x86/intel_pmc_core.h
-@@ -21,6 +21,8 @@
- #ifndef PMC_CORE_H
- #define PMC_CORE_H
- 
-+#include <linux/bits.h>
-+
- #define PMC_BASE_ADDR_DEFAULT			0xFE000000
- 
- /* Sunrise Point Power Management Controller PCI Device ID */
-@@ -44,7 +46,26 @@
- #define SPT_PMC_READ_DISABLE_BIT		0x16
- #define SPT_PMC_MSG_FULL_STS_BIT		0x18
- #define NUM_RETRIES				100
--#define NUM_IP_IGN_ALLOWED			17
-+#define SPT_NUM_IP_IGN_ALLOWED			17
-+
-+#define SPT_PMC_LTR_CUR_PLT			0x350
-+#define SPT_PMC_LTR_CUR_ASLT			0x354
-+#define SPT_PMC_LTR_SPA				0x360
-+#define SPT_PMC_LTR_SPB				0x364
-+#define SPT_PMC_LTR_SATA			0x368
-+#define SPT_PMC_LTR_GBE				0x36C
-+#define SPT_PMC_LTR_XHCI			0x370
-+#define SPT_PMC_LTR_ME				0x378
-+#define SPT_PMC_LTR_EVA				0x37C
-+#define SPT_PMC_LTR_SPC				0x380
-+#define SPT_PMC_LTR_AZ				0x384
-+#define SPT_PMC_LTR_LPSS			0x38C
-+#define SPT_PMC_LTR_CAM				0x390
-+#define SPT_PMC_LTR_SPD				0x394
-+#define SPT_PMC_LTR_SPE				0x398
-+#define SPT_PMC_LTR_ESPI			0x39C
-+#define SPT_PMC_LTR_SCC				0x3A0
-+#define SPT_PMC_LTR_ISH				0x3A4
- 
- /* Sunrise Point: PGD PFET Enable Ack Status Registers */
- enum ppfear_regs {
-@@ -124,18 +145,46 @@ enum ppfear_regs {
- #define SPT_PMC_BIT_MPHY_CMN_LANE3		BIT(3)
- 
- /* Cannonlake Power Management Controller register offsets */
--#define CNP_PMC_SLP_S0_RES_COUNTER_OFFSET      0x193C
--#define CNP_PMC_LTR_IGNORE_OFFSET              0x1B0C
--#define CNP_PMC_PM_CFG_OFFSET                  0x1818
- #define CNP_PMC_SLPS0_DBG_OFFSET		0x10B4
-+#define CNP_PMC_PM_CFG_OFFSET			0x1818
-+#define CNP_PMC_SLP_S0_RES_COUNTER_OFFSET	0x193C
-+#define CNP_PMC_LTR_IGNORE_OFFSET		0x1B0C
- /* Cannonlake: PGD PFET Enable Ack Status Register(s) start */
--#define CNP_PMC_HOST_PPFEAR0A                  0x1D90
-+#define CNP_PMC_HOST_PPFEAR0A			0x1D90
- 
--#define CNP_PMC_MMIO_REG_LEN                   0x2000
--#define CNP_PPFEAR_NUM_ENTRIES                 8
--#define CNP_PMC_READ_DISABLE_BIT               22
- #define CNP_PMC_LATCH_SLPS0_EVENTS		BIT(31)
- 
-+#define CNP_PMC_MMIO_REG_LEN			0x2000
-+#define CNP_PPFEAR_NUM_ENTRIES			8
-+#define CNP_PMC_READ_DISABLE_BIT		22
-+#define CNP_NUM_IP_IGN_ALLOWED			19
-+#define CNP_PMC_LTR_CUR_PLT			0x1B50
-+#define CNP_PMC_LTR_CUR_ASLT			0x1B54
-+#define CNP_PMC_LTR_SPA				0x1B60
-+#define CNP_PMC_LTR_SPB				0x1B64
-+#define CNP_PMC_LTR_SATA			0x1B68
-+#define CNP_PMC_LTR_GBE				0x1B6C
-+#define CNP_PMC_LTR_XHCI			0x1B70
-+#define CNP_PMC_LTR_ME				0x1B78
-+#define CNP_PMC_LTR_EVA				0x1B7C
-+#define CNP_PMC_LTR_SPC				0x1B80
-+#define CNP_PMC_LTR_AZ				0x1B84
-+#define CNP_PMC_LTR_LPSS			0x1B8C
-+#define CNP_PMC_LTR_CAM				0x1B90
-+#define CNP_PMC_LTR_SPD				0x1B94
-+#define CNP_PMC_LTR_SPE				0x1B98
-+#define CNP_PMC_LTR_ESPI			0x1B9C
-+#define CNP_PMC_LTR_SCC				0x1BA0
-+#define CNP_PMC_LTR_ISH				0x1BA4
-+#define CNP_PMC_LTR_CNV				0x1BF0
-+#define CNP_PMC_LTR_EMMC			0x1BF4
-+#define CNP_PMC_LTR_UFSX2			0x1BF8
-+
-+#define LTR_DECODED_VAL				GENMASK(9, 0)
-+#define LTR_DECODED_SCALE			GENMASK(12, 10)
-+#define LTR_REQ_SNOOP				BIT(15)
-+#define LTR_REQ_NONSNOOP			BIT(31)
-+
- struct pmc_bit_map {
- 	const char *name;
- 	u32 bit_mask;
-@@ -148,6 +197,7 @@ struct pmc_bit_map {
-  * @mphy_sts:		Maps name of MPHY lane to MPHY status lane status bit
-  * @pll_sts:		Maps name of PLL to corresponding bit status
-  * @slps0_dbg_maps:	Array of SLP_S0_DBG* registers containing debug info
-+ * @ltr_show_sts:	Maps PCH IP Names to their MMIO register offsets
-  * @slp_s0_offset:	PWRMBASE offset to read SLP_S0 residency
-  * @ltr_ignore_offset:	PWRMBASE offset to read/write LTR ignore bit
-  * @regmap_length:	Length of memory to map from PWRMBASE address to access
-@@ -166,6 +216,7 @@ struct pmc_reg_map {
- 	const struct pmc_bit_map *mphy_sts;
- 	const struct pmc_bit_map *pll_sts;
- 	const struct pmc_bit_map **slps0_dbg_maps;
-+	const struct pmc_bit_map *ltr_show_sts;
- 	const u32 slp_s0_offset;
- 	const u32 ltr_ignore_offset;
- 	const int regmap_length;
-@@ -174,6 +225,7 @@ struct pmc_reg_map {
- 	const u32 pm_cfg_offset;
- 	const int pm_read_disable_bit;
- 	const u32 slps0_dbg_offset;
-+	const u32 ltr_ignore_max;
- };
- 
- /**
 diff --git a/drivers/platform/x86/intel_telemetry_debugfs.c b/drivers/platform/x86/intel_telemetry_debugfs.c
-index 1423fa87..59764b65 100644
+index b998d7da97fb..8889f3b9b56a 100644
 --- a/drivers/platform/x86/intel_telemetry_debugfs.c
 +++ b/drivers/platform/x86/intel_telemetry_debugfs.c
 @@ -477,17 +477,7 @@ static int telem_pss_states_show(struct seq_file *s, void *unused)
@@ -22738,86 +22161,9 @@ index 1423fa87..59764b65 100644
  	if (!f) {
  		pr_err("ioss_sample_info debugfs register failed\n");
  		goto out;
-diff --git a/include/media/v4l2-ioctl.h b/include/media/v4l2-ioctl.h
-index 5848d92c..10380de6 100644
---- a/include/media/v4l2-ioctl.h
-+++ b/include/media/v4l2-ioctl.h
-@@ -48,6 +48,9 @@ struct v4l2_fh;
-  * @vidioc_enum_fmt_meta_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_ENUM_FMT <vidioc_enum_fmt>` ioctl logic
-  *	for metadata capture
-+ * @vidioc_enum_fmt_meta_out: pointer to the function that implements
-+ *	:ref:`VIDIOC_ENUM_FMT <vidioc_enum_fmt>` ioctl logic
-+ *	for metadata output
-  * @vidioc_g_fmt_vid_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_G_FMT <vidioc_g_fmt>` ioctl logic for video capture
-  *	in single plane mode
-@@ -80,6 +83,8 @@ struct v4l2_fh;
-  *	Radio output
-  * @vidioc_g_fmt_meta_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_G_FMT <vidioc_g_fmt>` ioctl logic for metadata capture
-+ * @vidioc_g_fmt_meta_out: pointer to the function that implements
-+ *	:ref:`VIDIOC_G_FMT <vidioc_g_fmt>` ioctl logic for metadata output
-  * @vidioc_s_fmt_vid_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_S_FMT <vidioc_g_fmt>` ioctl logic for video capture
-  *	in single plane mode
-@@ -112,6 +117,8 @@ struct v4l2_fh;
-  *	Radio output
-  * @vidioc_s_fmt_meta_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_S_FMT <vidioc_g_fmt>` ioctl logic for metadata capture
-+ * @vidioc_s_fmt_meta_out: pointer to the function that implements
-+ *	:ref:`VIDIOC_S_FMT <vidioc_g_fmt>` ioctl logic for metadata output
-  * @vidioc_try_fmt_vid_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_TRY_FMT <vidioc_g_fmt>` ioctl logic for video capture
-  *	in single plane mode
-@@ -146,6 +153,8 @@ struct v4l2_fh;
-  *	Radio output
-  * @vidioc_try_fmt_meta_cap: pointer to the function that implements
-  *	:ref:`VIDIOC_TRY_FMT <vidioc_g_fmt>` ioctl logic for metadata capture
-+ * @vidioc_try_fmt_meta_out: pointer to the function that implements
-+ *	:ref:`VIDIOC_TRY_FMT <vidioc_g_fmt>` ioctl logic for metadata output
-  * @vidioc_reqbufs: pointer to the function that implements
-  *	:ref:`VIDIOC_REQBUFS <vidioc_reqbufs>` ioctl
-  * @vidioc_querybuf: pointer to the function that implements
-@@ -318,6 +327,8 @@ struct v4l2_ioctl_ops {
- 				       struct v4l2_fmtdesc *f);
- 	int (*vidioc_enum_fmt_meta_cap)(struct file *file, void *fh,
- 					struct v4l2_fmtdesc *f);
-+	int (*vidioc_enum_fmt_meta_out)(struct file *file, void *fh,
-+					struct v4l2_fmtdesc *f);
- 
- 	/* VIDIOC_G_FMT handlers */
- 	int (*vidioc_g_fmt_vid_cap)(struct file *file, void *fh,
-@@ -346,6 +357,8 @@ struct v4l2_ioctl_ops {
- 				    struct v4l2_format *f);
- 	int (*vidioc_g_fmt_meta_cap)(struct file *file, void *fh,
- 				     struct v4l2_format *f);
-+	int (*vidioc_g_fmt_meta_out)(struct file *file, void *fh,
-+				     struct v4l2_format *f);
- 
- 	/* VIDIOC_S_FMT handlers */
- 	int (*vidioc_s_fmt_vid_cap)(struct file *file, void *fh,
-@@ -374,6 +387,8 @@ struct v4l2_ioctl_ops {
- 				    struct v4l2_format *f);
- 	int (*vidioc_s_fmt_meta_cap)(struct file *file, void *fh,
- 				     struct v4l2_format *f);
-+	int (*vidioc_s_fmt_meta_out)(struct file *file, void *fh,
-+				     struct v4l2_format *f);
- 
- 	/* VIDIOC_TRY_FMT handlers */
- 	int (*vidioc_try_fmt_vid_cap)(struct file *file, void *fh,
-@@ -402,6 +417,8 @@ struct v4l2_ioctl_ops {
- 				      struct v4l2_format *f);
- 	int (*vidioc_try_fmt_meta_cap)(struct file *file, void *fh,
- 				       struct v4l2_format *f);
-+	int (*vidioc_try_fmt_meta_out)(struct file *file, void *fh,
-+				       struct v4l2_format *f);
- 
- 	/* Buffer handlers */
- 	int (*vidioc_reqbufs)(struct file *file, void *fh,
 diff --git a/include/uapi/linux/intel-ipu3.h b/include/uapi/linux/intel-ipu3.h
 new file mode 100644
-index 00000000..7ad42b63
+index 000000000000..7ad42b63342e
 --- /dev/null
 +++ b/include/uapi/linux/intel-ipu3.h
 @@ -0,0 +1,2827 @@
@@ -25648,37 +24994,6 @@ index 00000000..7ad42b63
 +	IPU3_RUNNING_MODE_STILL = 1,
 +};
 +#endif
-diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 1aae2e4b..cccfbc7a 100644
---- a/include/uapi/linux/videodev2.h
-+++ b/include/uapi/linux/videodev2.h
-@@ -145,6 +145,7 @@ enum v4l2_buf_type {
- 	V4L2_BUF_TYPE_SDR_CAPTURE          = 11,
- 	V4L2_BUF_TYPE_SDR_OUTPUT           = 12,
- 	V4L2_BUF_TYPE_META_CAPTURE         = 13,
-+	V4L2_BUF_TYPE_META_OUTPUT	   = 14,
- 	/* Deprecated, do not use */
- 	V4L2_BUF_TYPE_PRIVATE              = 0x80,
- };
-@@ -469,6 +470,7 @@ struct v4l2_capability {
- #define V4L2_CAP_READWRITE              0x01000000  /* read/write systemcalls */
- #define V4L2_CAP_ASYNCIO                0x02000000  /* async I/O */
- #define V4L2_CAP_STREAMING              0x04000000  /* streaming I/O ioctls */
-+#define V4L2_CAP_META_OUTPUT		0x08000000  /* Is a metadata output device */
- 
- #define V4L2_CAP_TOUCH                  0x10000000  /* Is a touch device */
- 
-@@ -715,6 +717,10 @@ struct v4l2_pix_format {
- #define V4L2_META_FMT_VSP1_HGT    v4l2_fourcc('V', 'S', 'P', 'T') /* R-Car VSP1 2-D Histogram */
- #define V4L2_META_FMT_UVC         v4l2_fourcc('U', 'V', 'C', 'H') /* UVC Payload Header metadata */
- 
-+/* Vendor specific - used for IPU3 camera sub-system */
-+#define V4L2_META_FMT_IPU3_PARAMS	v4l2_fourcc('i', 'p', '3', 'p') /* IPU3 params */
-+#define V4L2_META_FMT_IPU3_STAT_3A	v4l2_fourcc('i', 'p', '3', 's') /* IPU3 3A statistics */
-+
- /* priv field value to indicates that subsequent fields are valid. */
- #define V4L2_PIX_FMT_PRIV_MAGIC		0xfeedcafe
- 
 -- 
-2.20.1
+2.22.0
 
