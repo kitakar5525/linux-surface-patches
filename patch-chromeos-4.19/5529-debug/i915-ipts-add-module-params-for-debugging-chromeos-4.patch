@@ -1,7 +1,7 @@
-From 177f3955b715e1e3fdfe53160fdf05d4c2bdd02f Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Sat, 16 Feb 2019 15:19:42 +0900
-Subject: [PATCH] i915: ipts: add module params for debugging
+From ca615774881a8511f19449a262760039ebd42b52 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 11 Jul 2019 10:49:26 +0900
+Subject: [PATCH 27/32] i915: ipts: add module params for debugging chromeos-4.19
 
 ---
  drivers/gpu/drm/i915/i915_params.c          | 15 +++++++++++++++
@@ -10,7 +10,7 @@ Subject: [PATCH] i915: ipts: add module params for debugging
  3 files changed, 27 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_params.c b/drivers/gpu/drm/i915/i915_params.c
-index 84415814c..d9ee778ff 100644
+index a6c2176645b6..950af0c4de47 100644
 --- a/drivers/gpu/drm/i915/i915_params.c
 +++ b/drivers/gpu/drm/i915/i915_params.c
 @@ -150,6 +150,21 @@ i915_param_named_unsafe(enable_guc, int, 0400,
@@ -36,12 +36,12 @@ index 84415814c..d9ee778ff 100644
  	"GuC firmware logging level. Requires GuC to be loaded. "
  	"(-1=auto [default], 0=disable, 1..4=enable with verbosity min..max)");
 diff --git a/drivers/gpu/drm/i915/i915_params.h b/drivers/gpu/drm/i915/i915_params.h
-index 4ab800c3d..d7e82ea58 100644
+index 0b001c71fdba..9951187f2597 100644
 --- a/drivers/gpu/drm/i915/i915_params.h
 +++ b/drivers/gpu/drm/i915/i915_params.h
-@@ -69,7 +69,10 @@ struct drm_printer;
+@@ -70,7 +70,10 @@ struct drm_printer;
+ 	param(bool, nuclear_pageflip, false) \
  	param(bool, enable_dp_mst, true) \
- 	param(bool, enable_dpcd_backlight, false) \
  	param(bool, enable_gvt, false) \
 -	param(int, enable_ipts, 1)
 +	param(int, enable_ipts, 1) \
@@ -52,7 +52,7 @@ index 4ab800c3d..d7e82ea58 100644
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
 diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
-index 2753f51eb..a4893d049 100644
+index 2416b74f592d..65b023f05ce2 100644
 --- a/drivers/gpu/drm/i915/intel_guc_submission.c
 +++ b/drivers/gpu/drm/i915/intel_guc_submission.c
 @@ -88,7 +88,12 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
@@ -69,7 +69,7 @@ index 2753f51eb..a4893d049 100644
  }
  
  static inline bool is_high_priority_kmd(struct intel_guc_client *client)
-@@ -111,7 +116,7 @@ static int reserve_doorbell(struct intel_guc_client *client)
+@@ -110,7 +115,7 @@ static int reserve_doorbell(struct intel_guc_client *client)
  	 * priority contexts, the second half for high-priority ones.
  	 */
  	offset = 0;
@@ -78,7 +78,7 @@ index 2753f51eb..a4893d049 100644
  		end = GUC_NUM_DOORBELLS;
  	}
  	else {
-@@ -1356,7 +1361,7 @@ int i915_guc_ipts_submission_enable(struct drm_i915_private *dev_priv,
+@@ -1355,7 +1360,7 @@ int i915_guc_ipts_submission_enable(struct drm_i915_private *dev_priv,
  	/* client for execbuf submission */
  	client = guc_client_alloc(dev_priv,
  				  INTEL_INFO(dev_priv)->ring_mask,
@@ -88,5 +88,5 @@ index 2753f51eb..a4893d049 100644
  	if (IS_ERR(client)) {
  		DRM_ERROR("Failed to create normal GuC client!\n");
 -- 
-2.20.1
+2.22.0
 
