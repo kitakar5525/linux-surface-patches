@@ -1,17 +1,17 @@
-From 657dad212691187d7d37553435d45c6713d45016 Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Sat, 23 Feb 2019 16:28:18 +0900
-Subject: [PATCH] Add acpi_call
+From 191daf077e430ab5f56f2e65d9ceb68435ad850a Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 11 Jul 2019 10:44:51 +0900
+Subject: [PATCH 18/32] Add acpi_call
 
 ---
  drivers/acpi/Kconfig     |   7 +
  drivers/acpi/Makefile    |   2 +
- drivers/acpi/acpi_call.c | 391 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 400 insertions(+)
+ drivers/acpi/acpi_call.c | 389 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 398 insertions(+)
  create mode 100644 drivers/acpi/acpi_call.c
 
 diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index dd1eea90f..f84e8b088 100644
+index dd1eea90f67f..ab93fd9442bf 100644
 --- a/drivers/acpi/Kconfig
 +++ b/drivers/acpi/Kconfig
 @@ -587,3 +587,10 @@ config X86_PM_TIMER
@@ -26,7 +26,7 @@ index dd1eea90f..f84e8b088 100644
 +	  ACPI methods through /proc/acpi/call.
 +	  Now with support for Integer, String and Buffer parameters.
 diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index 6d59aa109..deb7ad577 100644
+index 6d59aa109a91..deb7ad577a2a 100644
 --- a/drivers/acpi/Makefile
 +++ b/drivers/acpi/Makefile
 @@ -118,3 +118,5 @@ video-objs			+= acpi_video.o video_detect.o
@@ -37,10 +37,10 @@ index 6d59aa109..deb7ad577 100644
 +obj-$(CONFIG_5525_ACPI_CALL)		+= acpi_call.o
 diff --git a/drivers/acpi/acpi_call.c b/drivers/acpi/acpi_call.c
 new file mode 100644
-index 000000000..adb315eac
+index 000000000000..974f88089859
 --- /dev/null
 +++ b/drivers/acpi/acpi_call.c
-@@ -0,0 +1,391 @@
+@@ -0,0 +1,389 @@
 +/* Copyright (c) 2010: Michal Kottman */
 +
 +#include <linux/module.h>
@@ -430,8 +430,6 @@ index 000000000..adb315eac
 +
 +module_init(init_acpi_call);
 +module_exit(unload_acpi_call);
-+
-+
 -- 
-2.21.0
+2.22.0
 
