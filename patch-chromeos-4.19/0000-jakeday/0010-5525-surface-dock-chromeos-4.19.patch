@@ -1,19 +1,19 @@
-From 63653d197c3ea1c536fd95eebc7ff8c81cf974e8 Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:50:29 -0400
-Subject: [PATCH 10/12] surface-dock
+From ebeabbc76f1d4c275205505972e8c55f019fece4 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 11 Jul 2019 10:30:00 +0900
+Subject: [PATCH 10/32] 5525-surface-dock-chromeos-4.19
 
 ---
  drivers/usb/core/quirks.c | 2 ++
  1 file changed, 2 insertions(+)
 
 diff --git a/drivers/usb/core/quirks.c b/drivers/usb/core/quirks.c
-index 8bc35d53408b..11fa56cbd769 100644
+index eb3ec589cd4a..cad1c4c04b3a 100644
 --- a/drivers/usb/core/quirks.c
 +++ b/drivers/usb/core/quirks.c
-@@ -212,6 +212,8 @@ static const struct usb_device_id usb_quirk_list[] = {
- 	/* Cherry Stream G230 2.0 (G85-231) and 3.0 (G85-232) */
- 	{ USB_DEVICE(0x046a, 0x0023), .driver_info = USB_QUIRK_RESET_RESUME },
+@@ -218,6 +218,8 @@ static const struct usb_device_id usb_quirk_list[] = {
+ 	/* Logitech HD Webcam C270 */
+ 	{ USB_DEVICE(0x046d, 0x0825), .driver_info = USB_QUIRK_RESET_RESUME },
  
 +	{ USB_DEVICE(0x045e, 0x07c6), .driver_info = USB_QUIRK_NO_LPM },
 +
@@ -21,5 +21,5 @@ index 8bc35d53408b..11fa56cbd769 100644
  	{ USB_DEVICE(0x046d, 0x082d), .driver_info = USB_QUIRK_DELAY_INIT },
  	{ USB_DEVICE(0x046d, 0x0841), .driver_info = USB_QUIRK_DELAY_INIT },
 -- 
-2.19.1
+2.22.0
 
