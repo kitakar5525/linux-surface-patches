@@ -1,7 +1,7 @@
 From 9773d9c2754b4a06d4a99c58fabb6fe6c31cd47a Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Fri, 28 Jun 2019 17:44:06 +0900
-Subject: [PATCH 05/11] ipts
+Subject: [PATCH 05/11] ipts-5.2
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
