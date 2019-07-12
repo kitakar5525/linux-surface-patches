@@ -1,0 +1,93 @@
+From 59f43e38a987cb974c887a4797ab70f753fffdc6 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 11 Jul 2019 07:07:20 +0900
+Subject: [PATCH] nvme: revert NVME_QUIRK_NO_DISABLE on linux 4.19
+
+---
+ drivers/nvme/host/nvme.h |  5 -----
+ drivers/nvme/host/pci.c  | 10 +---------
+ drivers/pci/quirks.c     |  4 ----
+ include/linux/pci_ids.h  |  2 --
+ 4 files changed, 1 insertion(+), 20 deletions(-)
+
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 3b63eafb..e82cdaec 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -90,11 +90,6 @@ enum nvme_quirks {
+ 	 * Set MEDIUM priority on SQ creation
+ 	 */
+ 	NVME_QUIRK_MEDIUM_PRIO_SQ		= (1 << 7),
+-
+-	/*
+-	 * Do not disable nvme when suspending (s2idle)
+-	 */
+-	NVME_QUIRK_NO_DISABLE			= (1 << 8),
+ };
+ 
+ /*
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 2b578fc8..c8eeecc5 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -30,7 +30,6 @@
+ #include <linux/types.h>
+ #include <linux/io-64-nonatomic-lo-hi.h>
+ #include <linux/sed-opal.h>
+-#include <linux/suspend.h>
+ 
+ #include "nvme.h"
+ 
+@@ -2606,11 +2605,8 @@ static int nvme_suspend(struct device *dev)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct nvme_dev *ndev = pci_get_drvdata(pdev);
+-	struct nvme_ctrl *ctrl = &ndev->ctrl;
+-
+-	if (!(pm_suspend_via_s2idle() && (ctrl->quirks & NVME_QUIRK_NO_DISABLE)))
+-		nvme_dev_disable(ndev, true);
+ 
++	nvme_dev_disable(ndev, true);
+ 	return 0;
+ }
+ 
+@@ -2714,10 +2710,6 @@ static const struct pci_device_id nvme_id_table[] = {
+ 		.driver_data = NVME_QUIRK_LIGHTNVM, },
+ 	{ PCI_DEVICE(0x1d1d, 0x2601),	/* CNEX Granby */
+ 		.driver_data = NVME_QUIRK_LIGHTNVM, },
+-	{ PCI_VDEVICE(SK_HYNIX, 0x1527),   /* Sk Hynix */
+-		.driver_data = NVME_QUIRK_NO_DISABLE, },
+-	{ PCI_VDEVICE(TOSHIBA, 0x010f),   /* TOSHIBA NVMe found on Surface Book with Performance Base */
+-		.driver_data = NVME_QUIRK_NO_DISABLE, },
+ 	{ PCI_DEVICE_CLASS(PCI_CLASS_STORAGE_EXPRESS, 0xffffff) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_APPLE, 0x2001) },
+ 	{ PCI_DEVICE(PCI_VENDOR_ID_APPLE, 0x2003) },
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 30c01392..28c64f84 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -1332,10 +1332,6 @@ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_AL, PCI_ANY_ID,
+    occur when mode detecting */
+ DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_VENDOR_ID_VIA, PCI_ANY_ID,
+ 				PCI_CLASS_STORAGE_IDE, 8, quirk_no_ata_d3);
+-DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_SK_HYNIX, 0x1527, quirk_no_ata_d3);
+-/* TOSHIBA NVMe disk found on Surface Book with Performance Base
+-   cannot wakeup from D3 state after s2idle */
+-DECLARE_PCI_FIXUP_EARLY(PCI_VENDOR_ID_TOSHIBA, 0x010f, quirk_no_ata_d3);
+ 
+ /*
+  * This was originally an Alpha-specific thing, but it really fits here.
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index c9aaf755..d157983b 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -3086,6 +3086,4 @@
+ 
+ #define PCI_VENDOR_ID_NCUBE		0x10ff
+ 
+-#define PCI_VENDOR_ID_SK_HYNIX		0x1c5c
+-
+ #endif /* _LINUX_PCI_IDS_H */
+-- 
+2.22.0
+
