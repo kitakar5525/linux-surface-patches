@@ -1,0 +1,46 @@
+From d084d0702b857c3a59bea3909af8097b59b012e5 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 15 Jul 2019 17:21:24 +0900
+Subject: [PATCH] Add parameter to disable Low Power Mode _DSM callbacks
+
+Use `acpi.no_lps0=1` to disable LPS0.
+
+From:
+Bug 202519 - Low residency in S0ix while suspend on HP Elite x2 1013 G3
+https://bugzilla.kernel.org/show_bug.cgi?id=202519#c2
+---
+ drivers/acpi/sleep.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/acpi/sleep.c b/drivers/acpi/sleep.c
+index 8ff08e531..384de9c08 100644
+--- a/drivers/acpi/sleep.c
++++ b/drivers/acpi/sleep.c
+@@ -160,6 +160,11 @@ static int __init init_nvs_nosave(const struct dmi_system_id *d)
+ 
+ static bool acpi_sleep_no_lps0;
+ 
++static bool no_lps0 = 0;
++module_param(no_lps0, bool, 0644);
++MODULE_PARM_DESC(no_lps0,
++	"Disable Low Power Mode _DSM callbacks (default: false, use LPS0)");
++
+ static int __init init_no_lps0(const struct dmi_system_id *d)
+ {
+ 	acpi_sleep_no_lps0 = true;
+@@ -912,9 +917,10 @@ static int lps0_device_attach(struct acpi_device *adev,
+ 	if (lps0_device_handle)
+ 		return 0;
+ 
+-	if (acpi_sleep_no_lps0) {
++	if (acpi_sleep_no_lps0 || no_lps0) {
+ 		acpi_handle_info(adev->handle,
+-				 "Low Power S0 Idle interface disabled\n");
++				 "Low Power S0 Idle interface disabled by %s\n",
++				no_lps0 ? "User" : "Blacklist");
+ 		return 0;
+ 	}
+ 
+-- 
+2.22.0
+
