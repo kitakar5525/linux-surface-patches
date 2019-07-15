@@ -1,0 +1,49 @@
+From 6fc9bfccbf4683b67c6f375ceb04260c3b143c87 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 10 Jul 2019 03:18:04 +0900
+Subject: [PATCH] Do not call ipts_restart when sensor reset or cmd_status is
+ non-zero
+
+---
+ drivers/misc/ipts/ipts-msg-handler.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/misc/ipts/ipts-msg-handler.c b/drivers/misc/ipts/ipts-msg-handler.c
+index 8b214f975..fda0a9e58 100644
+--- a/drivers/misc/ipts/ipts-msg-handler.c
++++ b/drivers/misc/ipts/ipts-msg-handler.c
+@@ -411,12 +411,17 @@ int ipts_handle_resp(ipts_info_t *ipts, touch_sensor_msg_m2h_t *m2h_msg,
+ 	if (rsp_status != 0) {
+ 		switch (rsp_status) {
+ 			case TOUCH_STATUS_SENSOR_EXPECTED_RESET:
++				ipts_info(ipts, "sensor reset %d, TOUCH_STATUS_SENSOR_EXPECTED_RESET\n", rsp_status);
++				ipts_info(ipts, "[debug]not calling ipts_restart\n");
++				// ipts_restart(ipts);
++				break;
+ 			case TOUCH_STATUS_SENSOR_UNEXPECTED_RESET:
+-				ipts_dbg(ipts, "sensor reset %d\n", rsp_status);
+-				ipts_restart(ipts);
++				ipts_info(ipts, "sensor reset %d, TOUCH_STATUS_SENSOR_UNEXPECTED_RESET\n", rsp_status);
++				ipts_info(ipts, "[debug]not calling ipts_restart\n");
++				// ipts_restart(ipts);
+ 				break;
+ 			default:
+-				ipts_dbg(ipts, "cmd : 0x%08x, status %d\n",
++				ipts_info(ipts, "cmd : 0x%08x, status %d\n",
+ 								cmd,
+ 								rsp_status);
+ 				break;
+@@ -424,7 +429,9 @@ int ipts_handle_resp(ipts_info_t *ipts, touch_sensor_msg_m2h_t *m2h_msg,
+ 	}
+ 
+ 	if (cmd_status) {
+-		ipts_restart(ipts);
++		ipts_info(ipts, "cmd_status: %d\n", cmd_status);
++		ipts_info(ipts, "[debug]not calling ipts_restart\n");
++		// ipts_restart(ipts);
+ 	}
+ 
+ 	return ret;
+-- 
+2.22.0
+
