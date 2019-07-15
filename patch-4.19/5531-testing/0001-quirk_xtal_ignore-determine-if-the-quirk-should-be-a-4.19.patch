@@ -1,0 +1,55 @@
+From c84d0fad5c55785f5ceff376382a8ac8d33d813d Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 15 Jul 2019 23:17:59 +0900
+Subject: [PATCH] quirk_xtal_ignore: determine if the quirk should be applied 
+ or not by module parameter instead for 4.19
+
+By default, quirk_xtal_ignore() will be called depending on
+pmc_core_dmi_table. This commit changes this behavior. Instead,
+ignores that table and decide whether call quirk_xtal_ignore()
+or not by module prameter enable_quirk_xtal_ignore.
+
+Use `intel_pmc_core.enable_quirk_xtal_ignore=1` to apply the quirk.
+---
+ drivers/platform/x86/intel_pmc_core.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
+index db3af795..e357f38f 100644
+--- a/drivers/platform/x86/intel_pmc_core.c
++++ b/drivers/platform/x86/intel_pmc_core.c
+@@ -830,6 +830,11 @@ static const struct pci_device_id pmc_pci_ids[] = {
+ 	{ 0, },
+ };
+ 
++static bool enable_quirk_xtal_ignore = 0;
++module_param(enable_quirk_xtal_ignore, bool, 0444);
++MODULE_PARM_DESC(enable_quirk_xtal_ignore,
++	"Enable quirk_xtal_ignore callback (ignore DMI white list) (default: false)");
++
+ /*
+  * This quirk can be used on those platforms where
+  * the platform BIOS enforces 24Mhx Crystal to shutdown
+@@ -846,6 +851,7 @@ int quirk_xtal_ignore(const struct dmi_system_id *id)
+ 	/* Low Voltage Mode Enable */
+ 	value &= ~SPT_PMC_VRIC1_SLPS0LVEN;
+ 	pmc_core_reg_write(pmcdev, pmcdev->map->pm_vric1_offset, value);
++	pr_info("quirk_xtal_ignore applied\n");
+ 	return 0;
+ }
+ 
+@@ -902,7 +908,10 @@ static int __init pmc_core_probe(void)
+ 		return err;
+ 	}
+ 
+-	dmi_check_system(pmc_core_dmi_table);
++	if (enable_quirk_xtal_ignore) {
++		quirk_xtal_ignore(NULL);
++	}
++
+ 	pr_info(" initialized\n");
+ 	return 0;
+ }
+-- 
+2.22.0
+
