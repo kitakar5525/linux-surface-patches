@@ -1,0 +1,54 @@
+From 9e0a4ec76475a7b6616de11eca00bbff64b2bd03 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Tue, 9 Jul 2019 17:15:38 +0900
+Subject: [PATCH] call ipts_send_feedback() in handle_outputs() only when
+ payload error occurred
+
+Calling the "ipts_send_feedback" function repeatedly seems to be
+what is causing touch to crash on some platforms, especially on
+Surface Pro 4 and Surface Book 1.
+
+Let's send a feedback only when a payload error occurred.
+---
+ drivers/misc/ipts/ipts-hid.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
+index e85844dc1..66c856ebb 100644
+--- a/drivers/misc/ipts/ipts-hid.c
++++ b/drivers/misc/ipts/ipts-hid.c
+@@ -407,15 +407,29 @@ static int handle_outputs(ipts_info_t *ipts, int parallel_idx)
+ 						err_payload->code[3],
+ 						err_payload->string);
+ 
+-				break;
++				goto err_payload;
+ 			}
+ 			default:
+ 				ipts_err(ipts, "invalid output buffer payload\n");
+-				break;
++				goto err_payload;
+ 		}
+ 	}
+ 
++	return 0;
++
++err_payload:
++	/*
++	 * Calling the "ipts_send_feedback" function repeatedly seems to be
++	 * what is causing touch to crash on some platforms, especially on
++	 * Surface Pro 4 and Surface Book 1.
++	 *
++	 * Let's send a feedback only when a payload error occurred.
++	 *
++	 * Touch and pen issue persists · Issue #374 · jakeday/linux-surface
++	 * https://github.com/jakeday/linux-surface/issues/374#issuecomment-508234110
++	 */
+ 	if (fb_buf) {
++		ipts_err(ipts, "handling payload error\n");
+ 		ret = ipts_send_feedback(ipts, parallel_idx, transaction_id);
+ 		if (ret)
+ 			return ret;
+-- 
+2.22.0
+
