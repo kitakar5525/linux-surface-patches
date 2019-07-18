@@ -1,6 +1,6 @@
-From 9773d9c2754b4a06d4a99c58fabb6fe6c31cd47a Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 28 Jun 2019 17:44:06 +0900
+From 9672c8655b40068efecf41d88953c18d1310a9b8 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 18 Jul 2019 22:42:12 +0900
 Subject: [PATCH 05/11] ipts-5.2
 
 ---
@@ -17,7 +17,7 @@ Subject: [PATCH 05/11] ipts-5.2
  drivers/gpu/drm/i915/intel_guc_submission.h |    4 +
  drivers/gpu/drm/i915/intel_ipts.c           |  657 ++++++++++++
  drivers/gpu/drm/i915/intel_ipts.h           |   36 +
- drivers/gpu/drm/i915/intel_lrc.c            |   13 +-
+ drivers/gpu/drm/i915/intel_lrc.c            |   14 +-
  drivers/gpu/drm/i915/intel_lrc.h            |    8 +
  drivers/gpu/drm/i915/intel_panel.c          |    7 +
  drivers/hid/hid-multitouch.c                |   22 +-
@@ -45,7 +45,7 @@ Subject: [PATCH 05/11] ipts-5.2
  drivers/misc/mei/hw-me-regs.h               |    1 +
  drivers/misc/mei/pci-me.c                   |    1 +
  include/linux/intel_ipts_if.h               |   75 ++
- 41 files changed, 5573 insertions(+), 25 deletions(-)
+ 41 files changed, 5573 insertions(+), 26 deletions(-)
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.c
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.h
  create mode 100644 drivers/misc/ipts/Kconfig
@@ -1123,7 +1123,7 @@ index 000000000..45d7d1273
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 11e5a8661..10e1d59a5 100644
+index 11e5a8661..131761781 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -166,8 +166,6 @@
@@ -1144,16 +1144,17 @@ index 11e5a8661..10e1d59a5 100644
  {
  	struct intel_engine_cs *engine;
  
-@@ -1235,7 +1233,7 @@ __execlists_update_reg_state(struct intel_context *ce,
+@@ -1235,8 +1233,7 @@ __execlists_update_reg_state(struct intel_context *ce,
  			gen8_make_rpcs(engine->i915, &ce->sseu);
  }
  
 -static int
-+int
- __execlists_context_pin(struct intel_context *ce,
+-__execlists_context_pin(struct intel_context *ce,
++int __execlists_context_pin(struct intel_context *ce,
  			struct intel_engine_cs *engine)
  {
-@@ -1285,7 +1283,7 @@ __execlists_context_pin(struct intel_context *ce,
+ 	void *vaddr;
+@@ -1285,7 +1282,7 @@ __execlists_context_pin(struct intel_context *ce,
  	return ret;
  }
  
@@ -1162,7 +1163,7 @@ index 11e5a8661..10e1d59a5 100644
  {
  	return __execlists_context_pin(ce, ce->engine);
  }
-@@ -2520,6 +2518,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
+@@ -2520,6 +2517,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
  	engine->emit_flush = gen8_emit_flush_render;
  	engine->emit_fini_breadcrumb = gen8_emit_fini_breadcrumb_rcs;
  
@@ -1172,7 +1173,7 @@ index 11e5a8661..10e1d59a5 100644
  	ret = logical_ring_init(engine);
  	if (ret)
  		return ret;
-@@ -2881,7 +2882,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
+@@ -2881,7 +2881,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
  		return i915_timeline_create(ctx->i915, NULL);
  }
  
