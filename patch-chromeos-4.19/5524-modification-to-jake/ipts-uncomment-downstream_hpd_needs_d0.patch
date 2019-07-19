@@ -3,7 +3,7 @@ From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Wed, 13 Feb 2019 23:34:14 +0900
 Subject: [PATCH 20/32] ipts: uncomment downstream_hpd_needs_d0
 
-Because I'm not sure why this it commented out, I revert this change.
+Because I'm not sure why this is commented out, I revert this change.
 
 ---
  drivers/gpu/drm/i915/intel_dp.c | 4 ++--
