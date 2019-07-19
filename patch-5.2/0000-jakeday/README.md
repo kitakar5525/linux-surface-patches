@@ -12,7 +12,7 @@ Adapted to i915 name changes
 - `RCS` to `RCS0`
 
 `to_intel_context()` is not available anymore
-- Use `intel_context_pin_lock` instead
+- I used `intel_context_pin_lock()` instead
 
 
 
