@@ -2,12 +2,12 @@
 
 ## Major IPTS patch changes
 
-Adapted i915 functions signature changes
+Adapted to i915 functions signature changes
 - `execlists_context_pin()`
 - `execlists_context_deferred_alloc()`
 - `i915_gem_create_context()`
 
-Adapted i915 name changes
+Adapted to i915 name changes
 - `ring_mask` to `engine_mask`
 - `RCS` to `RCS0`
 
