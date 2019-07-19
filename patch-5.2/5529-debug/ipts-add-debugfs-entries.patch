@@ -2,15 +2,26 @@ From 8e2b654b2a118c29b6d17f074bf52e1a8f8da014 Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Thu, 20 Jun 2019 16:19:15 +0900
 Subject: [PATCH] ipts: add debugfs entries
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-Add three debugfs entries:
+Add debugfs entries:
 ・ quiesce_io_cmd
 ・ clear_mem_window_cmd
 ・ debug
 ・ ipts_restart
+
+quiesce_io_cmd, clear_mem_window_cmd and ipts_restart usage:
+```
+$ sudo su -c "echo 1 > /sys/kernel/debug/ipts/ipts_restart"
+```
+
+debug usage:
+```
+$ sudo cat /sys/kernel/debug/ipts/debug
+>> tdt : fw status : A280505D 00000000 00000000 00000000 00000000 00000000
+>> == DB s:1, c:831 ==
+>> == WQ h:784, t:784 ==
+```
+
 ---
  drivers/misc/ipts/ipts-dbgfs.c       | 148 +++++++++++++++++++++++++++
  drivers/misc/ipts/ipts-msg-handler.h |   1 +
