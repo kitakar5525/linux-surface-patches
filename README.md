@@ -2,6 +2,8 @@
 
 - Intended for **Surface Book 1 (especially, with Performance Base)** and **Surface 3**, but all patches (or equivalent) from [jakeday repository](https://github.com/jakeday/linux-surface) are included
 
+Please refer to every patch header comment or patch name for why the patch is added.
+
 ## See also
 
 ### My memos
