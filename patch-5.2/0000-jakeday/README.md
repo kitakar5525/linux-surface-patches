@@ -1,18 +1,51 @@
-# IPTS patch changes from 5.1 to 5.2
+# Changes from 5.1 to 5.2
 
-resolved-.rej-files
+## Major IPTS patch changes
+
+Adapted i915 functions signature changes
+- `execlists_context_pin()`
+- `execlists_context_deferred_alloc()`
+- `i915_gem_create_context()`
+
+Adapted i915 name changes
+- `ring_mask` to `engine_mask`
+- `RCS` to `RCS0`
+
+`to_intel_context()` is not available anymore
+- Use `intel_context_pin_lock` instead
+
+
+
+### Continue using `execlists_context_pin()`
+
+Using `intel_context_pin()` like this resulted in black screen right after boot:
 ```diff
-From 27dd2fb66f3d8f93479e26a711ea8d0bb781aba4 Mon Sep 17 00:00:00 2001
+-    pin_ret = execlists_context_pin(dev_priv->engine[RCS], ipts_ctx);
++    pin_ret = intel_context_pin(ipts_ctx, dev_priv->engine[RCS0]);
+    if (IS_ERR(pin_ret)) {
+        DRM_DEBUG("lr context pinning failed :  %ld\n", PTR_ERR(pin_ret));
+        goto err_ctx;
+    }
+```
+
+
+
+## Complete IPTS patch changes
+
+ipts-5.2: resolved .rej files
+```diff
+From 24aa8bb861b3275bd8a5c3450d281c411eb9c40c Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 18 Jul 2019 22:03:36 +0900
-Subject: [PATCH 2/3] ipts-5.2: resolved .rej files
+Subject: [PATCH 1/2] ipts-5.2: resolved .rej files
 
+Stop exposing __execlists_context_pin()
 ---
- drivers/gpu/drm/i915/i915_irq.c    |  4 +++-
- drivers/gpu/drm/i915/intel_lrc.c   |  9 +++------
- drivers/gpu/drm/i915/intel_lrc.h   | 11 +++++------
- drivers/gpu/drm/i915/intel_panel.c |  1 +
- 4 files changed, 12 insertions(+), 13 deletions(-)
+ drivers/gpu/drm/i915/i915_irq.c    | 4 +++-
+ drivers/gpu/drm/i915/intel_lrc.c   | 6 ++----
+ drivers/gpu/drm/i915/intel_lrc.h   | 9 +++------
+ drivers/gpu/drm/i915/intel_panel.c | 1 +
+ 4 files changed, 9 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
 index c542e27e9..78fcd4b78 100644
@@ -37,7 +70,7 @@ index c542e27e9..78fcd4b78 100644
  		 GT_RENDER_USER_INTERRUPT << GEN8_BCS_IRQ_SHIFT |
  		 GT_CONTEXT_SWITCH_INTERRUPT << GEN8_BCS_IRQ_SHIFT),
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 247576bf4..131761781 100644
+index 247576bf4..10b5dd1a4 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -166,8 +166,6 @@
@@ -49,17 +82,7 @@ index 247576bf4..131761781 100644
  static void execlists_init_reg_state(u32 *reg_state,
  				     struct intel_context *ce,
  				     struct intel_engine_cs *engine,
-@@ -1235,8 +1233,7 @@ __execlists_update_reg_state(struct intel_context *ce,
- 			gen8_make_rpcs(engine->i915, &ce->sseu);
- }
- 
--static int
--__execlists_context_pin(struct intel_context *ce,
-+int __execlists_context_pin(struct intel_context *ce,
- 			struct intel_engine_cs *engine)
- {
- 	void *vaddr;
-@@ -1285,7 +1282,7 @@ __execlists_context_pin(struct intel_context *ce,
+@@ -1285,7 +1283,7 @@ __execlists_context_pin(struct intel_context *ce,
  	return ret;
  }
  
@@ -68,7 +91,7 @@ index 247576bf4..131761781 100644
  {
  	return __execlists_context_pin(ce, ce->engine);
  }
-@@ -2884,7 +2881,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
+@@ -2884,7 +2882,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
  		return i915_timeline_create(ctx->i915, NULL);
  }
  
@@ -78,18 +101,16 @@ index 247576bf4..131761781 100644
  {
  	struct drm_i915_gem_object *ctx_obj;
 diff --git a/drivers/gpu/drm/i915/intel_lrc.h b/drivers/gpu/drm/i915/intel_lrc.h
-index 4297cfff2..450d780d0 100644
+index 4297cfff2..bfef20e4f 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.h
 +++ b/drivers/gpu/drm/i915/intel_lrc.h
-@@ -115,13 +115,12 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
+@@ -115,13 +115,10 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
  							const char *prefix),
  				   unsigned int max);
  
 -struct intel_context *
 -execlists_context_pin(struct intel_engine_cs *engine,
 -		      struct i915_gem_context *ctx);
-+int __execlists_context_pin(struct intel_context *ce,
-+			struct intel_engine_cs *engine);
 +int execlists_context_pin(struct intel_context *ce);
  void execlists_context_unpin(struct intel_context *ce);
 -int execlists_context_deferred_alloc(struct i915_gem_context *ctx,
@@ -118,12 +139,12 @@ index 0b3f2cfc2..2d3c523ba 100644
 
 ```
 
-resolved-build-time-errors
+ipts-5.2: resolved build time errors
 ```diff
-From 80b98ca5e1c5f02ce393f933dca30621c6c4ef13 Mon Sep 17 00:00:00 2001
+From fc8bdb4b6da7d5d64f325b51bb12e9fd0d2e0863 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 18 Jul 2019 22:16:13 +0900
-Subject: [PATCH 3/3] ipts-5.2: resolved build time errors
+Subject: [PATCH 2/2] ipts-5.2: resolved build time errors
 
 ---
  drivers/gpu/drm/i915/i915_gem_context.c     |  2 +-
@@ -158,7 +179,7 @@ index fad19db49..475bebc91 100644
  				  ctx);
  	if (IS_ERR(client)) {
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index b276a2f78..97219a8cf 100644
+index b276a2f78..2810a0c86 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -175,7 +175,7 @@ static int create_ipts_context(void)
@@ -193,7 +214,7 @@ index b276a2f78..97219a8cf 100644
 -	pin_ret = execlists_context_pin(dev_priv->engine[RCS], ipts_ctx);
 -	if (IS_ERR(pin_ret)) {
 -		DRM_DEBUG("lr context pinning failed :  %ld\n", PTR_ERR(pin_ret));
-+	pin_ret = __execlists_context_pin(ce, dev_priv->engine[RCS0]);
++	pin_ret = execlists_context_pin(ce);
 +	if (pin_ret) {
 +		DRM_DEBUG("lr context pinning failed :  %d\n", pin_ret);
  		goto err_ctx;

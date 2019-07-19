@@ -1,4 +1,4 @@
-From 9672c8655b40068efecf41d88953c18d1310a9b8 Mon Sep 17 00:00:00 2001
+From d7c54fc7484fec4a5e73f3ac45b54f347b9676df Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 18 Jul 2019 22:42:12 +0900
 Subject: [PATCH 05/11] ipts-5.2
@@ -17,8 +17,8 @@ Subject: [PATCH 05/11] ipts-5.2
  drivers/gpu/drm/i915/intel_guc_submission.h |    4 +
  drivers/gpu/drm/i915/intel_ipts.c           |  657 ++++++++++++
  drivers/gpu/drm/i915/intel_ipts.h           |   36 +
- drivers/gpu/drm/i915/intel_lrc.c            |   14 +-
- drivers/gpu/drm/i915/intel_lrc.h            |    8 +
+ drivers/gpu/drm/i915/intel_lrc.c            |   11 +-
+ drivers/gpu/drm/i915/intel_lrc.h            |    6 +
  drivers/gpu/drm/i915/intel_panel.c          |    7 +
  drivers/hid/hid-multitouch.c                |   22 +-
  drivers/misc/Kconfig                        |    1 +
@@ -45,7 +45,7 @@ Subject: [PATCH 05/11] ipts-5.2
  drivers/misc/mei/hw-me-regs.h               |    1 +
  drivers/misc/mei/pci-me.c                   |    1 +
  include/linux/intel_ipts_if.h               |   75 ++
- 41 files changed, 5573 insertions(+), 26 deletions(-)
+ 41 files changed, 5570 insertions(+), 24 deletions(-)
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.c
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.h
  create mode 100644 drivers/misc/ipts/Kconfig
@@ -419,7 +419,7 @@ index aa5e6749c..c9e5c14e7 100644
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 new file mode 100644
-index 000000000..97219a8cf
+index 000000000..2810a0c86
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -0,0 +1,657 @@
@@ -632,7 +632,7 @@ index 000000000..97219a8cf
 +		goto err_ctx;
 +	}
 +
-+	pin_ret = __execlists_context_pin(ce, dev_priv->engine[RCS0]);
++	pin_ret = execlists_context_pin(ce);
 +	if (pin_ret) {
 +		DRM_DEBUG("lr context pinning failed :  %d\n", pin_ret);
 +		goto err_ctx;
@@ -1123,7 +1123,7 @@ index 000000000..45d7d1273
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 11e5a8661..131761781 100644
+index 11e5a8661..10b5dd1a4 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -166,8 +166,6 @@
@@ -1144,17 +1144,7 @@ index 11e5a8661..131761781 100644
  {
  	struct intel_engine_cs *engine;
  
-@@ -1235,8 +1233,7 @@ __execlists_update_reg_state(struct intel_context *ce,
- 			gen8_make_rpcs(engine->i915, &ce->sseu);
- }
- 
--static int
--__execlists_context_pin(struct intel_context *ce,
-+int __execlists_context_pin(struct intel_context *ce,
- 			struct intel_engine_cs *engine)
- {
- 	void *vaddr;
-@@ -1285,7 +1282,7 @@ __execlists_context_pin(struct intel_context *ce,
+@@ -1285,7 +1283,7 @@ __execlists_context_pin(struct intel_context *ce,
  	return ret;
  }
  
@@ -1163,7 +1153,7 @@ index 11e5a8661..131761781 100644
  {
  	return __execlists_context_pin(ce, ce->engine);
  }
-@@ -2520,6 +2517,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
+@@ -2520,6 +2518,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
  	engine->emit_flush = gen8_emit_flush_render;
  	engine->emit_fini_breadcrumb = gen8_emit_fini_breadcrumb_rcs;
  
@@ -1173,7 +1163,7 @@ index 11e5a8661..131761781 100644
  	ret = logical_ring_init(engine);
  	if (ret)
  		return ret;
-@@ -2881,7 +2881,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
+@@ -2881,7 +2882,7 @@ static struct i915_timeline *get_timeline(struct i915_gem_context *ctx)
  		return i915_timeline_create(ctx->i915, NULL);
  }
  
@@ -1183,15 +1173,13 @@ index 11e5a8661..131761781 100644
  {
  	struct drm_i915_gem_object *ctx_obj;
 diff --git a/drivers/gpu/drm/i915/intel_lrc.h b/drivers/gpu/drm/i915/intel_lrc.h
-index 84aa230ea..450d780d0 100644
+index 84aa230ea..bfef20e4f 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.h
 +++ b/drivers/gpu/drm/i915/intel_lrc.h
-@@ -115,6 +115,14 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
+@@ -115,6 +115,12 @@ void intel_execlists_show_requests(struct intel_engine_cs *engine,
  							const char *prefix),
  				   unsigned int max);
  
-+int __execlists_context_pin(struct intel_context *ce,
-+			struct intel_engine_cs *engine);
 +int execlists_context_pin(struct intel_context *ce);
 +void execlists_context_unpin(struct intel_context *ce);
 +int execlists_context_deferred_alloc(struct intel_context *ce,
