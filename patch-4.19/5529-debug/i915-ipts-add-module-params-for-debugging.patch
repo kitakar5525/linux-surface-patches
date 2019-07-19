@@ -3,6 +3,21 @@ From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Sat, 16 Feb 2019 15:19:42 +0900
 Subject: [PATCH] i915: ipts: add module params for debugging
 
+Add parameters:
+・ ipts_guc_priority
+・ disable_priority_mechanism
+・ enable_high_priority_PRIORITY_HIGH_only
+
+Use
+・ i915.ipts_guc_priority=3
+・ i915.disable_priority_mechanism=0
+・ i915.enable_high_priority_PRIORITY_HIGH_only=0
+to revert the commit 1143fca
+
+References:
+・ fix touch screen lag and crashing in ipts module · jakeday/linux-surface@1143fca
+https://github.com/jakeday/linux-surface/commit/1143fcaa6b40e6bd53adba8556789155572ef4fb
+
 ---
  drivers/gpu/drm/i915/i915_params.c          | 15 +++++++++++++++
  drivers/gpu/drm/i915/i915_params.h          |  5 ++++-

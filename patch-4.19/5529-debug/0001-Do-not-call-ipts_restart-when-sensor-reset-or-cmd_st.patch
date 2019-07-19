@@ -4,6 +4,28 @@ Date: Wed, 10 Jul 2019 03:18:04 +0900
 Subject: [PATCH] Do not call ipts_restart when sensor reset or cmd_status is
  non-zero
 
+This patch is mainly for chromeos-4.19 kernel. I frequently encountered
+a sensor reset on Chromium OS BEFORE. Then, ipts_restart() was called
+and the touch inputs were no longer usable even though IPTS did not
+report any errors after ipts_restart().
+However, I cannot reproduce this issue anymore. So, I'm not sure if
+this change makes any sense yet.
+Maybe Chromium OS flags for GPU are related (?) My current flags:
+```
+--enable-features=DoubleTapToZoomInTabletMode,DriveFS,PDFAnnotations,VirtualDesks,VizDisplayCompositor,VizHitTest
+--force-tablet-mode=touch_view
+--top-chrome-touch-ui=disabled
+--ash-debug-shortcuts
+--show-taps
+--pull-to-refresh=1
+--force-gpu-rasterization
+--enable-oop-rasterization
+--enable-zero-copy
+--ignore-gpu-blacklist
+--enable-features=VizDisplayCompositor
+--disable-gpu-driver-workarounds
+```
+My current kernel config: https://github.com/kitakar5525/linux-surface-patches/blob/28ca848104836cb6d8a4c2a5c824b320633ed933/patch-chromeos-4.19/configs/config-surface/config-4.19.58
 ---
  drivers/misc/ipts/ipts-msg-handler.c | 15 +++++++++++----
  1 file changed, 11 insertions(+), 4 deletions(-)

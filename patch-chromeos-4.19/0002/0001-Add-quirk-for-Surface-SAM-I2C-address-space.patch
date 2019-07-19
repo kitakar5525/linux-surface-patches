@@ -3,6 +3,15 @@ From: qzed <qzed@users.noreply.github.com>
 Date: Fri, 5 Apr 2019 18:17:59 +0200
 Subject: [PATCH 17/32] Add quirk for Surface SAM I2C address space
 
+The module does not work as there is already an address-space handler
+attached to the device. Thus we need to patch this handler.
+
+See:
+・qzed/linux-surface-sam-hid: Experimental Linux drivers for Surface SAM over HID.
+https://github.com/qzed/linux-surface-sam-hid
+・[SB] SAM Support (dGPU-detection, clipboard-detach handling) #286
+https://github.com/jakeday/linux-surface/issues/286
+
 ---
  drivers/i2c/i2c-core-acpi.c | 179 +++++++++++++++++++++++++++++++++---
  1 file changed, 166 insertions(+), 13 deletions(-)

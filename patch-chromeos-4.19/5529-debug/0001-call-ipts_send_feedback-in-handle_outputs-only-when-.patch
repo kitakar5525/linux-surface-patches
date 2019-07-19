@@ -9,6 +9,21 @@ what is causing touch to crash on some platforms, especially on
 Surface Pro 4 and Surface Book 1.
 
 Let's send a feedback only when a payload error occurred.
+
+
+
+I encountered an error once (only once and I cannot reproduce it yet)
+in one week usage with a patch
+ipts-fix-crash-caused-by-calling-ipts_send_feedback-.patch:
+```
+ipts mei::3e8d0870-271a-4208-8eb5-9acb9402ae04:0F: error : severity : 2, source : 1, code : 17:252:255:255
+string Frame Error
+```
+The error message appeared repeatedly in dmesg on Linux 4.19.57.
+So, I made ipts_send_feedback() be called when (and only when)
+payload error occurred.
+I'm not sure if this change makes any sense because I cannot reproduce
+the error yet.
 ---
  drivers/misc/ipts/ipts-hid.c | 18 ++++++++++++++++--
  1 file changed, 16 insertions(+), 2 deletions(-)

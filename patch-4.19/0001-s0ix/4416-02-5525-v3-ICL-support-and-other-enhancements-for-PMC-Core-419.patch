@@ -3,6 +3,35 @@ From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Mon, 25 Mar 2019 09:47:11 +0900
 Subject: [PATCH] v3-ICL-support-and-other-enhancements-for-PMC-Core-419
 
+Changes in v3:
+ * Dropped reference to coreboot project as suggested by Thomas and Boris.
+ * Rebased onto "for-next" branch of pdx86 tree and dropped previously
+   accepted five patches from v2 of this series since they are already
+   present there.
+ * Fixed checkpatch complains about 75 char limit for commit messages.
+
+Changes in v2:
+ * Addressed review comments from Thomas
+ * Added tags revieved
+ * Folded in SHA1 suggestions from Stephen Rothwell, though Andy might
+   want to fix it via rebasing
+ * Rebased and tested with Linux v5.0.0-rc6
+
+This series:
+ - Adds ICL U/Y CPUID to intel-family.h
+ - Enables PMC driver for ICL 
+ - Introduces a new "package cstate show" feature
+ - Fixes a customer issue related to S0ix on latest HP laptops
+ - Fixes some minor bugs  
+
+
+Rajneesh Bhardwaj (5):
+  x86/cpu: Add Icelake to Intel family
+  platform/x86: intel_pmc_core: Convert to INTEL_CPU_FAM6 macro
+  platform/x86: intel_pmc_core: Add ICL platform support
+  platform/x86: intel_pmc_core: Add Package cstates residency info
+  platform/x86: intel_pmc_core: Quirk to ignore XTAL shutdown
+
 ---
  drivers/platform/x86/intel_pmc_core.c | 144 ++++++++++++++++++++++----
  drivers/platform/x86/intel_pmc_core.h |  10 ++
