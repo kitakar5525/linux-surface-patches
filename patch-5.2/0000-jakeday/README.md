@@ -5,14 +5,24 @@
 Adapted to i915 functions signature changes
 - `execlists_context_pin()`
 - `execlists_context_deferred_alloc()`
+
+- [drm/i915: Make context pinning part of intel_context_ops · torvalds/linux@95f697e](https://github.com/torvalds/linux/commit/95f697eb024d7def7f9050cd5eba9502034dd94d)
+
 - `i915_gem_create_context()`
+
+- [drm/i915: Separate GEM context construction and registration to users… · torvalds/linux@3aa9945](https://github.com/torvalds/linux/commit/3aa9945a528e7616b5c8fe5d7aa7d4aaf52b0af2)
+- [drm/i915: Allow contexts to share a single timeline across all engines · torvalds/linux@ea593db](https://github.com/torvalds/linux/commit/ea593dbba4c8ed841630fa5445202627e1046ba6)
 
 Adapted to i915 name changes
 - `ring_mask` to `engine_mask`
 - `RCS` to `RCS0`
 
+- [drm/i915: Store the BIT(engine->id) as the engine's mask · torvalds/linux@8a68d46](https://github.com/torvalds/linux/commit/8a68d464366efb5b294fa11ccf23b51306cc2695)
+
 `to_intel_context()` is not available anymore
 - I used `intel_context_pin_lock()` instead
+
+- [drm/i915: Move over to intel_context_lookup() · torvalds/linux@c4d52fe](https://github.com/torvalds/linux/commit/c4d52feb2c46ddcdde4058cf03f8b9eb996bb09b)
 
 
 
