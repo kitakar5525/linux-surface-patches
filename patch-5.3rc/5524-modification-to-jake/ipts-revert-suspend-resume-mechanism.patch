@@ -1,0 +1,85 @@
+From 94a86673a9c0a5c639607a51625031bdab1e4e5c Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 22 Jul 2019 19:37:09 +0900
+Subject: [PATCH 15/28] ipts: revert suspend/resume mechanism
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The suspend/resume mechanism was introduced on commit a3a3ed3.
+If I recall correctly, This change was intended for hibernation.
+Because I don't use hibernation and I don't want to remove ipts
+module before suspend like this systemd/system-sleep/sleep on
+jakeday repository, I revert this commit.
+
+References:
+・updating 4.19 patches to fix touch and suspend · jakeday/linux-surface@a3a3ed3
+https://github.com/jakeday/linux-surface/commit/a3a3ed3dc433ed3b654669bfb57089e32d7077eb
+・systemd/system-sleep/sleep - linux-surface/sleep at 5.1.15-1 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/blob/5.1.15-1/root/lib/systemd/system-sleep/sleep
+・Can't wake up from suspend using lid or power button · Issue #381 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/381
+---
+ drivers/gpu/drm/i915/i915_drv.c   |  6 ------
+ drivers/gpu/drm/i915/intel_ipts.c | 10 ----------
+ drivers/gpu/drm/i915/intel_ipts.h |  2 --
+ 3 files changed, 18 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
+index 9d6f633ce..ed44c87a9 100644
+--- a/drivers/gpu/drm/i915/i915_drv.c
++++ b/drivers/gpu/drm/i915/i915_drv.c
+@@ -2094,9 +2094,6 @@ static int i915_drm_suspend(struct drm_device *dev)
+ 	struct pci_dev *pdev = dev_priv->drm.pdev;
+ 	pci_power_t opregion_target_state;
+ 
+-	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
+-		intel_ipts_suspend(dev);
+-
+ 	disable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+ 
+ 	/* We do a lot of poking in a lot of registers, make sure they work
+@@ -2294,9 +2291,6 @@ static int i915_drm_resume(struct drm_device *dev)
+ 
+ 	enable_rpm_wakeref_asserts(&dev_priv->runtime_pm);
+ 
+-	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
+-		intel_ipts_resume(dev);
+-
+ 	return 0;
+ }
+ 
+diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
+index 2810a0c86..059c4ef66 100644
+--- a/drivers/gpu/drm/i915/intel_ipts.c
++++ b/drivers/gpu/drm/i915/intel_ipts.c
+@@ -645,13 +645,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
+ 		cancel_delayed_work(&intel_ipts.reacquire_db_work);
+ 	}
+ }
+-
+-int intel_ipts_resume(struct drm_device *dev)
+-{
+-	return intel_ipts_init(dev);
+-}
+-
+-void intel_ipts_suspend(struct drm_device *dev)
+-{
+-	intel_ipts_cleanup(dev);
+-}
+diff --git a/drivers/gpu/drm/i915/intel_ipts.h b/drivers/gpu/drm/i915/intel_ipts.h
+index 45d7d1273..a6965d102 100644
+--- a/drivers/gpu/drm/i915/intel_ipts.h
++++ b/drivers/gpu/drm/i915/intel_ipts.h
+@@ -28,8 +28,6 @@ struct drm_device;
+ 
+ int intel_ipts_init(struct drm_device *dev);
+ void intel_ipts_cleanup(struct drm_device *dev);
+-int intel_ipts_resume(struct drm_device *dev);
+-void intel_ipts_suspend(struct drm_device *dev);
+ int intel_ipts_notify_backlight_status(bool backlight_on);
+ int intel_ipts_notify_complete(void);
+ 
+-- 
+2.22.0
+

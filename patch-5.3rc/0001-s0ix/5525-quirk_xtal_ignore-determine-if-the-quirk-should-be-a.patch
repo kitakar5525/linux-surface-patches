@@ -1,0 +1,54 @@
+From 58837fe0c566558765e386d857240b53dd9a67f7 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 22 Jul 2019 19:35:28 +0900
+Subject: [PATCH 13/28] quirk_xtal_ignore: determine if the quirk should be
+ applied  or not by module parameter instead
+
+By default, quirk_xtal_ignore() will be called depending on
+pmc_core_dmi_table. This commit changes this behavior. Instead,
+ignores that table and decide whether call quirk_xtal_ignore()
+or not by module prameter enable_quirk_xtal_ignore.
+
+Use `intel_pmc_core.enable_quirk_xtal_ignore=1` to apply the quirk.
+---
+ drivers/platform/x86/intel_pmc_core.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
+index 235c0b89f..265d1da51 100644
+--- a/drivers/platform/x86/intel_pmc_core.c
++++ b/drivers/platform/x86/intel_pmc_core.c
+@@ -822,6 +822,11 @@ static const struct pci_device_id pmc_pci_ids[] = {
+ 	{ 0, },
+ };
+ 
++static bool enable_quirk_xtal_ignore = 0;
++module_param(enable_quirk_xtal_ignore, bool, 0444);
++MODULE_PARM_DESC(enable_quirk_xtal_ignore,
++	"Enable quirk_xtal_ignore callback (ignore DMI white list) (default: false)");
++
+ /*
+  * This quirk can be used on those platforms where
+  * the platform BIOS enforces 24Mhx Crystal to shutdown
+@@ -838,6 +843,7 @@ static int quirk_xtal_ignore(const struct dmi_system_id *id)
+ 	/* Low Voltage Mode Enable */
+ 	value &= ~SPT_PMC_VRIC1_SLPS0LVEN;
+ 	pmc_core_reg_write(pmcdev, pmcdev->map->pm_vric1_offset, value);
++	pr_info("quirk_xtal_ignore applied\n");
+ 	return 0;
+ }
+ 
+@@ -890,7 +896,9 @@ static int pmc_core_probe(struct platform_device *pdev)
+ 	mutex_init(&pmcdev->lock);
+ 	platform_set_drvdata(pdev, pmcdev);
+ 	pmcdev->pmc_xram_read_bit = pmc_core_check_read_lock_bit();
+-	dmi_check_system(pmc_core_dmi_table);
++	if (enable_quirk_xtal_ignore) {
++		quirk_xtal_ignore(NULL);
++	}
+ 
+ 	pmc_core_dbgfs_register(pmcdev);
+ 
+-- 
+2.22.0
+
