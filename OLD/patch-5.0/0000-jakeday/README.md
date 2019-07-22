@@ -5,6 +5,16 @@ See
 
 ## IPTS changes
 
+### Major changes
+
+Use `__guc_client_enable()` instead of `create_doorbell()`
+
+>Apparently (I mean, after blindly digging around i915 for 2 days) this problem was introduced by commit [torvalds/linux@48b426a](https://github.com/torvalds/linux/commit/48b426a9b9ab93481a2c5b913c2c6add5fb1001), which moves the initialization of GuC descriptors out of the initial allocation. This can be fixed by simply calling the new __guc_client_enable function instead of create_doorbell when initializing IPTS. The new function takes care of everything for us automatically.
+
+- https://github.com/jakeday/linux-surface/issues/417#issuecomment-471146629
+
+### Complete changes
+
 Resolved .rej files and build time errors
 ```diff
 From 67c8f227097c2d16ba0e01d5f49608c0231e520e Mon Sep 17 00:00:00 2001
