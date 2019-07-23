@@ -1,9 +1,14 @@
 From 0140825e5c16b79e3089fa550c550b5a0c664a51 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Mon, 22 Jul 2019 19:38:37 +0900
-Subject: [PATCH 16/28] ipts: uncomment downstream_hpd_needs_d0
+Subject: [PATCH] ipts: uncomment downstream_hpd_needs_d0 for 5.3rc
 
+Introduced on commit adc8ed9.
 Because I'm not sure why this is commented out, I revert this change.
+
+References:
+・ updating ipts patch · jakeday/linux-surface@adc8ed9
+https://github.com/jakeday/linux-surface/commit/adc8ed95d0135612caf25e8f53a983810ac53548
 ---
  drivers/gpu/drm/i915/display/intel_dp.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
