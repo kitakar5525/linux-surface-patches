@@ -1,7 +1,7 @@
 From 18248373b6f536fdc583ddf7ee36bf41b5ede3f7 Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Thu, 20 Jun 2019 16:19:15 +0900
-Subject: [PATCH] ipts: add debugfs entries
+Subject: [PATCH] ipts: add debugfs entry
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
