@@ -1,8 +1,15 @@
-From d7c54fc7484fec4a5e73f3ac45b54f347b9676df Mon Sep 17 00:00:00 2001
+From 2cb471314d9dc7581168432f7ca2a0dddd680345 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 18 Jul 2019 22:42:12 +0900
-Subject: [PATCH 05/11] ipts-5.2
+Date: Wed, 24 Jul 2019 20:42:03 +0900
+Subject: [PATCH] ipts-5.2
 
+ipts-5.2: resolved .rej files
+
+Stop exposing __execlists_context_pin()
+
+ipts-5.2: resolved build time errors
+
+Update according to @qzed finding
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
  drivers/gpu/drm/i915/i915_drv.c             |   13 +
@@ -419,7 +426,7 @@ index aa5e6749c..c9e5c14e7 100644
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 new file mode 100644
-index 000000000..2810a0c86
+index 000000000..c2e84ca96
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -0,0 +1,657 @@
@@ -600,7 +607,6 @@ index 000000000..2810a0c86
 +	struct i915_gem_context *ipts_ctx = NULL;
 +	struct drm_i915_private *dev_priv = to_i915(intel_ipts.dev);
 +	struct intel_context *ce = NULL;
-+	int pin_ret;
 +	int ret = 0;
 +
 +	/* Initialize the context right away.*/
@@ -618,7 +624,7 @@ index 000000000..2810a0c86
 +		goto err_unlock;
 +	}
 +
-+	ce = intel_context_pin_lock(ipts_ctx, dev_priv->engine[RCS0]);
++	ce = intel_context_pin(ipts_ctx, dev_priv->engine[RCS0]);
 +	if (IS_ERR(ce)) {
 +		DRM_ERROR("Failed to create intel context (error %ld)\n",
 +			  PTR_ERR(ce));
@@ -632,9 +638,9 @@ index 000000000..2810a0c86
 +		goto err_ctx;
 +	}
 +
-+	pin_ret = execlists_context_pin(ce);
-+	if (pin_ret) {
-+		DRM_DEBUG("lr context pinning failed :  %d\n", pin_ret);
++	ret = execlists_context_pin(ce);
++	if (ret) {
++		DRM_DEBUG("lr context pinning failed :  %d\n", ret);
 +		goto err_ctx;
 +	}
 +
@@ -677,6 +683,7 @@ index 000000000..2810a0c86
 +	}
 +
 +	execlists_context_unpin(ce);
++	intel_context_unpin(ce);
 +	i915_gem_context_put(ipts_ctx);
 +
 +	mutex_unlock(&intel_ipts.dev->struct_mutex);
