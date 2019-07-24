@@ -1,6 +1,11 @@
-# Changes from 5.1 to 5.2
+# IPTS module changes from 5.1 to 5.2
 
-## Major IPTS patch changes
+See also
+- [linux-surface-patches/patch-5.2/0000-jakeday at master · kitakar5525/linux-surface-patches](https://github.com/kitakar5525/linux-surface-patches/tree/master/patch-5.2/0000-jakeday)
+
+
+
+## Major patch changes
 
 ### Adapted to i915 functions signature changes
 - `execlists_context_pin()`
@@ -40,7 +45,7 @@ Using `intel_context_pin()` like this resulted in black screen right after boot:
 
 
 
-## Complete IPTS patch changes
+## Complete changes
 
 ipts-5.2: resolved .rej files
 ```diff
@@ -249,6 +254,79 @@ index b276a2f78..6647c92d1 100644
  	i915_gem_context_put(ipts_ctx);
  
  	mutex_unlock(&intel_ipts.dev->struct_mutex);
+-- 
+2.22.0
+
+
+```
+
+
+
+## Feature additions / Bug fixes
+
+Fix RCS0 GPU hang on module removing
+```diff
+From ee64e1cd19364d7e1150757d1c25e9f0d4540d4e Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 24 Jul 2019 21:57:47 +0900
+Subject: [PATCH] Fix RCS0 GPU hang on module removing
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Before this commit, when you removed intel_ipts module, you will see
+this GPU hang:
+\```
+kernel: IPTS ipts_mei_cl_exit() is called
+kernel: ipts mei::3e8d0870-271a-4208-8eb5-9acb9402ae04:0F: error in reading m2h msg
+kernel: IPTS removed
+kernel: Asynchronous wait on fence i915:systemd-logind[547]/0:75a timed out (hint:intel_atomic_commit_ready+0x0/0x50 [i915])
+kernel: i915 0000:00:02.0: GPU HANG: ecode 9:0:0x00000000, no progress on rcs0
+kernel: [drm] GPU hangs can indicate a bug anywhere in the entire gfx stack, including userspace.
+kernel: [drm] Please file a _new_ bug report on bugs.freedesktop.org against DRI -> DRM/Intel
+kernel: [drm] drm/i915 developers can then reassign to the right component if it's not a kernel issue.
+kernel: [drm] The gpu crash dump is required to analyze gpu hangs, so please always attach it.
+kernel: [drm] GPU crash dump saved to /sys/class/drm/card0/error
+kernel: i915 0000:00:02.0: Resetting rcs0 for no progress on rcs0
+kernel: i915 0000:00:02.0: Resetting rcs0 for hang on rcs0
+kernel: [drm:intel_guc_send_mmio [i915]] *ERROR* MMIO: GuC action 0x3 failed with error -110 0x3
+kernel: i915 0000:00:02.0: Resetting chip for hang on rcs0
+kernel: i915 0000:00:02.0: GPU reset not supported
+\```
+
+This commit fixes GPU hang on removing intel_ipts module.
+
+See:
+・ Porting patches to Linux 5.2 (ipts) · Issue #544 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/544#issuecomment-514367983
+---
+ drivers/misc/ipts/ipts-msg-handler.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/misc/ipts/ipts-msg-handler.c b/drivers/misc/ipts/ipts-msg-handler.c
+index 8b214f975..db5356a1c 100644
+--- a/drivers/misc/ipts/ipts-msg-handler.c
++++ b/drivers/misc/ipts/ipts-msg-handler.c
+@@ -151,6 +151,9 @@ void ipts_stop(ipts_info_t *ipts)
+ 	old_state = ipts_get_state(ipts);
+ 	ipts_set_state(ipts, IPTS_STA_STOPPING);
+ 
++	ipts_send_sensor_quiesce_io_cmd(ipts);
++	ipts_send_sensor_clear_mem_window_cmd(ipts);
++
+ 	if (old_state < IPTS_STA_RESOURCE_READY)
+ 		return;
+ 
+@@ -267,6 +270,9 @@ int ipts_handle_resp(ipts_info_t *ipts, touch_sensor_msg_m2h_t *m2h_msg,
+ 				break;
+ 			}
+ 
++			if (ipts_get_state(ipts) == IPTS_STA_STOPPING)
++				break;
++
+ 			/* allocate default resource : common & hid only */
+ 			if (!ipts_is_default_resource_ready(ipts)) {
+ 				ret = ipts_allocate_default_resource(ipts);
 -- 
 2.22.0
 
