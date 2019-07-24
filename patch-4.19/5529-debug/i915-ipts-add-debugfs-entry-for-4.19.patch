@@ -1,7 +1,10 @@
-From 124be5eb098b7a998a3e28eabd2da7cc6150d8e2 Mon Sep 17 00:00:00 2001
+From 1d5a763d033c339e275a33604a520bd02ab10c34 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Wed, 24 Jul 2019 22:59:52 +0900
-Subject: [PATCH] i915: ipts: add debugfs entry
+Date: Thu, 25 Jul 2019 06:04:48 +0900
+Subject: [PATCH] i915: ipts: add debugfs entry for 4.19
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Add debugfs entry
 ・ i915_intel_ipts_cleanup
@@ -16,18 +19,18 @@ $ sudo su -c "echo 1 > /sys/kernel/debug/dri/0/i915_ipts_cleanup"
  1 file changed, 62 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_debugfs.c b/drivers/gpu/drm/i915/i915_debugfs.c
-index 5823ffb17..2ffad9712 100644
+index f9ce35da4..c8b88b1b7 100644
 --- a/drivers/gpu/drm/i915/i915_debugfs.c
 +++ b/drivers/gpu/drm/i915/i915_debugfs.c
-@@ -41,6 +41,7 @@
- #include "intel_hdmi.h"
- #include "intel_pm.h"
- #include "intel_psr.h"
+@@ -31,6 +31,7 @@
+ #include <linux/sched/mm.h>
+ #include "intel_drv.h"
+ #include "intel_guc_submission.h"
 +#include "intel_ipts.h"
  
  static inline struct drm_i915_private *node_to_i915(struct drm_info_node *node)
  {
-@@ -4567,6 +4568,64 @@ static const struct file_operations i915_fifo_underrun_reset_ops = {
+@@ -4691,6 +4692,64 @@ static const struct file_operations i915_fifo_underrun_reset_ops = {
  	.llseek = default_llseek,
  };
  
@@ -92,8 +95,8 @@ index 5823ffb17..2ffad9712 100644
  static const struct drm_info_list i915_debugfs_list[] = {
  	{"i915_capabilities", i915_capabilities, 0},
  	{"i915_gem_objects", i915_gem_object_info, 0},
-@@ -4642,7 +4701,9 @@ static const struct i915_debugfs_files {
- 	{"i915_hpd_short_storm_ctl", &i915_hpd_short_storm_ctl_fops},
+@@ -4769,7 +4828,9 @@ static const struct i915_debugfs_files {
+ 	{"i915_hpd_storm_ctl", &i915_hpd_storm_ctl_fops},
  	{"i915_ipc_status", &i915_ipc_status_fops},
  	{"i915_drrs_ctl", &i915_drrs_ctl_fops},
 -	{"i915_edp_psr_debug", &i915_edp_psr_debug_fops}
