@@ -151,12 +151,14 @@ index 0b3f2cfc2..2d3c523ba 100644
 
 ipts-5.2: resolved build time errors
 ```diff
-From 58e980b08a3a461eac9ca2400dce7683b2823aed Mon Sep 17 00:00:00 2001
+From e639952e323f0bfb813ac60ce038236afa9d7be9 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 18 Jul 2019 22:16:13 +0900
 Subject: [PATCH 2/2] ipts-5.2: resolved build time errors
 
 Update according to @qzed finding
+
+More update according to @qzed finding
 ---
  drivers/gpu/drm/i915/i915_gem_context.c     |  2 +-
  drivers/gpu/drm/i915/intel_guc_submission.c |  2 +-
@@ -190,7 +192,7 @@ index fad19db49..475bebc91 100644
  				  ctx);
  	if (IS_ERR(client)) {
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index b276a2f78..c2e84ca96 100644
+index b276a2f78..6647c92d1 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -175,7 +175,6 @@ static int create_ipts_context(void)
@@ -215,7 +217,7 @@ index b276a2f78..c2e84ca96 100644
  	}
  
 -	ret = execlists_context_deferred_alloc(ipts_ctx, dev_priv->engine[RCS], ce);
-+	ret = execlists_context_deferred_alloc(ce, dev_priv->engine[RCS0]);
++	ret = execlists_context_deferred_alloc(ce, ce->engine);
  	if (ret) {
  		DRM_DEBUG("lr context allocation failed : %d\n", ret);
  		goto err_ctx;
@@ -235,7 +237,7 @@ index b276a2f78..c2e84ca96 100644
  	ipts_ctx = intel_ipts.ipts_context;
  
 -	ce = to_intel_context(ipts_ctx, dev_priv->engine[RCS]);
-+	ce = intel_context_pin_lock(ipts_ctx, dev_priv->engine[RCS0]);
++	ce = intel_context_lookup(ipts_ctx, dev_priv->engine[RCS0]);
  
  	/* Initialize the context right away.*/
  	ret = i915_mutex_lock_interruptible(intel_ipts.dev);
