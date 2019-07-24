@@ -3,9 +3,9 @@ From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
 Date: Tue, 5 Mar 2019 20:37:23 +0900
 Subject: [PATCH] ipts: revert suspend/resume mechanism
 
-The suspend/resume mechanism was introduced on commit a3a3ed3.
-If I recall correctly, This change was intended for hibernation.
-Because I don't use hibernation and I don't want to remove ipts
+The suspend/resume mechanism was introduced on commit a3a3ed3
+to fix touch inputs lost after suspend/hibernation.
+Because I don't have this issue and I don't want to remove ipts
 module before suspend like this systemd/system-sleep/sleep on
 jakeday repository, I revert this commit.
 
@@ -14,7 +14,14 @@ References:
 https://github.com/jakeday/linux-surface/commit/a3a3ed3dc433ed3b654669bfb57089e32d7077eb
 ・systemd/system-sleep/sleep - linux-surface/sleep at 5.1.15-1 · jakeday/linux-surface
 https://github.com/jakeday/linux-surface/blob/5.1.15-1/root/lib/systemd/system-sleep/sleep
-・Can't wake up from suspend using lid or power button · Issue #381 · jakeday/linux-surface
+
+・ Touchscreen (irrecoverably) lost after suspend/hibernate · Issue #270 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/270
+・ [SP4] Hibernate doesn't turn off computer · Issue #320 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/320
+・ [SP 5 (2017), kernel 4.18.20]: System freeze after resuming from hibernate · Issue #310 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/310
+・ Can't wake up from suspend using lid or power button · Issue #381 · jakeday/linux-surface
 https://github.com/jakeday/linux-surface/issues/381
 
 ---
