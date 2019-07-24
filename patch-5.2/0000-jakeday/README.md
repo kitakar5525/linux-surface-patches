@@ -20,7 +20,7 @@
 - [drm/i915: Store the BIT(engine->id) as the engine's mask · torvalds/linux@8a68d46](https://github.com/torvalds/linux/commit/8a68d464366efb5b294fa11ccf23b51306cc2695)
 
 ### `to_intel_context()` is not available anymore
-- I used `intel_context_pin_lock()` instead
+- Candidate is `intel_context_pin()` or `intel_context_pin_lock()`
 
 - [drm/i915: Move over to intel_context_lookup() · torvalds/linux@c4d52fe](https://github.com/torvalds/linux/commit/c4d52feb2c46ddcdde4058cf03f8b9eb996bb09b)
 
