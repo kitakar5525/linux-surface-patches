@@ -1,13 +1,18 @@
-From 8e2b654b2a118c29b6d17f074bf52e1a8f8da014 Mon Sep 17 00:00:00 2001
+From 18248373b6f536fdc583ddf7ee36bf41b5ede3f7 Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Thu, 20 Jun 2019 16:19:15 +0900
 Subject: [PATCH] ipts: add debugfs entries
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 Add debugfs entries:
 ・ quiesce_io_cmd
 ・ clear_mem_window_cmd
 ・ debug
 ・ ipts_restart
+・ ipts_stop
+・ ipts_start
 
 quiesce_io_cmd, clear_mem_window_cmd and ipts_restart usage:
 ```
@@ -22,12 +27,12 @@ $ sudo cat /sys/kernel/debug/ipts/debug
 >> == WQ h:784, t:784 ==
 ```
 ---
- drivers/misc/ipts/ipts-dbgfs.c       | 148 +++++++++++++++++++++++++++
+ drivers/misc/ipts/ipts-dbgfs.c       | 212 +++++++++++++++++++++++++++
  drivers/misc/ipts/ipts-msg-handler.h |   1 +
- 2 files changed, 149 insertions(+)
+ 2 files changed, 213 insertions(+)
 
 diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
-index 1c5c92f7d..232ac9bd7 100644
+index 1c5c92f7d..7581b21f8 100644
 --- a/drivers/misc/ipts/ipts-dbgfs.c
 +++ b/drivers/misc/ipts/ipts-dbgfs.c
 @@ -20,9 +20,13 @@
@@ -44,7 +49,7 @@ index 1c5c92f7d..232ac9bd7 100644
  
  static ssize_t ipts_dbgfs_mode_read(struct file *fp, char __user *ubuf,
  						size_t cnt, loff_t *ppos)
-@@ -112,6 +116,122 @@ static const struct file_operations ipts_status_dbgfs_fops = {
+@@ -112,6 +116,172 @@ static const struct file_operations ipts_status_dbgfs_fops = {
          .llseek = generic_file_llseek,
  };
  
@@ -164,10 +169,60 @@ index 1c5c92f7d..232ac9bd7 100644
 +        .llseek = generic_file_llseek,
 +};
 +
++static ssize_t ipts_dbgfs_ipts_stop_write(struct file *fp, const char __user *ubuf,
++						size_t cnt, loff_t *ppos)
++{
++	ipts_info_t *ipts = fp->private_data;
++	bool result;
++	int rc;
++
++	rc = kstrtobool_from_user(ubuf, cnt, &result);
++	if (rc)
++		return rc;
++
++	if (!result)
++		return -EINVAL;
++
++	ipts_stop(ipts);
++
++	return cnt;
++}
++
++static const struct file_operations ipts_ipts_stop_dbgfs_fops = {
++        .open = simple_open,
++        .write = ipts_dbgfs_ipts_stop_write,
++        .llseek = generic_file_llseek,
++};
++
++static ssize_t ipts_dbgfs_ipts_start_write(struct file *fp, const char __user *ubuf,
++						size_t cnt, loff_t *ppos)
++{
++	ipts_info_t *ipts = fp->private_data;
++	bool result;
++	int rc;
++
++	rc = kstrtobool_from_user(ubuf, cnt, &result);
++	if (rc)
++		return rc;
++
++	if (!result)
++		return -EINVAL;
++
++	ipts_start(ipts);
++
++	return cnt;
++}
++
++static const struct file_operations ipts_ipts_start_dbgfs_fops = {
++        .open = simple_open,
++        .write = ipts_dbgfs_ipts_start_write,
++        .llseek = generic_file_llseek,
++};
++
  void ipts_dbgfs_deregister(ipts_info_t* ipts)
  {
  	if (!ipts->dbgfs_dir)
-@@ -143,6 +263,34 @@ int ipts_dbgfs_register(ipts_info_t* ipts, const char *name)
+@@ -143,6 +313,48 @@ int ipts_dbgfs_register(ipts_info_t* ipts, const char *name)
                  goto err;
          }
  
@@ -192,10 +247,24 @@ index 1c5c92f7d..232ac9bd7 100644
 +                goto err;
 +        }
 +
-+		f = debugfs_create_file("ipts_restart", S_IWUSR, dir,
++        f = debugfs_create_file("ipts_restart", S_IWUSR, dir,
 +                                ipts, &ipts_ipts_restart_dbgfs_fops);
 +        if (!f) {
 +                ipts_err(ipts, "debugfs ipts_restart creation failed\n");
++                goto err;
++        }
++
++        f = debugfs_create_file("ipts_stop", S_IWUSR, dir,
++                                ipts, &ipts_ipts_stop_dbgfs_fops);
++        if (!f) {
++                ipts_err(ipts, "debugfs ipts_stop creation failed\n");
++                goto err;
++        }
++
++        f = debugfs_create_file("ipts_start", S_IWUSR, dir,
++                                ipts, &ipts_ipts_start_dbgfs_fops);
++        if (!f) {
++                ipts_err(ipts, "debugfs ipts_start creation failed\n");
 +                goto err;
 +        }
 +
