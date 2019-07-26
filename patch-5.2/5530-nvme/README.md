@@ -1,6 +1,4 @@
-I almost forgot to mention, I announce here there is also an update to 0002-suspend.patch of NVMe part.
-
-### Update patch set for issue "NVMe breaks suspend (s2idle)" and "SSD heating while suspend"
+# Update patch set for issue "NVMe breaks suspend (s2idle)" and "SSD heating while suspend"
 
 For 5.2
 - (Revert the patch 0000-jakeday/0002-suspend.patch of nvme part first
