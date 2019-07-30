@@ -1,8 +1,7 @@
 # Update patch set for issue "NVMe breaks suspend (s2idle)" and "SSD heating while suspend"
 
 For 5.2
-- (Revert the patch 0000-jakeday/0002-suspend.patch of nvme part first
-to apply this patch set)
+- (Revert NVMe part of 0002-suspend.patch first to apply this patch set)
 - [nvme: export get and set features · torvalds/linux@1a87ee6](https://github.com/torvalds/linux/commit/1a87ee657c530bb2f3e39e4ac184d48f5f959cda)
 - [nvme-pci: use host managed power state for suspend · torvalds/linux@d916b1b](https://github.com/torvalds/linux/commit/d916b1be94b6dc8d293abed2451f3062f6af7551#diff-bc4c090f021c046a7d256a3fcf86b7da)
 
