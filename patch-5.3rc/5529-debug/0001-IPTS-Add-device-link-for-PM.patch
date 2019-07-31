@@ -1,0 +1,103 @@
+From 88eeef9bff8522ebaf8e4d2b92dc4a013ba45e52 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Sat, 27 Jul 2019 16:34:09 +0900
+Subject: [PATCH 1/2] IPTS: Add device link for PM (Power Management)
+
+This commit may fix errors on ipts_stop (intel_ipts module removing,
+ME side) and intel_ipts_cleanup (i915 module side) and ensure
+dependency between ME (Intel Management Engine) and i915 on the PM side.
+
+References
+- IPTS: Add device link for PM · qzed/linux-surface@9338dc4
+https://github.com/qzed/linux-surface/commit/9338dc4d1c2d14f9622af7d3a55b0a9efa50ba1c#diff-e7af621fb63905d8174510a6e676197b
+---
+ drivers/gpu/drm/i915/intel_ipts.c | 38 +++++++++++++++++--------------
+ drivers/misc/ipts/ipts-gfx.c      |  1 +
+ include/linux/intel_ipts_if.h     |  1 +
+ 3 files changed, 23 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
+index efc9607f6..5d9145ac2 100644
+--- a/drivers/gpu/drm/i915/intel_ipts.c
++++ b/drivers/gpu/drm/i915/intel_ipts.c
+@@ -496,32 +496,36 @@ static int intel_ipts_unmap_buffer(uint64_t gfx_handle, uint64_t buf_handle)
+ 
+ int intel_ipts_connect(intel_ipts_connect_t *ipts_connect)
+ {
++	u32 flags = DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_CONSUMER;
+ 	struct drm_i915_private *dev_priv = to_i915(intel_ipts.dev);
+-	int ret = 0;
+ 
+ 	if (!intel_ipts.initialized)
+ 		return -EIO;
+ 
+-	if (ipts_connect && ipts_connect->if_version <=
+-					SUPPORTED_IPTS_INTERFACE_VERSION) {
++	if (!ipts_connect)
++		return -EINVAL;
+ 
+-		/* return gpu operations for ipts */
+-		ipts_connect->ipts_ops.get_wq_info = intel_ipts_get_wq_info;
+-		ipts_connect->ipts_ops.map_buffer = intel_ipts_map_buffer;
+-		ipts_connect->ipts_ops.unmap_buffer = intel_ipts_unmap_buffer;
+-		ipts_connect->gfx_version = INTEL_INFO(dev_priv)->gen;
+-		ipts_connect->gfx_handle = (uint64_t)&intel_ipts;
++	if (ipts_connect->if_version > SUPPORTED_IPTS_INTERFACE_VERSION)
++		return -EINVAL;
+ 
+-		/* save callback and data */
+-		intel_ipts.data = ipts_connect->data;
+-		intel_ipts.ipts_clbks = ipts_connect->ipts_cb;
++	/* set up device-link for PM */
++	if (!device_link_add(ipts_connect->client, intel_ipts.dev->dev, flags))
++		return -EFAULT;
+ 
+-		intel_ipts.connected = true;
+-	} else {
+-		ret = -EINVAL;
+-	}
++	/* return gpu operations for ipts */
++	ipts_connect->ipts_ops.get_wq_info = intel_ipts_get_wq_info;
++	ipts_connect->ipts_ops.map_buffer = intel_ipts_map_buffer;
++	ipts_connect->ipts_ops.unmap_buffer = intel_ipts_unmap_buffer;
++	ipts_connect->gfx_version = INTEL_INFO(dev_priv)->gen;
++	ipts_connect->gfx_handle = (uint64_t)&intel_ipts;
+ 
+-	return ret;
++	/* save callback and data */
++	intel_ipts.data = ipts_connect->data;
++	intel_ipts.ipts_clbks = ipts_connect->ipts_cb;
++
++	intel_ipts.connected = true;
++
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(intel_ipts_connect);
+ 
+diff --git a/drivers/misc/ipts/ipts-gfx.c b/drivers/misc/ipts/ipts-gfx.c
+index 51727770e..4989a2222 100644
+--- a/drivers/misc/ipts/ipts-gfx.c
++++ b/drivers/misc/ipts/ipts-gfx.c
+@@ -46,6 +46,7 @@ static int connect_gfx(ipts_info_t *ipts)
+ 	int ret = 0;
+ 	intel_ipts_connect_t ipts_connect;
+ 
++	ipts_connect.client = ipts->cldev->dev.parent;
+ 	ipts_connect.if_version = IPTS_INTERFACE_V1;
+ 	ipts_connect.ipts_cb.workload_complete = gfx_processing_complete;
+ 	ipts_connect.ipts_cb.notify_gfx_status = notify_gfx_status;
+diff --git a/include/linux/intel_ipts_if.h b/include/linux/intel_ipts_if.h
+index f329bbfb8..bad44fb4f 100644
+--- a/include/linux/intel_ipts_if.h
++++ b/include/linux/intel_ipts_if.h
+@@ -60,6 +60,7 @@ typedef struct intel_ipts_callback {
+ } intel_ipts_callback_t;
+ 
+ typedef struct intel_ipts_connect {
++	struct device *client;		/* input : client device for PM setup */
+         intel_ipts_callback_t ipts_cb;	/* input : callback addresses */
+ 	void *data;			/* input : callback data */
+         u32 if_version;			/* input : interface version */
+-- 
+2.22.0
+
