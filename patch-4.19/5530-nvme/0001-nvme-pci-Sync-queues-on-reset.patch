@@ -1,7 +1,7 @@
-From b3197a5fa029d9e25a7f088f6bdbd3cd22876881 Mon Sep 17 00:00:00 2001
+From f5b8d6792f254df3296aea1a2e7a594e95b7259d Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 11 Jul 2019 09:13:33 +0900
-Subject: [PATCH 1/4] nvme-pci: Sync queues on reset
+Date: Wed, 31 Jul 2019 08:33:13 +0900
+Subject: [PATCH 1/3] nvme-pci: Sync queues on reset
 
 A controller with multiple namespaces may have multiple request_queues with
 their own timeout work. If a controller fails with IO outstanding to
@@ -9,7 +9,13 @@ diffent namespaces, each request queue may attempt to handle it, so
 ensure there is no previously scheduled timeout work executing prior to
 starting controller initialization by synchronizing with each queue.
 
+Reviewed-by: Minwoo Im <minwoo.im.dev@gmail.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Keith Busch <keith.busch@intel.com>
+
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Ported to 4.19
 ---
  drivers/nvme/host/core.c | 12 ++++++++++++
  drivers/nvme/host/nvme.h |  1 +
@@ -17,10 +23,10 @@ Signed-off-by: Keith Busch <keith.busch@intel.com>
  3 files changed, 14 insertions(+)
 
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index d8869d97..b4010781 100644
+index e26d1191c..d0137bd43 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
-@@ -3554,6 +3554,18 @@ static void nvme_free_ctrl(struct device *dev)
+@@ -3556,6 +3556,18 @@ static void nvme_free_ctrl(struct device *dev)
  		nvme_put_subsystem(subsys);
  }
  
@@ -40,7 +46,7 @@ index d8869d97..b4010781 100644
   * Initialize a NVMe controller structures.  This needs to be called during
   * earliest initialization so that we have the initialized structured around
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index e82cdaec..60d823c5 100644
+index e82cdaec8..60d823c59 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -433,6 +433,7 @@ void nvme_complete_async_event(struct nvme_ctrl *ctrl, __le16 status,
@@ -52,10 +58,10 @@ index e82cdaec..60d823c5 100644
  void nvme_wait_freeze(struct nvme_ctrl *ctrl);
  void nvme_wait_freeze_timeout(struct nvme_ctrl *ctrl, long timeout);
 diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index c8eeecc5..3b4e0648 100644
+index 0a5d064f8..c975421f2 100644
 --- a/drivers/nvme/host/pci.c
 +++ b/drivers/nvme/host/pci.c
-@@ -2265,6 +2265,7 @@ static void nvme_reset_work(struct work_struct *work)
+@@ -2267,6 +2267,7 @@ static void nvme_reset_work(struct work_struct *work)
  	 */
  	if (dev->ctrl.ctrl_config & NVME_CC_ENABLE)
  		nvme_dev_disable(dev, false);
