@@ -2,6 +2,10 @@
 
 From [jakeday/linux-surface: Linux Kernel for Surface Devices](https://github.com/jakeday/linux-surface) commit 67bd6e23acc189099c10fe55a448980223863449, which is the last commit with support 4.18.
 
+## Changes from jakeday
+
+- Add `__set_bit(INPUT_PROP_DIRECT, hi->input->propbit);` into `case HID_DG_STYLUS`
+
 ## IPTS changes from 4.17 to 4.18
 
 ```diff

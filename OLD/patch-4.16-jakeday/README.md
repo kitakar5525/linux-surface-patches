@@ -2,7 +2,12 @@
 
 From [jakeday/linux-surface: Linux Kernel for Surface Devices](https://github.com/jakeday/linux-surface) commit 6bbdaf3679e2c1be7eb1fcf8362c5e53741c468c, which is the last commit with support 4.14 to 4.17.
 
-# IPTS changes from 4.15 to 4.16
+## Changes made by jakeday
+
+- Add error check to `intel_guc_sample_forcewake` and `create_doorbell`
+- Reverted back from `IS_SKYLAKE(dev_priv) || IS_KABYLAKE(dev_priv) ? GUC_CLIENT_PRIORITY_HIGH : GUC_CLIENT_PRIORITY_NORMAL,` to `GUC_CLIENT_PRIORITY_NORMAL,` because it is not compatible with 4.16+ yet. (changed again in 4.19)
+
+## IPTS changes from 4.15 to 4.16
 
 ```diff
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c

@@ -1,6 +1,34 @@
 # IPTS patch changes from 4.18 to 4.19
 
+## changes by jakeday
+- in `mt_input_mapped`
+```diff
++	if (field->application == HID_DG_TOUCHSCREEN ||
++			field->application == HID_DG_TOUCHPAD) {
++		if (usage->type == EV_KEY || usage->type == EV_ABS)
++			set_bit(usage->type, hi->input->evbit);
++
++		return -1;
++	}
+```
+
+- changes was made to use `IS_SKYLAKE(dev_priv) || IS_KABYLAKE(dev_priv) ? GUC_CLIENT_PRIORITY_HIGH : GUC_CLIENT_PRIORITY_NORMAL,` instead of `GUC_CLIENT_PRIORITY_NORMAL,`
+
 diff from commit `67bd6e23acc189099c10fe55a448980223863449`
+
+- in `intel_ipts_cleanup`
+```diff
++			struct i915_vma *vma, *vn;
++
++			list_for_each_entry_safe(vma, vn,
++						 &obj->list, obj_link) {
++				vma->flags &= ~I915_VMA_PIN_MASK;
++				i915_vma_destroy(vma);
++			}
++
+```
+
+- introduced `intel_ipts_resume` and `intel_ipts_suspend`
 
 ```diff
 diff --git a/drivers/gpu/drm/i915/i915_gem_context.c b/drivers/gpu/drm/i915/i915_gem_context.c
