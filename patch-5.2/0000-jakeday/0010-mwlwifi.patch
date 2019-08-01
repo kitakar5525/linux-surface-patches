@@ -1,7 +1,7 @@
-From f04d413e4e627349abbdfca77d3cd5298bd904bb Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Thu, 27 Jun 2019 12:00:56 -0400
-Subject: [PATCH 10/11] mwlwifi
+From 16181905a434e631631ec7a404036a6dd8103c30 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:47:02 +0200
+Subject: [PATCH 10/12] mwlwifi
 
 ---
  drivers/net/wireless/marvell/Kconfig          |    1 +
@@ -85,7 +85,7 @@ Subject: [PATCH 10/11] mwlwifi
  create mode 100644 drivers/net/wireless/marvell/mwlwifi/vendor_cmd.h
 
 diff --git a/drivers/net/wireless/marvell/Kconfig b/drivers/net/wireless/marvell/Kconfig
-index dff82fdbe..c0790dbd5 100644
+index dff82fdbea78..c0790dbd52c0 100644
 --- a/drivers/net/wireless/marvell/Kconfig
 +++ b/drivers/net/wireless/marvell/Kconfig
 @@ -15,6 +15,7 @@ if WLAN_VENDOR_MARVELL
@@ -97,7 +97,7 @@ index dff82fdbe..c0790dbd5 100644
  config MWL8K
  	tristate "Marvell 88W8xxx PCI/PCIe Wireless support"
 diff --git a/drivers/net/wireless/marvell/Makefile b/drivers/net/wireless/marvell/Makefile
-index 25f6d5d2f..00fccce28 100644
+index 25f6d5d2fa0c..00fccce28cdd 100644
 --- a/drivers/net/wireless/marvell/Makefile
 +++ b/drivers/net/wireless/marvell/Makefile
 @@ -3,5 +3,6 @@ obj-$(CONFIG_LIBERTAS)		+= libertas/
@@ -109,7 +109,7 @@ index 25f6d5d2f..00fccce28 100644
  obj-$(CONFIG_MWL8K)	+= mwl8k.o
 diff --git a/drivers/net/wireless/marvell/mwlwifi/Kconfig b/drivers/net/wireless/marvell/mwlwifi/Kconfig
 new file mode 100644
-index 000000000..a9bcb9cd4
+index 000000000000..a9bcb9cd4100
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/Kconfig
 @@ -0,0 +1,23 @@
@@ -138,7 +138,7 @@ index 000000000..a9bcb9cd4
 +
 diff --git a/drivers/net/wireless/marvell/mwlwifi/Makefile b/drivers/net/wireless/marvell/mwlwifi/Makefile
 new file mode 100644
-index 000000000..061833703
+index 000000000000..061833703c7f
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/Makefile
 @@ -0,0 +1,19 @@
@@ -163,7 +163,7 @@ index 000000000..061833703
 +ccflags-y += -D__CHECK_ENDIAN__
 diff --git a/drivers/net/wireless/marvell/mwlwifi/Makefile.module b/drivers/net/wireless/marvell/mwlwifi/Makefile.module
 new file mode 100644
-index 000000000..d11a1b88c
+index 000000000000..d11a1b88cab6
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/Makefile.module
 @@ -0,0 +1,28 @@
@@ -197,7 +197,7 @@ index 000000000..d11a1b88c
 +	find . -name "*.o" -exec rm -f {} \;
 diff --git a/drivers/net/wireless/marvell/mwlwifi/README.md b/drivers/net/wireless/marvell/mwlwifi/README.md
 new file mode 100644
-index 000000000..788c5d4dc
+index 000000000000..788c5d4dc80d
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/README.md
 @@ -0,0 +1,142 @@
@@ -345,7 +345,7 @@ index 000000000..788c5d4dc
 +    ```
 diff --git a/drivers/net/wireless/marvell/mwlwifi/core.c b/drivers/net/wireless/marvell/mwlwifi/core.c
 new file mode 100644
-index 000000000..9d2b55116
+index 000000000000..9d2b5511607e
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/core.c
 @@ -0,0 +1,1086 @@
@@ -1437,7 +1437,7 @@ index 000000000..9d2b55116
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/core.h b/drivers/net/wireless/marvell/mwlwifi/core.h
 new file mode 100644
-index 000000000..00069c4f0
+index 000000000000..00069c4f0b44
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/core.h
 @@ -0,0 +1,517 @@
@@ -1960,7 +1960,7 @@ index 000000000..00069c4f0
 +#endif /* _CORE_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/debugfs.c b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
 new file mode 100644
-index 000000000..e375806a7
+index 000000000000..e375806a7111
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/debugfs.c
 @@ -0,0 +1,2201 @@
@@ -4167,7 +4167,7 @@ index 000000000..e375806a7
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/debugfs.h b/drivers/net/wireless/marvell/mwlwifi/debugfs.h
 new file mode 100644
-index 000000000..e7595f563
+index 000000000000..e7595f563348
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/debugfs.h
 @@ -0,0 +1,24 @@
@@ -4197,7 +4197,7 @@ index 000000000..e7595f563
 +#endif /* _MWL_DEBUGFS_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
 new file mode 100644
-index 000000000..ff943d6fe
+index 000000000000..ff943d6fe447
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.c
 @@ -0,0 +1,3852 @@
@@ -8055,7 +8055,7 @@ index 000000000..ff943d6fe
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.h b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.h
 new file mode 100644
-index 000000000..9565cc447
+index 000000000000..9565cc447dc6
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/fwcmd.h
 @@ -0,0 +1,285 @@
@@ -8346,7 +8346,7 @@ index 000000000..9565cc447
 +#endif /* _FWCMD_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/hif-ops.h b/drivers/net/wireless/marvell/mwlwifi/hif/hif-ops.h
 new file mode 100644
-index 000000000..f5c7144b3
+index 000000000000..f5c7144b3c1b
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/hif-ops.h
 @@ -0,0 +1,297 @@
@@ -8649,7 +8649,7 @@ index 000000000..f5c7144b3
 +#endif /* _HIF_OPS_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/hif.h b/drivers/net/wireless/marvell/mwlwifi/hif/hif.h
 new file mode 100644
-index 000000000..6ea6192ac
+index 000000000000..6ea6192ac5e0
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/hif.h
 @@ -0,0 +1,81 @@
@@ -8736,7 +8736,7 @@ index 000000000..6ea6192ac
 +#endif /* _HIF_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/hostcmd.h b/drivers/net/wireless/marvell/mwlwifi/hif/hostcmd.h
 new file mode 100644
-index 000000000..b14f161f1
+index 000000000000..b14f161f1410
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/hostcmd.h
 @@ -0,0 +1,1285 @@
@@ -10027,7 +10027,7 @@ index 000000000..b14f161f1
 +#endif /* _HOSTCMD_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/dev.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/dev.h
 new file mode 100644
-index 000000000..2c26bff80
+index 000000000000..2c26bff80683
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/dev.h
 @@ -0,0 +1,1032 @@
@@ -11065,7 +11065,7 @@ index 000000000..2c26bff80
 +#endif /* _DEV_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.c
 new file mode 100644
-index 000000000..939ed5413
+index 000000000000..939ed54133c7
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.c
 @@ -0,0 +1,274 @@
@@ -11345,7 +11345,7 @@ index 000000000..939ed5413
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.h
 new file mode 100644
-index 000000000..36a3311aa
+index 000000000000..36a3311aa678
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/fwdl.h
 @@ -0,0 +1,24 @@
@@ -11375,7 +11375,7 @@ index 000000000..36a3311aa
 +#endif /* _FWDL_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
 new file mode 100644
-index 000000000..da55913c0
+index 000000000000..da55913c0570
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/pcie.c
 @@ -0,0 +1,1645 @@
@@ -13026,7 +13026,7 @@ index 000000000..da55913c0
 +MODULE_DEVICE_TABLE(pci, pcie_id_tbl);
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.c
 new file mode 100644
-index 000000000..25076c6d6
+index 000000000000..25076c6d66df
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.c
 @@ -0,0 +1,540 @@
@@ -13572,7 +13572,7 @@ index 000000000..25076c6d6
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.h
 new file mode 100644
-index 000000000..d2b580fce
+index 000000000000..d2b580fceb0a
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx.h
 @@ -0,0 +1,25 @@
@@ -13603,7 +13603,7 @@ index 000000000..d2b580fce
 +#endif /* _RX_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.c
 new file mode 100644
-index 000000000..d1ede588b
+index 000000000000..d1ede588b4c1
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.c
 @@ -0,0 +1,612 @@
@@ -14221,7 +14221,7 @@ index 000000000..d1ede588b
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.h
 new file mode 100644
-index 000000000..7e83cedf4
+index 000000000000..7e83cedf4351
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/rx_ndp.h
 @@ -0,0 +1,26 @@
@@ -14253,7 +14253,7 @@ index 000000000..7e83cedf4
 +#endif /* _RX_NDP_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/sc4_ddr.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/sc4_ddr.h
 new file mode 100644
-index 000000000..2da0257ac
+index 000000000000..2da0257accba
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/sc4_ddr.h
 @@ -0,0 +1,965 @@
@@ -15224,7 +15224,7 @@ index 000000000..2da0257ac
 +};
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
 new file mode 100644
-index 000000000..dd77589ef
+index 000000000000..dd77589ef5a6
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.c
 @@ -0,0 +1,1396 @@
@@ -16626,7 +16626,7 @@ index 000000000..dd77589ef
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.h
 new file mode 100644
-index 000000000..c233ba1aa
+index 000000000000..c233ba1aaa9d
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx.h
 @@ -0,0 +1,38 @@
@@ -16670,7 +16670,7 @@ index 000000000..c233ba1aa
 +#endif /* _TX_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
 new file mode 100644
-index 000000000..6758cde36
+index 000000000000..6758cde363c6
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.c
 @@ -0,0 +1,693 @@
@@ -17369,7 +17369,7 @@ index 000000000..6758cde36
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.h b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.h
 new file mode 100644
-index 000000000..2ad5f381b
+index 000000000000..2ad5f381b9ee
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hif/pcie/tx_ndp.h
 @@ -0,0 +1,30 @@
@@ -17405,7 +17405,7 @@ index 000000000..2ad5f381b
 +#endif /* _TX_NDP_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hostapd/700-interoperability-workaround-for-80+80-and-160-MHz-channels b/drivers/net/wireless/marvell/mwlwifi/hostapd/700-interoperability-workaround-for-80+80-and-160-MHz-channels
 new file mode 100644
-index 000000000..adadd2e4d
+index 000000000000..adadd2e4d8d4
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hostapd/700-interoperability-workaround-for-80+80-and-160-MHz-channels
 @@ -0,0 +1,32 @@
@@ -17443,7 +17443,7 @@ index 000000000..adadd2e4d
 + 	oper->vht_basic_mcs_set = host_to_le16(0xfffc);
 diff --git a/drivers/net/wireless/marvell/mwlwifi/hostapd/README b/drivers/net/wireless/marvell/mwlwifi/hostapd/README
 new file mode 100644
-index 000000000..a5fb2b68d
+index 000000000000..a5fb2b68d3d3
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/hostapd/README
 @@ -0,0 +1,26 @@
@@ -17475,7 +17475,7 @@ index 000000000..a5fb2b68d
 +    Signed-off-by: Jouni Malinen jouni@qca.qualcomm.com
 diff --git a/drivers/net/wireless/marvell/mwlwifi/mac80211.c b/drivers/net/wireless/marvell/mwlwifi/mac80211.c
 new file mode 100644
-index 000000000..725dec0f6
+index 000000000000..725dec0f604b
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/mac80211.c
 @@ -0,0 +1,933 @@
@@ -18414,7 +18414,7 @@ index 000000000..725dec0f6
 +};
 diff --git a/drivers/net/wireless/marvell/mwlwifi/mu_mimo.c b/drivers/net/wireless/marvell/mwlwifi/mu_mimo.c
 new file mode 100644
-index 000000000..74ab054f9
+index 000000000000..74ab054f947e
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/mu_mimo.c
 @@ -0,0 +1,21 @@
@@ -18441,7 +18441,7 @@ index 000000000..74ab054f9
 +
 diff --git a/drivers/net/wireless/marvell/mwlwifi/mu_mimo.h b/drivers/net/wireless/marvell/mwlwifi/mu_mimo.h
 new file mode 100644
-index 000000000..24179f404
+index 000000000000..24179f404774
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/mu_mimo.h
 @@ -0,0 +1,23 @@
@@ -18470,7 +18470,7 @@ index 000000000..24179f404
 +#endif /* _MU_MIMO_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/sysadpt.h b/drivers/net/wireless/marvell/mwlwifi/sysadpt.h
 new file mode 100644
-index 000000000..1194e5271
+index 000000000000..1194e5271870
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/sysadpt.h
 @@ -0,0 +1,86 @@
@@ -18562,7 +18562,7 @@ index 000000000..1194e5271
 +#endif /* _SYSADPT_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/thermal.c b/drivers/net/wireless/marvell/mwlwifi/thermal.c
 new file mode 100644
-index 000000000..7c59def51
+index 000000000000..7c59def51e7f
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/thermal.c
 @@ -0,0 +1,182 @@
@@ -18750,7 +18750,7 @@ index 000000000..7c59def51
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/thermal.h b/drivers/net/wireless/marvell/mwlwifi/thermal.h
 new file mode 100644
-index 000000000..c7f0ad2b8
+index 000000000000..c7f0ad2b87eb
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/thermal.h
 @@ -0,0 +1,42 @@
@@ -18798,7 +18798,7 @@ index 000000000..c7f0ad2b8
 +#endif /* _THERMAL_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/utils.c b/drivers/net/wireless/marvell/mwlwifi/utils.c
 new file mode 100644
-index 000000000..b73054a3f
+index 000000000000..b73054a3f55e
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/utils.c
 @@ -0,0 +1,576 @@
@@ -19380,7 +19380,7 @@ index 000000000..b73054a3f
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/utils.h b/drivers/net/wireless/marvell/mwlwifi/utils.h
 new file mode 100644
-index 000000000..4a292e990
+index 000000000000..4a292e990412
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/utils.h
 @@ -0,0 +1,158 @@
@@ -19544,7 +19544,7 @@ index 000000000..4a292e990
 +#endif /* _UTILS_H_ */
 diff --git a/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.c b/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.c
 new file mode 100644
-index 000000000..3e26fc42c
+index 000000000000..3e26fc42c225
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.c
 @@ -0,0 +1,136 @@
@@ -19686,7 +19686,7 @@ index 000000000..3e26fc42c
 +}
 diff --git a/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.h b/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.h
 new file mode 100644
-index 000000000..b6fdf70c2
+index 000000000000..b6fdf70c22fb
 --- /dev/null
 +++ b/drivers/net/wireless/marvell/mwlwifi/vendor_cmd.h
 @@ -0,0 +1,60 @@

@@ -1,6 +1,6 @@
-From 7244a3e77fa6eedaac424a66966976bb855f43e2 Mon Sep 17 00:00:00 2001
+From 86187d6525d976c68415699fa64f5b8428cf0867 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 25 Jul 2019 06:20:51 +0900
+Date: Fri, 2 Aug 2019 00:14:57 +0900
 Subject: [PATCH] i915: ipts: add debugfs entry for chromeos-4.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8

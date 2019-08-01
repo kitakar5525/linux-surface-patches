@@ -1,20 +1,20 @@
-From 94a6aaea9b59c035c688b480e00e46efeab5db87 Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Thu, 27 Jun 2019 11:59:15 -0400
-Subject: [PATCH 01/11] surface-acpi
+From 9b98d8261c388ab7b8b890f621f1987d6412d774 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:44:14 +0200
+Subject: [PATCH 01/12] surface-acpi
 
 ---
  drivers/acpi/acpica/dsopcode.c      |    2 +-
  drivers/acpi/acpica/exfield.c       |   12 +-
  drivers/platform/x86/Kconfig        |   97 +
  drivers/platform/x86/Makefile       |    1 +
- drivers/platform/x86/surface_acpi.c | 3828 +++++++++++++++++++++++++++
+ drivers/platform/x86/surface_acpi.c | 3908 +++++++++++++++++++++++++++
  drivers/tty/serdev/core.c           |   90 +-
- 6 files changed, 4024 insertions(+), 6 deletions(-)
+ 6 files changed, 4104 insertions(+), 6 deletions(-)
  create mode 100644 drivers/platform/x86/surface_acpi.c
 
 diff --git a/drivers/acpi/acpica/dsopcode.c b/drivers/acpi/acpica/dsopcode.c
-index 10f32b626..7b2a4987f 100644
+index 10f32b62608e..7b2a4987f050 100644
 --- a/drivers/acpi/acpica/dsopcode.c
 +++ b/drivers/acpi/acpica/dsopcode.c
 @@ -123,7 +123,7 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
@@ -27,7 +27,7 @@ index 10f32b626..7b2a4987f 100644
  		bit_count = (u32) length_desc->integer.value;
  
 diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index d3d2dbfba..0b7f617a6 100644
+index d3d2dbfba680..0b7f617a6e9b 100644
 --- a/drivers/acpi/acpica/exfield.c
 +++ b/drivers/acpi/acpica/exfield.c
 @@ -109,6 +109,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
@@ -59,7 +59,7 @@ index d3d2dbfba..0b7f617a6 100644
  		buffer_desc = acpi_ut_create_buffer_object(buffer_length);
  		if (!buffer_desc) {
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 5d5cc6111..4fefae580 100644
+index 5d5cc6111081..4fefae580dec 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -623,6 +623,103 @@ config THINKPAD_ACPI_HOTKEY_POLL
@@ -167,7 +167,7 @@ index 5d5cc6111..4fefae580 100644
  	tristate "Thinkpad Hard Drive Active Protection System (hdaps)"
  	depends on INPUT
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index 87b0069bd..8b12c19dc 100644
+index 87b0069bd781..8b12c19dc165 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -39,6 +39,7 @@ obj-$(CONFIG_TC1100_WMI)	+= tc1100-wmi.o
@@ -180,10 +180,10 @@ index 87b0069bd..8b12c19dc 100644
  obj-$(CONFIG_FUJITSU_TABLET)	+= fujitsu-tablet.o
 diff --git a/drivers/platform/x86/surface_acpi.c b/drivers/platform/x86/surface_acpi.c
 new file mode 100644
-index 000000000..b57ab7111
+index 000000000000..a17538905642
 --- /dev/null
 +++ b/drivers/platform/x86/surface_acpi.c
-@@ -0,0 +1,3828 @@
+@@ -0,0 +1,3908 @@
 +#include <asm/unaligned.h>
 +#include <linux/acpi.h>
 +#include <linux/completion.h>
@@ -272,8 +272,7 @@ index 000000000..b57ab7111
 +typedef int (*surfacegen5_ec_event_handler_fn)(struct surfacegen5_event *event, void *data);
 +typedef unsigned long (*surfacegen5_ec_event_handler_delay)(struct surfacegen5_event *event, void *data);
 +
-+struct device_link *surfacegen5_ec_consumer_add(struct device *consumer, u32 flags);
-+int surfacegen5_ec_consumer_remove(struct device_link *link);
++int surfacegen5_ec_consumer_register(struct device *consumer);
 +
 +int surfacegen5_ec_rqst(const struct surfacegen5_rqst *rqst, struct surfacegen5_buf *result);
 +
@@ -534,30 +533,21 @@ index 000000000..b57ab7111
 +	return ec;
 +}
 +
-+struct device_link *surfacegen5_ec_consumer_add(struct device *consumer, u32 flags)
++int surfacegen5_ec_consumer_register(struct device *consumer)
 +{
++	u32 flags = DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_CONSUMER;
 +	struct surfacegen5_ec *ec;
 +	struct device_link *link;
 +
 +	ec = surfacegen5_ec_acquire_init();
 +	if (!ec) {
-+		return ERR_PTR(-ENXIO);
-+	}
-+
-+	link = device_link_add(consumer, &ec->serdev->dev, flags);
-+
-+	surfacegen5_ec_release(ec);
-+	return link;
-+}
-+
-+int surfacegen5_ec_consumer_remove(struct device_link *link)
-+{
-+	struct surfacegen5_ec *ec = surfacegen5_ec_acquire_init();
-+	if (!ec) {
 +		return -ENXIO;
 +	}
 +
-+	device_link_del(link);
++	link = device_link_add(consumer, &ec->serdev->dev, flags);
++	if (!link) {
++		return -EFAULT;
++	}
 +
 +	surfacegen5_ec_release(ec);
 +	return 0;
@@ -2057,15 +2047,19 @@ index 000000000..b57ab7111
 +	struct device *dev;
 +};
 +
++struct surfacegen5_san_consumer_link {
++	const struct surfacegen5_san_acpi_consumer *properties;
++	struct device_link                         *link;
++};
++
 +struct surfacegen5_san_consumers {
-+	u32                  num;
-+	struct device_link **links;
++	u32                                   num;
++	struct surfacegen5_san_consumer_link *links;
 +};
 +
 +struct surfacegen5_san_drvdata {
 +	struct surfacegen5_san_opreg_context opreg_ctx;
 +	struct surfacegen5_san_consumers     consumers;
-+	struct device_link                  *ec_link;
 +};
 +
 +struct gsb_data_in {
@@ -2373,19 +2367,25 @@ index 000000000..b57ab7111
 +
 +	if (rqst.tc == 0x11 && rqst.cid == 0x0D && status == -EPERM) {
 +		/* Base state quirk:
-+		 * The base state may be queried from ACPI when the EC is
-+		 * still suspended. In this case it will return '-EPERM'.
-+		 * Returning 0xff (unknown base status) here will suppress
-+		 * error messages and cause an immediate re-query of the
-+		 * state. Delay return to avoid spinning.
++		 * The base state may be queried from ACPI when the EC is still
++		 * suspended. In this case it will return '-EPERM'. This query
++		 * will only be triggered from the ACPI lid GPE interrupt, thus
++		 * we are either in laptop or studio mode (base status 0x01 or
++		 * 0x02). Furthermore, we will only get here if the device (and
++		 * EC) have been suspended.
++		 *
++		 * We now assume that the device is in laptop mode (0x01). This
++		 * has the drawback that it will wake the device when unfolding
++		 * it in studio mode, but it also allows us to avoid actively
++		 * waiting for the EC to wake up, which may incur a notable
++		 * delay.
 +		 */
 +
 +		buffer->status          = 0x00;
 +		buffer->len             = 0x03;
 +		buffer->data.out.status = 0x00;
 +		buffer->data.out.len    = 0x01;
-+		buffer->data.out.pld[0] = 0xFF;
-+		msleep(SG5_QUIRK_BASE_STATE_DELAY);
++		buffer->data.out.pld[0] = 0x01;
 +
 +	} else if (!status) {		// success
 +		buffer->status          = 0x00;
@@ -2514,7 +2514,7 @@ index 000000000..b57ab7111
 +                                          struct surfacegen5_san_consumers *out)
 +{
 +	const struct surfacegen5_san_acpi_consumer *con;
-+	struct device_link **links, **link;
++	struct surfacegen5_san_consumer_link *links, *link;
 +	struct acpi_device *adev;
 +	acpi_handle handle;
 +	u32 max_links = 0;
@@ -2530,7 +2530,7 @@ index 000000000..b57ab7111
 +	}
 +
 +	// allocate
-+	links = kzalloc(max_links * sizeof(struct device_link *), GFP_KERNEL);
++	links = kzalloc(max_links * sizeof(struct surfacegen5_san_consumer_link), GFP_KERNEL);
 +	link = &links[0];
 +
 +	if (!links) {
@@ -2554,11 +2554,12 @@ index 000000000..b57ab7111
 +			goto consumers_link_cleanup;
 +		}
 +
-+		*link = device_link_add(&adev->dev, &pdev->dev, con->flags);
-+		if (!(*link)) {
++		link->link = device_link_add(&adev->dev, &pdev->dev, con->flags);
++		if (!(link->link)) {
 +			status = -EFAULT;
 +			goto consumers_link_cleanup;
 +		}
++		link->properties = con;
 +
 +		link += 1;
 +	}
@@ -2570,7 +2571,9 @@ index 000000000..b57ab7111
 +
 +consumers_link_cleanup:
 +	for (link = link - 1; link >= links; --link) {
-+		device_link_del(*link);
++		if (link->properties->flags & DL_FLAG_STATELESS) {
++			device_link_del(link->link);
++		}
 +	}
 +
 +	return status;
@@ -2584,7 +2587,9 @@ index 000000000..b57ab7111
 +	}
 +
 +	for (i = 0; i < consumers->num; ++i) {
-+		device_link_del(consumers->links[i]);
++		if (consumers->links[i].properties->flags & DL_FLAG_STATELESS) {
++			device_link_del(consumers->links[i].link);
++		}
 +	}
 +
 +	kfree(consumers->links);
@@ -2597,14 +2602,8 @@ index 000000000..b57ab7111
 +{
 +	const struct surfacegen5_san_acpi_consumer *cons;
 +	struct surfacegen5_san_drvdata *drvdata;
-+	struct device_link *ec_link;
 +	acpi_handle san = ACPI_HANDLE(&pdev->dev);	// _SAN device node
 +	int status;
-+
-+	drvdata = kzalloc(sizeof(struct surfacegen5_san_drvdata), GFP_KERNEL);
-+	if (!drvdata) {
-+		return -ENOMEM;
-+	}
 +
 +	/*
 +	 * Defer probe if the _SSH driver has not set up the controller yet. This
@@ -2612,18 +2611,16 @@ index 000000000..b57ab7111
 +	 * which the battery does not get set up correctly). Otherwise register as
 +	 * consumer to set up a device_link.
 +	 */
-+	ec_link = surfacegen5_ec_consumer_add(&pdev->dev, DL_FLAG_PM_RUNTIME);
-+	if (IS_ERR_OR_NULL(ec_link)) {
-+		if (PTR_ERR(ec_link) == -ENXIO) {
-+			status = -EPROBE_DEFER;
-+		} else {
-+			status = -EFAULT;
-+		}
-+
-+		goto err_probe_ec_link;
++	status = surfacegen5_ec_consumer_register(&pdev->dev);
++	if (status) {
++		return status == -ENXIO ? -EPROBE_DEFER : status;
 +	}
 +
-+	drvdata->ec_link = ec_link;
++	drvdata = kzalloc(sizeof(struct surfacegen5_san_drvdata), GFP_KERNEL);
++	if (!drvdata) {
++		return -ENOMEM;
++	}
++
 +	drvdata->opreg_ctx.dev = &pdev->dev;
 +
 +	cons = acpi_device_get_match_data(&pdev->dev);
@@ -2658,8 +2655,6 @@ index 000000000..b57ab7111
 +	platform_set_drvdata(san, NULL);
 +	surfacegen5_san_consumers_unlink(&drvdata->consumers);
 +err_probe_consumers:
-+	surfacegen5_ec_consumer_remove(drvdata->ec_link);
-+err_probe_ec_link:
 +	kfree(drvdata);
 +	return status;
 +}
@@ -2674,7 +2669,6 @@ index 000000000..b57ab7111
 +	surfacegen5_san_disable_events();
 +
 +	surfacegen5_san_consumers_unlink(&drvdata->consumers);
-+	surfacegen5_ec_consumer_remove(drvdata->ec_link);
 +	kfree(drvdata);
 +
 +	platform_set_drvdata(pdev, NULL);
@@ -2742,7 +2736,8 @@ index 000000000..b57ab7111
 + * Request ID for VHF events. This value is based on the output of the Surface
 + * EC and should not be changed.
 + */
-+#define SG5_VHF_RQID			0x0001
++#define SG5_EVENT_VHF_RQID	0x0001
++#define SG5_EVENT_VHF_TC	0x08
 +
 +
 +struct surfacegen5_vhf_evtctx {
@@ -2751,7 +2746,6 @@ index 000000000..b57ab7111
 +};
 +
 +struct surfacegen5_vhf_drvdata {
-+	struct device_link           *ec_link;
 +	struct surfacegen5_vhf_evtctx event_ctx;
 +};
 +
@@ -2915,25 +2909,18 @@ index 000000000..b57ab7111
 +static int surfacegen5_acpi_vhf_probe(struct platform_device *pdev)
 +{
 +	struct surfacegen5_vhf_drvdata *drvdata;
-+	struct device_link *ec_link;
 +	struct hid_device *hid;
 +	int status;
++
++	// add device link to EC
++	status = surfacegen5_ec_consumer_register(&pdev->dev);
++	if (status) {
++		return status == -ENXIO ? -EPROBE_DEFER : status;
++	}
 +
 +	drvdata = kzalloc(sizeof(struct surfacegen5_vhf_drvdata), GFP_KERNEL);
 +	if (!drvdata) {
 +		return -ENOMEM;
-+	}
-+
-+	// add device link to EC
-+	ec_link = surfacegen5_ec_consumer_add(&pdev->dev, DL_FLAG_PM_RUNTIME);
-+	if (IS_ERR_OR_NULL(ec_link)) {
-+		if (PTR_ERR(ec_link) == -ENXIO) {
-+			status = -EPROBE_DEFER;
-+		} else {
-+			status = -EFAULT;
-+		}
-+
-+		goto err_probe_ec_link;
 +	}
 +
 +	hid = surfacegen5_vhf_create_hid_device(pdev);
@@ -2947,7 +2934,6 @@ index 000000000..b57ab7111
 +		goto err_add_hid;
 +	}
 +
-+	drvdata->ec_link = ec_link;
 +	drvdata->event_ctx.dev = &pdev->dev;
 +	drvdata->event_ctx.hid = hid;
 +
@@ -2958,7 +2944,7 @@ index 000000000..b57ab7111
 +         * default, thus there should be no need to explicitly enable them.
 +	 */
 +	status = surfacegen5_ec_set_delayed_event_handler(
-+			SG5_VHF_RQID,
++			SG5_EVENT_VHF_RQID,
 +	                surfacegen5_vhf_event_handler,
 +	                surfacegen5_vhf_event_delay,
 +			&drvdata->event_ctx);
@@ -2966,14 +2952,19 @@ index 000000000..b57ab7111
 +		goto err_add_hid;
 +	}
 +
++	status = surfacegen5_ec_enable_event_source(SG5_EVENT_VHF_TC, 0x01, SG5_EVENT_VHF_RQID);
++	if (status) {
++		goto err_event_source;
++	}
++
 +	return 0;
 +
++err_event_source:
++	surfacegen5_ec_remove_event_handler(SG5_EVENT_VHF_RQID);
 +err_add_hid:
 +	hid_destroy_device(hid);
 +	platform_set_drvdata(pdev, NULL);
 +err_probe_hid:
-+	surfacegen5_ec_consumer_remove(drvdata->ec_link);
-+err_probe_ec_link:
 +	kfree(drvdata);
 +	return status;
 +}
@@ -2982,10 +2973,10 @@ index 000000000..b57ab7111
 +{
 +	struct surfacegen5_vhf_drvdata *drvdata = platform_get_drvdata(pdev);
 +
-+	surfacegen5_ec_remove_event_handler(SG5_VHF_RQID);
++	surfacegen5_ec_disable_event_source(SG5_EVENT_VHF_TC, 0x01, SG5_EVENT_VHF_RQID);
++	surfacegen5_ec_remove_event_handler(SG5_EVENT_VHF_RQID);
 +
 +	hid_destroy_device(drvdata->event_ctx.hid);
-+	surfacegen5_ec_consumer_remove(drvdata->ec_link);
 +	kfree(drvdata);
 +
 +	platform_set_drvdata(pdev, NULL);
@@ -3091,7 +3082,6 @@ index 000000000..b57ab7111
 +	struct list_head client_list;
 +	struct mutex mutex;
 +	bool active;
-+	struct device_link *ec_link;
 +	spinlock_t input_lock;
 +	struct input_dev *input_dev;
 +};
@@ -3531,27 +3521,18 @@ index 000000000..b57ab7111
 +static int surfacegen5_acpi_dtx_probe(struct platform_device *pdev)
 +{
 +	struct surface_dtx_dev *ddev = &surface_dtx_dev;
-+	struct device_link *ec_link;
 +	struct input_dev *input_dev;
 +	int status;
 +
 +	// link to ec
-+	ec_link = surfacegen5_ec_consumer_add(&pdev->dev, DL_FLAG_PM_RUNTIME);
-+	if (IS_ERR_OR_NULL(ec_link)) {
-+		if (PTR_ERR(ec_link) == -ENXIO) {
-+			// Defer probe if the _SSH driver has not set up the controller yet.
-+			status = -EPROBE_DEFER;
-+		} else {
-+			status = -EFAULT;
-+		}
-+
-+		goto err_probe_ec_link;
++	status = surfacegen5_ec_consumer_register(&pdev->dev);
++	if (status) {
++		return status == -ENXIO ? -EPROBE_DEFER : status;
 +	}
 +
 +	input_dev = surface_dtx_register_inputdev(pdev);
 +	if (IS_ERR(input_dev)) {
-+		status = PTR_ERR(input_dev);
-+		goto err_input_dev;
++		return PTR_ERR(input_dev);
 +	}
 +
 +	// initialize device
@@ -3565,7 +3546,6 @@ index 000000000..b57ab7111
 +	INIT_LIST_HEAD(&ddev->client_list);
 +	init_waitqueue_head(&ddev->waitq);
 +	ddev->active = true;
-+	ddev->ec_link = ec_link;
 +	ddev->input_dev = input_dev;
 +	mutex_unlock(&ddev->mutex);
 +
@@ -3586,9 +3566,6 @@ index 000000000..b57ab7111
 +	misc_deregister(&ddev->mdev);
 +err_register:
 +	input_unregister_device(ddev->input_dev);
-+err_input_dev:
-+	surfacegen5_ec_consumer_remove(ec_link);
-+err_probe_ec_link:
 +	return status;
 +}
 +
@@ -3622,9 +3599,6 @@ index 000000000..b57ab7111
 +	// unregister user-space devices
 +	input_unregister_device(ddev->input_dev);
 +	misc_deregister(&ddev->mdev);
-+
-+	// unlink
-+	surfacegen5_ec_consumer_remove(ddev->ec_link);
 +
 +	return 0;
 +}
@@ -3676,6 +3650,17 @@ index 000000000..b57ab7111
 +
 +#ifdef CONFIG_SURFACE_ACPI_SID
 +
++struct si_lid_device {
++	const char *acpi_path;
++	const u32 gpe_number;
++};
++
++struct si_device_info {
++	const bool has_perf_mode;
++	const struct si_lid_device *lid_device;
++};
++
++
 +enum sg5_perf_mode {
 +	SG5_PERF_MODE_NORMAL   = 1,
 +	SG5_PERF_MODE_BATTERY  = 2,
@@ -3695,10 +3680,6 @@ index 000000000..b57ab7111
 +
 +	__SG5_PARAM_PERF_MODE__START = 0,
 +	__SG5_PARAM_PERF_MODE__END   = 4,
-+};
-+
-+struct surface_sid_drvdata {
-+	struct device_link *ec_link;
 +};
 +
 +
@@ -3836,39 +3817,24 @@ index 000000000..b57ab7111
 +const static DEVICE_ATTR_RW(perf_mode);
 +
 +
-+static int surfacegen5_acpi_sid_probe(struct platform_device *pdev)
++static int sid_perf_mode_setup(struct platform_device *pdev, const struct si_device_info *info)
 +{
-+	struct surface_sid_drvdata *drvdata;
-+	struct device_link *ec_link;
 +	int status;
 +
++	if (!info->has_perf_mode)
++		return 0;
++
 +	// link to ec
-+	ec_link = surfacegen5_ec_consumer_add(&pdev->dev, DL_FLAG_PM_RUNTIME);
-+	if (IS_ERR_OR_NULL(ec_link)) {
-+		if (PTR_ERR(ec_link) == -ENXIO) {
-+			// Defer probe if the _SSH driver has not set up the controller yet.
-+			status = -EPROBE_DEFER;
-+		} else {
-+			status = -EFAULT;
-+		}
-+
-+		goto err_probe_ec_link;
++	status = surfacegen5_ec_consumer_register(&pdev->dev);
++	if (status) {
++		return status == -ENXIO ? -EPROBE_DEFER : status;
 +	}
-+
-+	// set up driver data
-+	drvdata = kzalloc(sizeof(struct surface_sid_drvdata), GFP_KERNEL);
-+	if (!drvdata) {
-+		status = -ENOMEM;
-+		goto err_drvdata;
-+	}
-+	drvdata->ec_link = ec_link;
-+	platform_set_drvdata(pdev, drvdata);
 +
 +	// set initial perf_mode
 +	if (param_perf_mode_init != SG5_PARAM_PERF_MODE_AS_IS) {
 +		status = sg5_ec_perf_mode_set(param_perf_mode_init);
 +		if (status) {
-+			goto err_set_perf;
++			return status;
 +		}
 +	}
 +
@@ -3882,36 +3848,149 @@ index 000000000..b57ab7111
 +
 +err_sysfs:
 +	sg5_ec_perf_mode_set(param_perf_mode_exit);
-+err_set_perf:
-+	platform_set_drvdata(pdev, NULL);
-+	kfree(drvdata);
-+err_drvdata:
-+	surfacegen5_ec_consumer_remove(ec_link);
-+err_probe_ec_link:
 +	return status;
 +}
 +
-+static int surfacegen5_acpi_sid_remove(struct platform_device *pdev)
++static void sid_perf_mode_remove(struct platform_device *pdev, const struct si_device_info *info)
 +{
-+	struct surface_sid_drvdata *drvdata = platform_get_drvdata(pdev);
++	if (!info->has_perf_mode)
++		return;
 +
 +	// remove perf_mode attribute
 +	sysfs_remove_file(&pdev->dev.kobj, &dev_attr_perf_mode.attr);
 +
 +	// set exit perf_mode
 +	sg5_ec_perf_mode_set(param_perf_mode_exit);
++}
 +
-+	// remove consumer and clean up
-+	surfacegen5_ec_consumer_remove(drvdata->ec_link);
-+	platform_set_drvdata(pdev, NULL);
-+	kfree(drvdata);
++
++static int sid_lid_enable_wakeup(const struct si_device_info *info, bool enable)
++{
++	int action = enable ? ACPI_GPE_ENABLE : ACPI_GPE_DISABLE;
++	int status;
++
++	if (!info->lid_device)
++		return 0;
++
++	status = acpi_set_gpe_wake_mask(NULL, info->lid_device->gpe_number, action);
++	if (status)
++		return -EFAULT;
++
++	return 0;
++}
++
++static int sid_lid_device_setup(struct platform_device *pdev, const struct si_device_info *info)
++{
++	acpi_handle lid_handle;
++	int status;
++
++	if (!info->lid_device)
++		return 0;
++
++	status = acpi_get_handle(NULL, (acpi_string)info->lid_device->acpi_path, &lid_handle);
++	if (status)
++		return -EFAULT;
++
++	status = acpi_setup_gpe_for_wake(lid_handle, NULL, info->lid_device->gpe_number);
++	if (status)
++		return -EFAULT;
++
++	status = acpi_enable_gpe(NULL, info->lid_device->gpe_number);
++	if (status)
++		return -EFAULT;
++
++	return sid_lid_enable_wakeup(info, true);
++}
++
++static void sid_lid_device_remove(struct platform_device *pdev, const struct si_device_info *info)
++{
++	sid_lid_enable_wakeup(info, false);
++}
++
++
++static int surfacegen5_acpi_sid_suspend(struct device *dev)
++{
++	const struct si_device_info *info = dev_get_drvdata(dev);
++	return sid_lid_enable_wakeup(info, true);
++}
++
++static int surfacegen5_acpi_sid_resume(struct device *dev)
++{
++	const struct si_device_info *info = dev_get_drvdata(dev);
++	return sid_lid_enable_wakeup(info, false);
++}
++
++static SIMPLE_DEV_PM_OPS(surfacegen5_acpi_sid_pm, surfacegen5_acpi_sid_suspend, surfacegen5_acpi_sid_resume);
++
++
++static int surfacegen5_acpi_sid_probe(struct platform_device *pdev)
++{
++	const struct si_device_info *info;
++	int status;
++
++	info = acpi_device_get_match_data(&pdev->dev);
++	if (!info)
++		return -ENODEV;
++	platform_set_drvdata(pdev, (void *)info);
++
++	status = sid_perf_mode_setup(pdev, info);
++	if (status)
++		goto err_perf_mode;
++
++	status = sid_lid_device_setup(pdev, info);
++	if (status)
++		goto err_lid;
++
++	return 0;
++
++err_lid:
++	sid_perf_mode_remove(pdev, info);
++err_perf_mode:
++	return status;
++}
++
++static int surfacegen5_acpi_sid_remove(struct platform_device *pdev)
++{
++	const struct si_device_info *info = platform_get_drvdata(pdev);
++
++	sid_perf_mode_remove(pdev, info);
++	sid_lid_device_remove(pdev, info);
 +
 +	return 0;
 +}
 +
 +
++static const struct si_lid_device lid_device_l17 = {
++	.acpi_path = "\\_SB.LID0",
++	.gpe_number = 0x17,
++};
++
++static const struct si_lid_device lid_device_l57 = {
++	.acpi_path = "\\_SB.LID0",
++	.gpe_number = 0x57,
++};
++
++static const struct si_device_info si_device_pro = {
++	.has_perf_mode = false,
++	.lid_device = &lid_device_l17,
++};
++
++static const struct si_device_info si_device_book = {
++	.has_perf_mode = true,
++	.lid_device = &lid_device_l17,
++};
++
++static const struct si_device_info si_device_laptop = {
++	.has_perf_mode = false,
++	.lid_device = &lid_device_l57,
++};
++
 +static const struct acpi_device_id surfacegen5_acpi_sid_match[] = {
-+	{ "MSHW0107", 0 },	/* Surface Book 2 */
++	{ "MSHW0081", (unsigned long)&si_device_pro },     /* Surface Pro 4 and 5 */
++	{ "MSHW0080", (unsigned long)&si_device_book },    /* Surface Book 1 */
++	{ "MSHW0107", (unsigned long)&si_device_book },    /* Surface Book 2 */
++	{ "MSHW0086", (unsigned long)&si_device_laptop },  /* Surface Laptop 1 */
++	{ "MSHW0112", (unsigned long)&si_device_laptop },  /* Surface Laptop 2 */
 +	{ },
 +};
 +MODULE_DEVICE_TABLE(acpi, surfacegen5_acpi_sid_match);
@@ -3922,6 +4001,7 @@ index 000000000..b57ab7111
 +	.driver = {
 +		.name = "surfacegen5_acpi_sid",
 +		.acpi_match_table = ACPI_PTR(surfacegen5_acpi_sid_match),
++		.pm = &surfacegen5_acpi_sid_pm,
 +	},
 +};
 +
@@ -4013,7 +4093,7 @@ index 000000000..b57ab7111
 +MODULE_DESCRIPTION("ACPI/Platform Drivers for Microsoft Surface Devices");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index a0ac16ee6..0dd242ff2 100644
+index a0ac16ee6575..0dd242ff24d1 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
 @@ -558,8 +558,7 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,

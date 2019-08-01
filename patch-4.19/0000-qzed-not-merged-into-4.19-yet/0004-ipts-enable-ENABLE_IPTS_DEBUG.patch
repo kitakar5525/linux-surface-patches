@@ -1,0 +1,25 @@
+From b8aff9c2b97e20d07812a0bc27f4e06d5fda683b Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 31 Jul 2019 12:22:57 +0900
+Subject: [PATCH] ipts: enable ENABLE_IPTS_DEBUG
+
+---
+ drivers/misc/ipts/ipts.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/misc/ipts/ipts.h b/drivers/misc/ipts/ipts.h
+index 1fcd02146..9c34b55ff 100644
+--- a/drivers/misc/ipts/ipts.h
++++ b/drivers/misc/ipts/ipts.h
+@@ -26,7 +26,7 @@
+ #include "ipts-state.h"
+ #include "ipts-binary-spec.h"
+ 
+-//#define ENABLE_IPTS_DEBUG		/* enable IPTS debug */
++#define ENABLE_IPTS_DEBUG		/* enable IPTS debug */
+ 
+ #ifdef ENABLE_IPTS_DEBUG
+ 
+-- 
+2.22.0
+

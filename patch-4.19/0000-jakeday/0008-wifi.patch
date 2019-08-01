@@ -1,7 +1,7 @@
-From f8f86cdab344912d26db511c6800842c03a1836e Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Wed, 26 Jun 2019 20:44:04 -0400
-Subject: [PATCH 08/11] wifi
+From 99b6b2846efa7c0cbfda3f08c95be73766f1b586 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 03:43:14 +0200
+Subject: [PATCH 08/12] wifi
 
 ---
  drivers/net/wireless/marvell/mwifiex/11n_aggr.c |  3 +--
@@ -85,7 +85,7 @@ index 60db2b969e20..efae99018c3c 100644
  							api_rev->major_ver;
  					mwifiex_dbg(adapter, INFO,
 diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-index b73f99dc5a72..d96a0ffc9649 100644
+index 1fb76d2f5d3f..fb32379da99d 100644
 --- a/drivers/net/wireless/marvell/mwifiex/fw.h
 +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
 @@ -1052,6 +1052,7 @@ struct host_cmd_ds_802_11_ps_mode_enh {
@@ -266,5 +266,5 @@ diff --git a/scripts/leaking_addresses.pl b/scripts/leaking_addresses.pl
 old mode 100755
 new mode 100644
 -- 
-2.19.1
+2.22.0
 

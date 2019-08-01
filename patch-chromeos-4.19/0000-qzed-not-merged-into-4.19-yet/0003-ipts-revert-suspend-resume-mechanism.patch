@@ -1,6 +1,6 @@
-From 7c9f8b3bbc8ac87657b945803013cb2cbc8b4438 Mon Sep 17 00:00:00 2001
-From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Mon, 8 Jul 2019 08:01:44 +0900
+From 6ef0eb31d638d21f92f3dc81ff62d1943e4fe174 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Tue, 5 Mar 2019 20:37:23 +0900
 Subject: [PATCH] ipts: revert suspend/resume mechanism
 
 The suspend/resume mechanism was introduced on commit a3a3ed3
@@ -31,10 +31,10 @@ https://github.com/jakeday/linux-surface/issues/381
  3 files changed, 18 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index f3a175bfe..b50823fd3 100644
+index eb095be71..ad28cbec5 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
-@@ -2057,9 +2057,6 @@ static int i915_drm_suspend(struct drm_device *dev)
+@@ -1913,9 +1913,6 @@ static int i915_drm_suspend(struct drm_device *dev)
  	struct pci_dev *pdev = dev_priv->drm.pdev;
  	pci_power_t opregion_target_state;
  
@@ -44,21 +44,21 @@ index f3a175bfe..b50823fd3 100644
  	disable_rpm_wakeref_asserts(dev_priv);
  
  	/* We do a lot of poking in a lot of registers, make sure they work
-@@ -2256,9 +2253,6 @@ static int i915_drm_resume(struct drm_device *dev)
+@@ -2110,9 +2107,6 @@ static int i915_drm_resume(struct drm_device *dev)
  
  	enable_rpm_wakeref_asserts(dev_priv);
  
 -	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
--		intel_ipts_resume(dev);
+-        intel_ipts_resume(dev);
 -
  	return 0;
  }
  
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index 133e2ab9b..6f9db885a 100644
+index b276a2f78..9899c91e4 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
-@@ -647,13 +647,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
+@@ -645,13 +645,3 @@ void intel_ipts_cleanup(struct drm_device *dev)
  		cancel_delayed_work(&intel_ipts.reacquire_db_work);
  	}
  }
@@ -86,5 +86,5 @@ index 45d7d1273..a6965d102 100644
  int intel_ipts_notify_complete(void);
  
 -- 
-2.22.0
+2.21.0
 

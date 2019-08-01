@@ -1,7 +1,7 @@
-From 7dd57f1f6fa5f256c75860255c0407fa67e41faa Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Thu, 27 Jun 2019 12:00:08 -0400
-Subject: [PATCH 06/11] hid
+From fa2a845d01e823ffadd8d6061f0ddcb0a8de09b1 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:45:42 +0200
+Subject: [PATCH 06/12] hid
 
 ---
  drivers/hid/hid-ids.h        | 21 +++++++++----
@@ -11,7 +11,7 @@ Subject: [PATCH 06/11] hid
  4 files changed, 86 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
-index b032d3899..21df9dbed 100644
+index bfc584ada4eb..c54a2af1a266 100644
 --- a/drivers/hid/hid-ids.h
 +++ b/drivers/hid/hid-ids.h
 @@ -821,11 +821,22 @@
@@ -43,7 +43,7 @@ index b032d3899..21df9dbed 100644
  #define USB_DEVICE_ID_MS_PIXART_MOUSE    0x00cb
  
 diff --git a/drivers/hid/hid-microsoft.c b/drivers/hid/hid-microsoft.c
-index 8b3a922bd..0290a1688 100644
+index 8b3a922bdad3..0290a16881e5 100644
 --- a/drivers/hid/hid-microsoft.c
 +++ b/drivers/hid/hid-microsoft.c
 @@ -438,7 +438,8 @@ static const struct hid_device_id ms_devices[] = {
@@ -57,7 +57,7 @@ index 8b3a922bd..0290a1688 100644
  		.driver_data = MS_PRESENTER },
  	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, 0x091B),
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 55639df49..e51f83880 100644
+index 03448d3a29f2..09ca4b1f2797 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -1983,6 +1983,63 @@ static const struct hid_device_id mt_devices[] = {
@@ -125,7 +125,7 @@ index 55639df49..e51f83880 100644
  	{ .driver_data = MT_CLS_CONFIDENCE_MINUS_ONE,
  		MT_USB_DEVICE(USB_VENDOR_ID_ASUS,
 diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
-index 671a28572..00165f9b4 100644
+index 1549c7a2f04c..c17a3c8da927 100644
 --- a/drivers/hid/hid-quirks.c
 +++ b/drivers/hid/hid-quirks.c
 @@ -111,6 +111,17 @@ static const struct hid_device_id hid_quirks[] = {

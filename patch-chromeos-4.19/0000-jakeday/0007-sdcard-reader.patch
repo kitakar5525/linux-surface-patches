@@ -1,17 +1,17 @@
-From d4069d965ce9e607bf04ca11b045532c9908ba57 Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Tue, 30 Apr 2019 20:49:52 -0400
-Subject: [PATCH 07/32] sdcard-reader
+From 4b8d1631e6c23f1c4802e613572ed09e4d1075ae Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 03:43:03 +0200
+Subject: [PATCH 07/12] sdcard-reader
 
 ---
  drivers/usb/core/hub.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 3a1555fb165f..390287ab5912 100644
+index eb24ec0e160d..8327ac3880c8 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -4161,7 +4161,8 @@ void usb_enable_lpm(struct usb_device *udev)
+@@ -4157,7 +4157,8 @@ void usb_enable_lpm(struct usb_device *udev)
  	if (!udev || !udev->parent ||
  			udev->speed < USB_SPEED_SUPER ||
  			!udev->lpm_capable ||

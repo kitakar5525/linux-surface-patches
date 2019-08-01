@@ -1,7 +1,7 @@
-From cb4ccf8470366106d240cad5afc4a8fc5d1c577b Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Wed, 26 Jun 2019 20:43:20 -0400
-Subject: [PATCH 05/11] ipts
+From 60508845ee5f6a06bce7ba337511a35929bb5645 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 03:42:39 +0200
+Subject: [PATCH 05/12] ipts
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -1222,7 +1222,7 @@ index 4a9f139e7b73..a800b93cf33d 100644
  
  static void pch_enable_backlight(const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 184e49036e1d..0f4ab4776c25 100644
+index f9167d0e095c..28b729c9d804 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -173,6 +173,7 @@ struct mt_device {
@@ -6170,5 +6170,5 @@ index 000000000000..f329bbfb8079
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.19.1
+2.22.0
 

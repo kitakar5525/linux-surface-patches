@@ -1,7 +1,7 @@
-From 778152035f0ec13b86ab7a724b49c324b9701c2b Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Wed, 26 Jun 2019 20:43:50 -0400
-Subject: [PATCH 07/11] sdcard-reader
+From 4b8d1631e6c23f1c4802e613572ed09e4d1075ae Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 03:43:03 +0200
+Subject: [PATCH 07/12] sdcard-reader
 
 ---
  drivers/usb/core/hub.c | 3 ++-
@@ -22,5 +22,5 @@ index eb24ec0e160d..8327ac3880c8 100644
  
  	udev->lpm_disable_count--;
 -- 
-2.19.1
+2.22.0
 

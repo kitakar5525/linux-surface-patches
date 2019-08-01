@@ -1,7 +1,7 @@
-From 43a7c6664daa22bedc86b085b56e9bd12011e572 Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Thu, 27 Jun 2019 12:00:30 -0400
-Subject: [PATCH 08/11] wifi
+From e9907ea84cfb7bf1f9a817f3587fef598f18c4f1 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:46:16 +0200
+Subject: [PATCH 08/12] wifi
 
 ---
  drivers/net/wireless/marvell/mwifiex/11n_aggr.c |  3 +--
@@ -19,7 +19,7 @@ Subject: [PATCH 08/11] wifi
  mode change 100755 => 100644 scripts/leaking_addresses.pl
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/11n_aggr.c b/drivers/net/wireless/marvell/mwifiex/11n_aggr.c
-index 042a1d07f..fc9041f58 100644
+index 042a1d07f686..fc9041f58e9f 100644
 --- a/drivers/net/wireless/marvell/mwifiex/11n_aggr.c
 +++ b/drivers/net/wireless/marvell/mwifiex/11n_aggr.c
 @@ -200,8 +200,7 @@ mwifiex_11n_aggregate_pkt(struct mwifiex_private *priv,
@@ -33,7 +33,7 @@ index 042a1d07f..fc9041f58 100644
  
  		skb_src = skb_dequeue(&pra_list->skb_head);
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index e11a4bb67..c3461a203 100644
+index e11a4bb67172..c3461a203deb 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 @@ -437,7 +437,10 @@ mwifiex_cfg80211_set_power_mgmt(struct wiphy *wiphy,
@@ -49,7 +49,7 @@ index e11a4bb67..c3461a203 100644
  	return mwifiex_drv_set_power(priv, &ps_mode);
  }
 diff --git a/drivers/net/wireless/marvell/mwifiex/cmdevt.c b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
-index 8c35441fd..718721399 100644
+index 8c35441fd9b7..71872139931e 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cmdevt.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cmdevt.c
 @@ -1006,6 +1006,7 @@ mwifiex_cmd_timeout_func(struct timer_list *t)
@@ -85,7 +85,7 @@ index 8c35441fd..718721399 100644
  							api_rev->major_ver;
  					mwifiex_dbg(adapter, INFO,
 diff --git a/drivers/net/wireless/marvell/mwifiex/fw.h b/drivers/net/wireless/marvell/mwifiex/fw.h
-index b73f99dc5..d96a0ffc9 100644
+index 1fb76d2f5d3f..fb32379da99d 100644
 --- a/drivers/net/wireless/marvell/mwifiex/fw.h
 +++ b/drivers/net/wireless/marvell/mwifiex/fw.h
 @@ -1052,6 +1052,7 @@ struct host_cmd_ds_802_11_ps_mode_enh {
@@ -97,7 +97,7 @@ index b73f99dc5..d96a0ffc9 100644
  
  struct hw_spec_api_rev {
 diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index f6da8edab..51a65f262 100644
+index f6da8edab7f1..51a65f26206b 100644
 --- a/drivers/net/wireless/marvell/mwifiex/main.c
 +++ b/drivers/net/wireless/marvell/mwifiex/main.c
 @@ -163,6 +163,7 @@ void mwifiex_queue_main_work(struct mwifiex_adapter *adapter)
@@ -173,7 +173,7 @@ index f6da8edab..51a65f262 100644
  		if ((adapter->ps_state == PS_STATE_SLEEP) &&
  		    (adapter->pm_wakeup_card_req &&
 diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index b025ba164..d4027a803 100644
+index b025ba164412..d4027a803079 100644
 --- a/drivers/net/wireless/marvell/mwifiex/main.h
 +++ b/drivers/net/wireless/marvell/mwifiex/main.h
 @@ -908,6 +908,7 @@ struct mwifiex_adapter {
@@ -193,7 +193,7 @@ index b025ba164..d4027a803 100644
  			      int cmd_type,
  			      struct mwifiex_ds_wakeup_reason *wakeup_reason);
 diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 3fe81b2a9..6e734a83e 100644
+index 3fe81b2a929a..6e734a83e6bf 100644
 --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
 +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
 @@ -1743,6 +1743,15 @@ static int mwifiex_pcie_process_cmd_complete(struct mwifiex_adapter *adapter)
@@ -213,7 +213,7 @@ index 3fe81b2a9..6e734a83e 100644
  	skb_trim(skb, rx_len);
  
 diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
-index 4ed10cf82..485360e85 100644
+index 4ed10cf82f9a..485360e8534b 100644
 --- a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
 +++ b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
 @@ -30,8 +30,8 @@ static bool drcs;
@@ -228,7 +228,7 @@ index 4ed10cf82..485360e85 100644
  		 "deepsleep enabled=0(default), deepsleep disabled=1");
  /*
 diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
-index 24b33e20e..51d0f3462 100644
+index 24b33e20e7a9..51d0f34625e1 100644
 --- a/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
 +++ b/drivers/net/wireless/marvell/mwifiex/sta_cmdresp.c
 @@ -48,9 +48,14 @@ mwifiex_process_cmdresp_error(struct mwifiex_private *priv,
@@ -250,7 +250,7 @@ index 24b33e20e..51d0f3462 100644
  	if (adapter->curr_cmd->wait_q_enabled)
  		adapter->cmd_wait_q.status = -1;
 diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index d445acc47..ae8e60cc1 100644
+index d445acc4786b..ae8e60cc17cb 100644
 --- a/drivers/net/wireless/marvell/mwifiex/usb.c
 +++ b/drivers/net/wireless/marvell/mwifiex/usb.c
 @@ -144,6 +144,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,

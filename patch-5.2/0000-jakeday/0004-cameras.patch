@@ -1,7 +1,7 @@
-From 5b2a90bcfbb95755e68c553fd22a007c2e46c6c8 Mon Sep 17 00:00:00 2001
-From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Sat, 13 Jul 2019 08:34:21 +0900
-Subject: [PATCH 04/11] cameras-5.2
+From f8bcea016a8bb9b7c58a06a977dd838d265098b1 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:45:19 +0200
+Subject: [PATCH 04/12] cameras
 
 ---
  drivers/media/usb/uvc/uvc_driver.c |   40 +
@@ -21,7 +21,7 @@ Subject: [PATCH 04/11] cameras-5.2
  create mode 100644 drivers/staging/ov5693/ov5693.h
 
 diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-index 66ee168dd..e4bccfab9 100644
+index 66ee168ddc7e..e4bccfab9da1 100644
 --- a/drivers/media/usb/uvc/uvc_driver.c
 +++ b/drivers/media/usb/uvc/uvc_driver.c
 @@ -2394,6 +2394,46 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
@@ -72,7 +72,7 @@ index 66ee168dd..e4bccfab9 100644
  	{ .match_flags		= USB_DEVICE_ID_MATCH_DEVICE
  				| USB_DEVICE_ID_MATCH_INT_INFO,
 diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
-index 0da0d3f0b..1fffb6f5a 100644
+index 0da0d3f0b5e4..1fffb6f5a3be 100644
 --- a/drivers/staging/Makefile
 +++ b/drivers/staging/Makefile
 @@ -49,3 +49,4 @@ obj-$(CONFIG_XIL_AXIS_FIFO)	+= axis-fifo/
@@ -82,7 +82,7 @@ index 0da0d3f0b..1fffb6f5a 100644
 +obj-$(CONFIG_VIDEO_OV5693)	+= ov5693/
 diff --git a/drivers/staging/ov5693/Kconfig b/drivers/staging/ov5693/Kconfig
 new file mode 100644
-index 000000000..96000f112
+index 000000000000..96000f112c4d
 --- /dev/null
 +++ b/drivers/staging/ov5693/Kconfig
 @@ -0,0 +1,10 @@
@@ -98,7 +98,7 @@ index 000000000..96000f112
 +         It currently only works with the atomisp driver.
 diff --git a/drivers/staging/ov5693/Makefile b/drivers/staging/ov5693/Makefile
 new file mode 100644
-index 000000000..d8a63faa5
+index 000000000000..d8a63faa591f
 --- /dev/null
 +++ b/drivers/staging/ov5693/Makefile
 @@ -0,0 +1,5 @@
@@ -109,7 +109,7 @@ index 000000000..d8a63faa5
 +ccflags-y += -Werror
 diff --git a/drivers/staging/ov5693/ad5823.c b/drivers/staging/ov5693/ad5823.c
 new file mode 100644
-index 000000000..7c34c36e7
+index 000000000000..7c34c36e77e5
 --- /dev/null
 +++ b/drivers/staging/ov5693/ad5823.c
 @@ -0,0 +1,218 @@
@@ -333,7 +333,7 @@ index 000000000..7c34c36e7
 +}
 diff --git a/drivers/staging/ov5693/ad5823.h b/drivers/staging/ov5693/ad5823.h
 new file mode 100644
-index 000000000..8b046c31f
+index 000000000000..8b046c31f3af
 --- /dev/null
 +++ b/drivers/staging/ov5693/ad5823.h
 @@ -0,0 +1,90 @@
@@ -429,7 +429,7 @@ index 000000000..8b046c31f
 +#endif
 diff --git a/drivers/staging/ov5693/ov5693.c b/drivers/staging/ov5693/ov5693.c
 new file mode 100644
-index 000000000..51d218da3
+index 000000000000..51d218da3722
 --- /dev/null
 +++ b/drivers/staging/ov5693/ov5693.c
 @@ -0,0 +1,1461 @@
@@ -1896,7 +1896,7 @@ index 000000000..51d218da3
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/staging/ov5693/ov5693.h b/drivers/staging/ov5693/ov5693.h
 new file mode 100644
-index 000000000..79aef6966
+index 000000000000..79aef69666e8
 --- /dev/null
 +++ b/drivers/staging/ov5693/ov5693.h
 @@ -0,0 +1,848 @@
