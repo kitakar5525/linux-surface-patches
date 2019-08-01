@@ -1,0 +1,105 @@
+From b316882ef87c34413c03cbd308249faf36d7312b Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 1 Aug 2019 17:48:17 +0900
+Subject: [PATCH] ipts: fix crash caused by calling ipts_send_feedback()
+ repeatedly
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Calling the "ipts_send_feedback" function repeatedly seems to be
+what is causing touch to crash on some platforms, especially on
+Surface Pro 4 and Surface Book 1.
+
+Disable sending feedbacks on SP4/SB1 for now. SP4/SB1 users can
+still forcibly enable sending feedbacks by `intel_ipts.no_feedbacks=0`
+
+Users other than SP4/SB1 can forcibly disable sending by
+`intel_ipts.no_feedbacks=1`
+
+Or, you can toggle it by
+```
+sudo su -c "echo 0 > /sys/module/intel_ipts/parameters/no_feedbacks"
+```
+
+See
+- Touch and pen issue persists · Issue #374 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/374#issuecomment-508234110
+---
+ drivers/misc/ipts/ipts-hid.c | 45 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+
+diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
+index e85844dc1..dc1aacab6 100644
+--- a/drivers/misc/ipts/ipts-hid.c
++++ b/drivers/misc/ipts/ipts-hid.c
+@@ -17,6 +17,7 @@
+ #include <linux/firmware.h>
+ #include <linux/hid.h>
+ #include <linux/vmalloc.h>
++#include <linux/dmi.h>
+ 
+ #include "ipts.h"
+ #include "ipts-resource.h"
+@@ -54,6 +55,28 @@ typedef struct kernel_output_payload_error {
+ 	char string[128];
+ } kernel_output_payload_error_t;
+ 
++static const struct dmi_system_id no_feedbacks_dmi_table[] = {
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
++		},
++	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
++		},
++	},
++	{ }
++};
++
++int no_feedbacks = -1;
++module_param(no_feedbacks, int, 0644);
++MODULE_PARM_DESC(no_feedbacks, "Disable sending feedbacks to fix crash. "
++				"-1=auto (true if your device is SB1/SP4, false if anothe models), "
++				"0=false, 1=true, (default: -1)");
++
+ static int ipts_hid_get_hid_descriptor(ipts_info_t *ipts, u8 **desc, int *size)
+ {
+ 	u8 *buf;
+@@ -415,7 +438,29 @@ static int handle_outputs(ipts_info_t *ipts, int parallel_idx)
+ 		}
+ 	}
+ 
++	/*
++	 * Calling the "ipts_send_feedback" function repeatedly seems to be
++	 * what is causing touch to crash on some platforms, especially on
++	 * Surface Pro 4 and Surface Book 1.
++	 *
++	 * Disable sending feedbacks on SP4/SB1 for now. SP4/SB1 users can
++	 * still forcibly enable sending feedbacks by `intel_ipts.no_feedbacks=0`
++	 *
++	 * Users other than SP4/SB1 can forcibly disable sending by
++	 * `intel_ipts.no_feedbacks=1`
++	 *
++	 * Touch and pen issue persists · Issue #374 · jakeday/linux-surface
++	 * https://github.com/jakeday/linux-surface/issues/374#issuecomment-508234110
++	 */
+ 	if (fb_buf) {
++		/* A negative value means "decide by dmi table" */
++		if (no_feedbacks < 0)
++			no_feedbacks = dmi_check_system(no_feedbacks_dmi_table) ? true : false;
++
++		if (no_feedbacks)
++			return 0;
++
++		pr_alert("DEBUG: sending feedbacks\n");
+ 		ret = ipts_send_feedback(ipts, parallel_idx, transaction_id);
+ 		if (ret)
+ 			return ret;
+-- 
+2.22.0
+
