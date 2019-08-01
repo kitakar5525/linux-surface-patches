@@ -26,6 +26,10 @@ $ sudo cat /sys/kernel/debug/ipts/debug
 >> == DB s:1, c:831 ==
 >> == WQ h:784, t:784 ==
 ```
+
+More info about debug output:
+- Touch and pen issue persists · Issue #374 · jakeday/linux-surface
+https://github.com/jakeday/linux-surface/issues/374#issuecomment-517026870
 ---
  drivers/misc/ipts/ipts-dbgfs.c       | 212 +++++++++++++++++++++++++++
  drivers/misc/ipts/ipts-msg-handler.h |   1 +
