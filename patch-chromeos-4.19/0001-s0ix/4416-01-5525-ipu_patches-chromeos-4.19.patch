@@ -130,7 +130,7 @@ index 000000000000..23b945bdad2a
 +video node, which are then passed to user space for statistics analysis
 +using :c:type:`v4l2_meta_format` interface.
 +
-+The statistics collected are AWB (Auto-white balance) RGBS (Red, Green, Blue and 
++The statistics collected are AWB (Auto-white balance) RGBS (Red, Green, Blue and
 +Saturation measure) cells, AWB filter response, AF (Auto-focus) filter response,
 +and AE (Auto-exposure) histogram.
 +
