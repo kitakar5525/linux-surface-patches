@@ -1,7 +1,7 @@
-From e5dcfa006e7f9ad6828001da0872b76d897611ed Mon Sep 17 00:00:00 2001
+From c14beca76be6855b49479b42494d8564c0c87b8e Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Mon, 22 Jul 2019 19:58:18 +0900
-Subject: [PATCH 02/29] suspend-5.3rc
+Date: Fri, 2 Aug 2019 06:31:57 +0900
+Subject: [PATCH 02/12] suspend-5.3rc
 
 ---
  kernel/power/suspend.c | 11 +++++++++++

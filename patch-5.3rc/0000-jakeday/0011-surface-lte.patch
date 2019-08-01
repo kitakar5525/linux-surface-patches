@@ -1,14 +1,14 @@
-From f88af283613f8d718a5393b0d3ab5ed0e2eb8b5b Mon Sep 17 00:00:00 2001
-From: Jake Day <jake@ninebysix.com>
-Date: Thu, 27 Jun 2019 12:01:07 -0400
-Subject: [PATCH 13/29] surface-lte
+From 1efb611bb6afb999ed05fb48406772a7b1d0ce29 Mon Sep 17 00:00:00 2001
+From: Maximilian Luz <luzmaximilian@gmail.com>
+Date: Fri, 26 Jul 2019 04:47:13 +0200
+Subject: [PATCH 11/12] surface-lte
 
 ---
  drivers/usb/serial/qcserial.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
-index 613f91add..e1428222d 100644
+index 613f91add03d..e1428222dd73 100644
 --- a/drivers/usb/serial/qcserial.c
 +++ b/drivers/usb/serial/qcserial.c
 @@ -177,6 +177,7 @@ static const struct usb_device_id id_table[] = {

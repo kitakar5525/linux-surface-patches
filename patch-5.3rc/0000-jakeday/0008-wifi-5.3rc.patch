@@ -1,21 +1,21 @@
-From bb63c11d7db2a7ea14bc814d28176324c6da3db3 Mon Sep 17 00:00:00 2001
+From 39d710e6c5f3291de1b57c7565c8b763a95769f0 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Mon, 22 Jul 2019 19:34:21 +0900
-Subject: [PATCH 10/29] wifi-5.3rc
+Date: Fri, 2 Aug 2019 06:52:17 +0900
+Subject: [PATCH 07/12] wifi-5.3rc
 
 ---
- drivers/net/wireless/marvell/mwifiex/11n_aggr.c |  3 +--
- drivers/net/wireless/marvell/mwifiex/cfg80211.c |  5 ++++-
- drivers/net/wireless/marvell/mwifiex/cmdevt.c   | 10 ++++++----
- drivers/net/wireless/marvell/mwifiex/fw.h       |  1 +
- drivers/net/wireless/marvell/mwifiex/main.c     | 17 +++++++++++++----
- drivers/net/wireless/marvell/mwifiex/main.h     |  2 ++
- drivers/net/wireless/marvell/mwifiex/pcie.c     |  9 +++++++++
- drivers/net/wireless/marvell/mwifiex/sta_cmd.c  |  4 ++--
- .../net/wireless/marvell/mwifiex/sta_cmdresp.c  | 11 ++++++++---
- drivers/net/wireless/marvell/mwifiex/usb.c      |  2 ++
- scripts/leaking_addresses.pl                    |  0
- 11 files changed, 48 insertions(+), 16 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/11n_aggr.c  |  3 +--
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c  |  5 ++++-
+ drivers/net/wireless/marvell/mwifiex/cmdevt.c    | 10 ++++++----
+ drivers/net/wireless/marvell/mwifiex/fw.h        |  1 +
+ drivers/net/wireless/marvell/mwifiex/main.c      | 16 ++++++++++++----
+ drivers/net/wireless/marvell/mwifiex/main.h      |  2 ++
+ drivers/net/wireless/marvell/mwifiex/pcie.c      |  9 +++++++++
+ drivers/net/wireless/marvell/mwifiex/sta_cmd.c   |  4 ++--
+ .../net/wireless/marvell/mwifiex/sta_cmdresp.c   | 11 ++++++++---
+ drivers/net/wireless/marvell/mwifiex/usb.c       |  2 ++
+ scripts/leaking_addresses.pl                     |  0
+ 11 files changed, 47 insertions(+), 16 deletions(-)
  mode change 100755 => 100644 scripts/leaking_addresses.pl
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/11n_aggr.c b/drivers/net/wireless/marvell/mwifiex/11n_aggr.c
@@ -97,7 +97,7 @@ index 1fb76d2f5..fb32379da 100644
  
  struct hw_spec_api_rev {
 diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index a9657ae6d..ba99d84a3 100644
+index a9657ae6d..7c529abde 100644
 --- a/drivers/net/wireless/marvell/mwifiex/main.c
 +++ b/drivers/net/wireless/marvell/mwifiex/main.c
 @@ -163,6 +163,7 @@ void mwifiex_queue_main_work(struct mwifiex_adapter *adapter)
@@ -108,7 +108,7 @@ index a9657ae6d..ba99d84a3 100644
  		spin_unlock_irqrestore(&adapter->main_proc_lock, flags);
  	} else {
  		spin_unlock_irqrestore(&adapter->main_proc_lock, flags);
-@@ -171,16 +172,18 @@ void mwifiex_queue_main_work(struct mwifiex_adapter *adapter)
+@@ -171,7 +172,7 @@ void mwifiex_queue_main_work(struct mwifiex_adapter *adapter)
  }
  EXPORT_SYMBOL_GPL(mwifiex_queue_main_work);
  
@@ -117,10 +117,7 @@ index a9657ae6d..ba99d84a3 100644
  {
  	spin_lock_bh(&adapter->rx_proc_lock);
  	if (adapter->rx_processing) {
-+		adapter->more_rx_task_flag = true;
- 		spin_unlock_bh(&adapter->rx_proc_lock);
- 	} else {
- 		spin_unlock_bh(&adapter->rx_proc_lock);
+@@ -181,6 +182,7 @@ static void mwifiex_queue_rx_work(struct mwifiex_adapter *adapter)
  		queue_work(adapter->rx_workqueue, &adapter->rx_work);
  	}
  }
@@ -128,7 +125,7 @@ index a9657ae6d..ba99d84a3 100644
  
  static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
  {
-@@ -189,6 +192,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+@@ -189,6 +191,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
  
  	spin_lock_bh(&adapter->rx_proc_lock);
  	if (adapter->rx_processing || adapter->rx_locked) {
@@ -136,7 +133,7 @@ index a9657ae6d..ba99d84a3 100644
  		spin_unlock_bh(&adapter->rx_proc_lock);
  		goto exit_rx_proc;
  	} else {
-@@ -196,6 +200,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+@@ -196,6 +199,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
  		spin_unlock_bh(&adapter->rx_proc_lock);
  	}
  
@@ -144,7 +141,7 @@ index a9657ae6d..ba99d84a3 100644
  	/* Check for Rx data */
  	while ((skb = skb_dequeue(&adapter->rx_data_q))) {
  		atomic_dec(&adapter->rx_pending);
-@@ -217,6 +222,11 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+@@ -217,6 +221,11 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
  		}
  	}
  	spin_lock_bh(&adapter->rx_proc_lock);
@@ -156,7 +153,7 @@ index a9657ae6d..ba99d84a3 100644
  	adapter->rx_processing = false;
  	spin_unlock_bh(&adapter->rx_proc_lock);
  
-@@ -280,11 +290,10 @@ int mwifiex_main_process(struct mwifiex_adapter *adapter)
+@@ -280,11 +289,10 @@ int mwifiex_main_process(struct mwifiex_adapter *adapter)
  				mwifiex_process_hs_config(adapter);
  			if (adapter->if_ops.process_int_status)
  				adapter->if_ops.process_int_status(adapter);
