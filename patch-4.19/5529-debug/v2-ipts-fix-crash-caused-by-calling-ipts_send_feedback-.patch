@@ -48,14 +48,14 @@ index e85844dc1..c53d22b73 100644
 +static const struct dmi_system_id no_feedback_dmi_table[] = {
 +	{
 +		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
 +		},
 +	},
 +	{
 +		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
 +		},
 +	},
 +	{ }
