@@ -1,4 +1,4 @@
-From b316882ef87c34413c03cbd308249faf36d7312b Mon Sep 17 00:00:00 2001
+From a394d542e583524af011e6302f7d6a104f3a921f Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 1 Aug 2019 17:48:17 +0900
 Subject: [PATCH] ipts: fix crash caused by calling ipts_send_feedback()
@@ -26,11 +26,11 @@ See
 - Touch and pen issue persists · Issue #374 · jakeday/linux-surface
 https://github.com/jakeday/linux-surface/issues/374#issuecomment-508234110
 ---
- drivers/misc/ipts/ipts-hid.c | 45 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ drivers/misc/ipts/ipts-hid.c | 44 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
 diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
-index e85844dc1..dc1aacab6 100644
+index e85844dc1..c53d22b73 100644
 --- a/drivers/misc/ipts/ipts-hid.c
 +++ b/drivers/misc/ipts/ipts-hid.c
 @@ -17,6 +17,7 @@
@@ -70,7 +70,7 @@ index e85844dc1..dc1aacab6 100644
  static int ipts_hid_get_hid_descriptor(ipts_info_t *ipts, u8 **desc, int *size)
  {
  	u8 *buf;
-@@ -415,7 +438,29 @@ static int handle_outputs(ipts_info_t *ipts, int parallel_idx)
+@@ -415,7 +438,28 @@ static int handle_outputs(ipts_info_t *ipts, int parallel_idx)
  		}
  	}
  
@@ -96,7 +96,6 @@ index e85844dc1..dc1aacab6 100644
 +		if (no_feedback)
 +			return 0;
 +
-+		pr_alert("DEBUG: sending feedback\n");
  		ret = ipts_send_feedback(ipts, parallel_idx, transaction_id);
  		if (ret)
  			return ret;
