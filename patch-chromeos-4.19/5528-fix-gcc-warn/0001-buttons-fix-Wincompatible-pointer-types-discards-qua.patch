@@ -1,0 +1,37 @@
+From f4b9fd4febbef3dab33742b6a0c477140d3682f1 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Fri, 2 Aug 2019 09:45:56 +0900
+Subject: [PATCH] buttons: fix Wincompatible-pointer-types-discards-qualifiers
+
+```
+drivers/input/misc/soc_button_array.c:374:19: error: passing 'const struct soc_button_info *' to parameter of type 'void *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+                devm_kfree(dev, button_info);
+                                ^~~~~~~~~~~
+/mnt/host/source/src/third_party/kernel/v4.19/include/linux/device.h:695:50: note: passing argument to parameter 'p' here
+extern void devm_kfree(struct device *dev, void *p);
+                                                 ^
+```
+
+References
+- omgssapi: fix build problems by rgerhards · Pull Request #2263 · rsyslog/rsyslog
+https://github.com/rsyslog/rsyslog/pull/2263/commits/7f5c8b9e6c1571cb3aba1a9756c17ade3ac6b001
+---
+ drivers/input/misc/soc_button_array.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index 8f21c062c85d..85ddc6cb2f33 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -371,7 +371,7 @@ static int soc_button_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	if (!device_data || !device_data->button_info)
+-		devm_kfree(dev, button_info);
++		devm_kfree(dev, (void *)button_info);
+ 
+ 	return 0;
+ }
+-- 
+2.22.0
+
