@@ -50,11 +50,11 @@ index f2d6c81d62e2..3538040910a5 100644
  	struct pci_dev *pdev = to_pci_dev(dev);
  	struct nvme_dev *ndev = pci_get_drvdata(pdev);
  
-+	if (pm_suspend_via_firmware() || !ctrl->npss) {
-+		pr_info("DEBUG: Passed %s %d, (pm_suspend_via_firmware() || !ctrl->npss)==true \n",__FUNCTION__,__LINE__);
++	if (pm_suspend_via_firmware() || !ndev->ctrl.npss) {
++		pr_info("DEBUG: Passed %s %d, (pm_suspend_via_firmware() || !ndev->ctrl.npss)==true \n",__FUNCTION__,__LINE__);
 +		pr_info("DEBUG: nvme_suspend(): using generic PCI power settings\n");
 +	} else {
-+		pr_info("DEBUG: Passed %s %d, (pm_suspend_via_firmware() || !ctrl->npss)==false \n",__FUNCTION__,__LINE__);
++		pr_info("DEBUG: Passed %s %d, (pm_suspend_via_firmware() || !ndev->ctrl.npss)==false \n",__FUNCTION__,__LINE__);
 +		pr_info("DEBUG: nvme_suspend(): using host managed power settings\n");
 +	}
 +
