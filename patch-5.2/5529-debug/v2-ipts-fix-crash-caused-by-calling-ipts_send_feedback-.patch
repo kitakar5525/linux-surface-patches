@@ -64,7 +64,7 @@ index e85844dc1..c53d22b73 100644
 +int no_feedback = -1;
 +module_param(no_feedback, int, 0644);
 +MODULE_PARM_DESC(no_feedback, "Disable sending feedback to fix crash. "
-+				"-1=auto (true if your device is SB1/SP4, false if anothe models), "
++				"-1=auto (true if your device is SB1/SP4, false if another model), "
 +				"0=false, 1=true, (default: -1)");
 +
  static int ipts_hid_get_hid_descriptor(ipts_info_t *ipts, u8 **desc, int *size)
