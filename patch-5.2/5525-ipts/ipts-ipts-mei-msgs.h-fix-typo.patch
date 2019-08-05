@@ -1,0 +1,25 @@
+From a1254fceda46222e9fa63f1483f7b46a661b7df8 Mon Sep 17 00:00:00 2001
+From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 15 May 2019 00:53:07 +0900
+Subject: [PATCH] ipts: ipts-mei-msgs.h: fix typo
+
+---
+ drivers/misc/ipts/ipts-mei-msgs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/misc/ipts/ipts-mei-msgs.h b/drivers/misc/ipts/ipts-mei-msgs.h
+index 8ca146800..d66d15a9c 100644
+--- a/drivers/misc/ipts/ipts-mei-msgs.h
++++ b/drivers/misc/ipts/ipts-mei-msgs.h
+@@ -384,7 +384,7 @@ C_ASSERT(sizeof(touch_sensor_set_mem_window_rsp_data_t) == 12);
+ //      TOUCH_STATUS_SUCCESS:                   Command was processed successfully and touch flow has stopped.
+ //      TOUCH_STATUS_CMD_SIZE_ERROR:            Command sent did not match expected size. Other fields will not contain valid data.
+ //      TOUCH_STATUS_QUIESCE_IO_IN_PROGRESS:    Indicates that Quiesce I/O is already in progress and this command cannot be accepted at this time.
+-//      TOUCH_STATIS_TIMEOUT:                   Indicates ME timed out waiting for Quiesce I/O flow to complete.
++//      TOUCH_STATUS_TIMEOUT:                   Indicates ME timed out waiting for Quiesce I/O flow to complete.
+ //
+ typedef struct touch_sensor_quiesce_io_rsp_data
+ {
+-- 
+2.21.0
+
