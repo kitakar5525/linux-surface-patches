@@ -7,7 +7,9 @@ Introduced on commit adc8ed9.
 Because I'm not sure why this is commented out, I revert this change.
 
 References:
-・ updating ipts patch · jakeday/linux-surface@adc8ed9
+- drm/i915: Improve DP downstream HPD handling · torvalds/linux@857c416
+https://github.com/torvalds/linux/commit/857c416e58dc306b15b7919117b6225544662bfa
+- updating ipts patch · jakeday/linux-surface@adc8ed9
 https://github.com/jakeday/linux-surface/commit/adc8ed95d0135612caf25e8f53a983810ac53548
 ---
  drivers/gpu/drm/i915/intel_dp.c | 4 ++--
