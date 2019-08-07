@@ -2,6 +2,10 @@
 
 ## IPTS changes
 
+IPTS is not working. It turned out that GuC submission will bot be allowed on 5.3. Thus, IPTS will not work on 5.3.
+- [drm/i915/guc: Don't allow GuC submission · torvalds/linux@a2904ad](https://github.com/torvalds/linux/commit/a2904ade3dc28cf1a1b7deded41f4369f75e664c)
+- [drm/i915/guc: Updates for GuC 32.0.3 firmware · torvalds/linux@ffd5ce2](https://github.com/torvalds/linux/commit/ffd5ce22faa4d07a07085b497717d7650f72fd5f)
+
 ### Path changes
 - `drivers/gpu/drm/i915/i915_gem_context.c` to `drivers/gpu/drm/i915/gem/i915_gem_context.c`
 - `drivers/gpu/drm/i915/intel_dp.c` to `drivers/gpu/drm/i915/display/intel_dp.c`
@@ -281,40 +285,78 @@ index 3d3c35398..9fb92c760 100644
 
 ```
 
-ipts: try to deal with runtime errors
+ipts5.3-rc: update by qzed
 ```diff
-From b847881beb086a07d6feabdea71a98cfc04dc6f2 Mon Sep 17 00:00:00 2001
+From f0d2fa6a996e7f65ea3ac86d87943f9bc40de0a6 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 2 Aug 2019 07:13:13 +0900
-Subject: [PATCH] ipts: try to deal with runtime errors
+Date: Tue, 6 Aug 2019 08:49:41 +0900
+Subject: [PATCH] ipts5.3-rc: update by qzed
 
 ---
- drivers/gpu/drm/i915/intel_ipts.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/gpu/drm/i915/intel_ipts.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
-index 9fb92c760..f8175195f 100644
+index 5ca04106e..b9f788dae 100644
 --- a/drivers/gpu/drm/i915/intel_ipts.c
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
-@@ -203,6 +203,16 @@ static int create_ipts_context(void)
+@@ -195,12 +195,19 @@ static int create_ipts_context(void)
  		goto err_unlock;
  	}
  
-+	ret = __intel_context_do_pin(ce);
-+	if (ret) {
-+		DRM_ERROR("context pinning failed : %d\n", ret);
-+		return ret;
+-	ce = intel_context_create(ipts_ctx, dev_priv->engine[RCS0]);
++	ce = i915_gem_context_get_engine(ipts_ctx, RCS0);
+ 	if (IS_ERR(ce)) {
+ 		DRM_ERROR("Failed to create intel context (error %ld)\n",
+ 			  PTR_ERR(ce));
+ 		ret = PTR_ERR(ce);
+-		goto err_unlock;
++		goto err_ctx;
 +	}
 +
-+	/* intel_context_is_pinned */
-+	if (atomic_read(&ce->pin_count))
-+		pr_alert("DEBUG: context is not pinned!\n");
-+
++	ret = intel_context_pin(ce);
++	if (ret) {
++		DRM_ERROR("Failed to pin intel context (error %d)\n", ret);
++		ret = PTR_ERR(ce);
++		goto err_ctx;
+ 	}
+ 
  	ret = execlists_context_deferred_alloc(ce, ce->engine);
- 	if (ret) {
- 		DRM_DEBUG("lr context allocation failed : %d\n", ret);
+@@ -226,7 +233,9 @@ static int create_ipts_context(void)
+ 	return 0;
+ 
+ err_ctx:
+-	if (ipts_ctx)
++	if (!IS_ERR_OR_NULL(ce))
++		intel_context_put(ce);
++	if (!IS_ERR_OR_NULL(ipts_ctx))
+ 		i915_gem_context_put(ipts_ctx);
+ 
+ err_unlock:
+@@ -244,7 +253,11 @@ static void destroy_ipts_context(void)
+ 
+ 	ipts_ctx = intel_ipts.ipts_context;
+ 
+-	ce = intel_context_create(ipts_ctx, dev_priv->engine[RCS0]);
++	ce = i915_gem_context_lookup_engine(ipts_ctx, RCS0);
++	if (IS_ERR(ce)) {
++		DRM_ERROR("i915_gem_context_lookup_engine failed: %ld\n", PTR_ERR(ce));
++		return;
++	}
+ 
+ 	/* Initialize the context right away.*/
+ 	ret = i915_mutex_lock_interruptible(intel_ipts.dev);
+@@ -255,6 +268,7 @@ static void destroy_ipts_context(void)
+ 
+ 	execlists_context_unpin(ce);
+ 	intel_context_unpin(ce);
++	intel_context_put(ce);
+ 	i915_gem_context_put(ipts_ctx);
+ 
+ 	mutex_unlock(&intel_ipts.dev->struct_mutex);
 -- 
 2.22.0
+
 
 ```
 
