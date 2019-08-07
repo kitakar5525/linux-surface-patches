@@ -2,7 +2,7 @@
 
 ## IPTS changes
 
-IPTS is not working. It turned out that GuC submission will bot be allowed on 5.3. Thus, IPTS will not work on 5.3.
+IPTS is not working. It turned out that GuC submission will not be allowed on 5.3. Thus, IPTS will not work on 5.3.
 - [drm/i915/guc: Don't allow GuC submission · torvalds/linux@a2904ad](https://github.com/torvalds/linux/commit/a2904ade3dc28cf1a1b7deded41f4369f75e664c)
 - [drm/i915/guc: Updates for GuC 32.0.3 firmware · torvalds/linux@ffd5ce2](https://github.com/torvalds/linux/commit/ffd5ce22faa4d07a07085b497717d7650f72fd5f)
 
