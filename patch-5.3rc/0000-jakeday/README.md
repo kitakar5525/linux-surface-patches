@@ -367,3 +367,68 @@ index 5ca04106e..b9f788dae 100644
 `USB_STATE_DEFAULT` to `USB_STATE_CONFIGURED`
 
 - [usb: core: hub: Enable/disable U1/U2 in configured state · torvalds/linux@fea3af5](https://github.com/torvalds/linux/commit/fea3af5e0358b014c653561109c11ebd3ecdbff2)
+
+
+
+## 0008-wifi.patch changes
+
+Resolved .rej files for wifi-5.2
+```diff
+From f128a72f283df3a126efa7c119377babd23cfc25 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Wed, 7 Aug 2019 16:13:14 +0900
+Subject: [PATCH 2/2] Resolved .rej files for wifi-5.2
+
+---
+ drivers/net/wireless/marvell/mwifiex/main.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index d25113557..ba99d84a3 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -172,16 +172,18 @@ void mwifiex_queue_main_work(struct mwifiex_adapter *adapter)
+ }
+ EXPORT_SYMBOL_GPL(mwifiex_queue_main_work);
+ 
+-static void mwifiex_queue_rx_work(struct mwifiex_adapter *adapter)
++void mwifiex_queue_rx_work(struct mwifiex_adapter *adapter)
+ {
+ 	spin_lock_bh(&adapter->rx_proc_lock);
+ 	if (adapter->rx_processing) {
++		adapter->more_rx_task_flag = true;
+ 		spin_unlock_bh(&adapter->rx_proc_lock);
+ 	} else {
+ 		spin_unlock_bh(&adapter->rx_proc_lock);
+ 		queue_work(adapter->rx_workqueue, &adapter->rx_work);
+ 	}
+ }
++EXPORT_SYMBOL_GPL(mwifiex_queue_rx_work);
+ 
+ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+ {
+@@ -190,6 +192,7 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+ 
+ 	spin_lock_bh(&adapter->rx_proc_lock);
+ 	if (adapter->rx_processing || adapter->rx_locked) {
++		adapter->more_rx_task_flag = true;
+ 		spin_unlock_bh(&adapter->rx_proc_lock);
+ 		goto exit_rx_proc;
+ 	} else {
+@@ -219,6 +222,11 @@ static int mwifiex_process_rx(struct mwifiex_adapter *adapter)
+ 		}
+ 	}
+ 	spin_lock_bh(&adapter->rx_proc_lock);
++	if (adapter->more_rx_task_flag) {
++		adapter->more_rx_task_flag = false;
++		spin_unlock_bh(&adapter->rx_proc_lock);
++		goto rx_process_start;
++	}
+ 	adapter->rx_processing = false;
+ 	spin_unlock_bh(&adapter->rx_proc_lock);
+ 
+-- 
+2.22.0
+
+
+```
