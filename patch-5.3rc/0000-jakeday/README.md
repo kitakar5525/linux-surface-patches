@@ -372,6 +372,8 @@ index 5ca04106e..b9f788dae 100644
 
 ## 0008-wifi.patch changes
 
+- [mwifiex: don't disable hardirqs; just softirqs · torvalds/linux@8a7f9fd](https://github.com/torvalds/linux/commit/8a7f9fd8a3e09c829c9fc2a86fe2d370ebcafd95#diff-bd00101a648dddd22d709b04ec311460)
+
 Resolved .rej files for wifi-5.2
 ```diff
 From f128a72f283df3a126efa7c119377babd23cfc25 Mon Sep 17 00:00:00 2001
