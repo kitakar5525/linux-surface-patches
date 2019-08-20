@@ -1,0 +1,26 @@
+From 741fb3bcc81c000668e3c80e18986c77d5b807f2 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Sun, 18 Aug 2019 19:26:41 +0900
+Subject: [PATCH] mwifiex_pcie: set to d3hot on removing
+
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 6a28d89ec..f34cbf242 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -314,6 +314,9 @@ static void mwifiex_pcie_remove(struct pci_dev *pdev)
+ 		mwifiex_init_shutdown_fw(priv, MWIFIEX_FUNC_SHUTDOWN);
+ 	}
+ 
++	pr_info("DEBUG: putting into D3hot...\n");
++	pci_set_power_state(pdev, PCI_D3hot);
++
+ 	mwifiex_remove_card(adapter);
+ }
+ 
+-- 
+2.22.1
+
