@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/x86_64 4.19.67 Kernel Configuration
+# Linux/x86_64 4.19.69 Kernel Configuration
 #
 
 #
@@ -2707,6 +2707,7 @@ CONFIG_TCG_VIRTIO_VTPM=m
 CONFIG_DEVPORT=y
 # CONFIG_XILLYBUS is not set
 # CONFIG_RANDOM_TRUST_CPU is not set
+# CONFIG_RANDOM_TRUST_BOOTLOADER is not set
 
 #
 # I2C support
