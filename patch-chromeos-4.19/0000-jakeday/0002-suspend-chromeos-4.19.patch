@@ -1,24 +1,18 @@
-From 8bd92c14cc09521dfb2c89aa41139d75aa69b88a Mon Sep 17 00:00:00 2001
+From c14beca76be6855b49479b42494d8564c0c87b8e Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Wed, 31 Jul 2019 08:39:18 +0900
-Subject: [PATCH 02/12] suspend
+Date: Fri, 2 Aug 2019 06:31:57 +0900
+Subject: [PATCH 02/12] suspend-chromeos-4.19
 
-Note:
-NVMe part will be merged into Linux 5.3. Remove the part in this
-patch when it arrives.
-
-Note2:
-Already backported the part on chromeos-4.19.
 ---
  kernel/power/suspend.c | 11 +++++++++++
  kernel/sysctl.c        |  9 +++++++++
  2 files changed, 20 insertions(+)
 
 diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
-index 09b7bd1080a2..3c17328b3151 100644
+index c874a7026..8057e8647 100644
 --- a/kernel/power/suspend.c
 +++ b/kernel/power/suspend.c
-@@ -547,6 +547,8 @@ int suspend_devices_and_enter(suspend_state_t state)
+@@ -533,6 +533,8 @@ int suspend_devices_and_enter(suspend_state_t state)
  	goto Resume_devices;
  }
  
@@ -27,7 +21,7 @@ index 09b7bd1080a2..3c17328b3151 100644
  /**
   * suspend_finish - Clean up before finishing the suspend sequence.
   *
-@@ -555,6 +557,15 @@ int suspend_devices_and_enter(suspend_state_t state)
+@@ -541,6 +543,15 @@ int suspend_devices_and_enter(suspend_state_t state)
   */
  static void suspend_finish(void)
  {
@@ -44,10 +38,10 @@ index 09b7bd1080a2..3c17328b3151 100644
  	pm_notifier_call_chain(PM_POST_SUSPEND);
  	pm_restore_console();
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 9a9fce9980f5..39e8081c18f8 100644
+index 078950d96..91dc487d6 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -314,7 +314,16 @@ static int min_extfrag_threshold;
+@@ -315,7 +315,16 @@ static int min_extfrag_threshold;
  static int max_extfrag_threshold = 1000;
  #endif
  

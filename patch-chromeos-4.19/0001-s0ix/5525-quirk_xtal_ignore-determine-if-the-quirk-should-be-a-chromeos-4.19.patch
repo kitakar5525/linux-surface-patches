@@ -1,7 +1,7 @@
-From 3c345a5ebe677bea131f89b86ffad4a105d7e7c2 Mon Sep 17 00:00:00 2001
+From 3daec7790b9580b03c465f561e1523adee10cb9f Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Mon, 15 Jul 2019 23:23:57 +0900
-Subject: [PATCH] quirk_xtal_ignore: determine if the quirk should be applied 
+Date: Fri, 6 Sep 2019 12:38:50 +0900
+Subject: [PATCH] quirk_xtal_ignore: determine if the quirk should be applied
  or not by module parameter instead for chromeos-4.19
 
 By default, quirk_xtal_ignore() will be called depending on
@@ -11,11 +11,11 @@ or not by module prameter enable_quirk_xtal_ignore.
 
 Use `intel_pmc_core.enable_quirk_xtal_ignore=1` to apply the quirk.
 ---
- drivers/platform/x86/intel_pmc_core.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/platform/x86/intel_pmc_core.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
-index 267a329d3494..75ba616d10df 100644
+index a45f41b135d1..4ca9e0dbe280 100644
 --- a/drivers/platform/x86/intel_pmc_core.c
 +++ b/drivers/platform/x86/intel_pmc_core.c
 @@ -825,6 +825,11 @@ static const struct pci_device_id pmc_pci_ids[] = {
@@ -38,18 +38,17 @@ index 267a329d3494..75ba616d10df 100644
  	return 0;
  }
  
-@@ -876,7 +882,10 @@ static int pmc_core_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
+@@ -894,7 +900,9 @@ static int pmc_core_probe(struct platform_device *pdev)
+ 	mutex_init(&pmcdev->lock);
+ 	platform_set_drvdata(pdev, pmcdev);
+ 	pmcdev->pmc_xram_read_bit = pmc_core_check_read_lock_bit();
 -	dmi_check_system(pmc_core_dmi_table);
 +	if (enable_quirk_xtal_ignore) {
 +		quirk_xtal_ignore(NULL);
 +	}
-+
- 	dev_info(&pdev->dev, " initialized\n");
- 	return 0;
- }
+ 
+ 	err = pmc_core_dbgfs_register(pmcdev);
+ 	if (err < 0) {
 -- 
-2.22.0
+2.23.0
 

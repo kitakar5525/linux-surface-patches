@@ -1,7 +1,7 @@
-From e686721185bed1a2e2061497758e547eb1809620 Mon Sep 17 00:00:00 2001
+From 9118764f28d42065a1f514b971ef601bd35b433a Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 2 Aug 2019 00:12:51 +0900
-Subject: [PATCH 05/12] ipts-chromeos-4.19
+Date: Fri, 6 Sep 2019 12:35:41 +0900
+Subject: [PATCH] ipts-chromeos-4.19
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -84,7 +84,7 @@ index 1c2857f13ad4..55f276c57f42 100644
  i915-$(CONFIG_DRM_I915_CAPTURE_ERROR) += i915_gpu_error.o
  i915-$(CONFIG_DRM_I915_SELFTEST) += \
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index ad528482773a..2e56034f6823 100644
+index daba79227e50..59232f0b4b94 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -53,6 +53,7 @@
@@ -105,7 +105,7 @@ index ad528482773a..2e56034f6823 100644
  	return 0;
  
  cleanup_gem:
-@@ -1764,6 +1768,9 @@ void i915_driver_unload(struct drm_device *dev)
+@@ -1765,6 +1769,9 @@ void i915_driver_unload(struct drm_device *dev)
  
  	disable_rpm_wakeref_asserts(dev_priv);
  
@@ -115,7 +115,7 @@ index ad528482773a..2e56034f6823 100644
  	i915_driver_unregister(dev_priv);
  
  	if (i915_gem_suspend(dev_priv))
-@@ -1899,6 +1906,9 @@ static int i915_drm_suspend(struct drm_device *dev)
+@@ -1900,6 +1907,9 @@ static int i915_drm_suspend(struct drm_device *dev)
  	struct pci_dev *pdev = dev_priv->drm.pdev;
  	pci_power_t opregion_target_state;
  
@@ -125,7 +125,7 @@ index ad528482773a..2e56034f6823 100644
  	disable_rpm_wakeref_asserts(dev_priv);
  
  	/* We do a lot of poking in a lot of registers, make sure they work
-@@ -2098,6 +2108,9 @@ static int i915_drm_resume(struct drm_device *dev)
+@@ -2099,6 +2109,9 @@ static int i915_drm_resume(struct drm_device *dev)
  
  	enable_rpm_wakeref_asserts(dev_priv);
  
@@ -136,7 +136,7 @@ index ad528482773a..2e56034f6823 100644
  }
  
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 763426cee8ab..2523a6fdf1d4 100644
+index 9140e7652ab9..af523821f1b9 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
 @@ -3290,6 +3290,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
@@ -244,7 +244,7 @@ index 36aa070cea66..0b001c71fdba 100644
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
 diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
-index c8debeb3c378..4ee20a337ba6 100644
+index bff7993bf0c1..edf99d6d1f2d 100644
 --- a/drivers/gpu/drm/i915/intel_dp.c
 +++ b/drivers/gpu/drm/i915/intel_dp.c
 @@ -2799,8 +2799,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
@@ -6065,7 +6065,7 @@ index 000000000000..1fcd02146b50
 +
 +#endif // _IPTS_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index bb1ee9834a02..2bbffe8aad40 100644
+index 225373e4a9ef..828342db01be 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -6077,7 +6077,7 @@ index bb1ee9834a02..2bbffe8aad40 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 4299658d48d6..a13fc65bb8e1 100644
+index a66ebceea408..030e8f4294be 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -6170,5 +6170,5 @@ index 000000000000..f329bbfb8079
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.22.0
+2.23.0
 
