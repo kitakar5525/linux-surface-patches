@@ -1,7 +1,7 @@
 From d5e20c033c737885ad68f0af9edf0369f9e0e187 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Fri, 2 Aug 2019 06:54:19 +0900
-Subject: [PATCH] i915: ipts: add module params for debugging
+Subject: [PATCH] i915: ipts: add module params for debugging for i915_legacy
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -21,15 +21,15 @@ References:
 ・ fix touch screen lag and crashing in ipts module · jakeday/linux-surface@1143fca
 https://github.com/jakeday/linux-surface/commit/1143fcaa6b40e6bd53adba8556789155572ef4fb
 ---
- drivers/gpu/drm/i915/i915_params.c          | 15 +++++++++++++++
- drivers/gpu/drm/i915/i915_params.h          |  5 ++++-
- drivers/gpu/drm/i915/intel_guc_submission.c | 11 ++++++++---
+ drivers/gpu/drm/i915_legacy/i915_params.c          | 15 +++++++++++++++
+ drivers/gpu/drm/i915_legacy/i915_params.h          |  5 ++++-
+ drivers/gpu/drm/i915_legacy/intel_guc_submission.c | 11 ++++++++---
  3 files changed, 27 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_params.c b/drivers/gpu/drm/i915/i915_params.c
+diff --git a/drivers/gpu/drm/i915_legacy/i915_params.c b/drivers/gpu/drm/i915_legacy/i915_params.c
 index 522636ae1..b03cc873b 100644
---- a/drivers/gpu/drm/i915/i915_params.c
-+++ b/drivers/gpu/drm/i915/i915_params.c
+--- a/drivers/gpu/drm/i915_legacy/i915_params.c
++++ b/drivers/gpu/drm/i915_legacy/i915_params.c
 @@ -151,6 +151,21 @@ i915_param_named_unsafe(enable_guc, int, 0400,
  i915_param_named_unsafe(enable_ipts, int, 0400,
  	"Enable IPTS Touchscreen and Pen support (default: 1)");
@@ -52,10 +52,10 @@ index 522636ae1..b03cc873b 100644
  i915_param_named(guc_log_level, int, 0400,
  	"GuC firmware logging level. Requires GuC to be loaded. "
  	"(-1=auto [default], 0=disable, 1..4=enable with verbosity min..max)");
-diff --git a/drivers/gpu/drm/i915/i915_params.h b/drivers/gpu/drm/i915/i915_params.h
+diff --git a/drivers/gpu/drm/i915_legacy/i915_params.h b/drivers/gpu/drm/i915_legacy/i915_params.h
 index 6124b1a96..06b96bbe5 100644
---- a/drivers/gpu/drm/i915/i915_params.h
-+++ b/drivers/gpu/drm/i915/i915_params.h
+--- a/drivers/gpu/drm/i915_legacy/i915_params.h
++++ b/drivers/gpu/drm/i915_legacy/i915_params.h
 @@ -78,7 +78,10 @@ struct drm_printer;
  	param(bool, enable_dp_mst, true) \
  	param(bool, enable_dpcd_backlight, false) \
@@ -68,10 +68,10 @@ index 6124b1a96..06b96bbe5 100644
  
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
-diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
+diff --git a/drivers/gpu/drm/i915_legacy/intel_guc_submission.c b/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
 index b4cdf26cd..3ad4053fc 100644
---- a/drivers/gpu/drm/i915/intel_guc_submission.c
-+++ b/drivers/gpu/drm/i915/intel_guc_submission.c
+--- a/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
++++ b/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
 @@ -97,7 +97,12 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
  
  static inline bool is_high_priority(struct intel_guc_client *client)

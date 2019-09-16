@@ -1,25 +1,17 @@
-From 0140825e5c16b79e3089fa550c550b5a0c664a51 Mon Sep 17 00:00:00 2001
+From 5a5e218df4a21522c7baba4438730512b18948cd Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Mon, 22 Jul 2019 19:38:37 +0900
-Subject: [PATCH] ipts: uncomment downstream_hpd_needs_d0 for 5.3rc
+Date: Mon, 16 Sep 2019 16:15:32 +0900
+Subject: [PATCH] ipts: uncomment downstream_hpd_needs_d0 for i915_legacy
 
-Introduced on commit adc8ed9.
-Because I'm not sure why this is commented out, I revert this change.
-
-References:
-- drm/i915: Improve DP downstream HPD handling · torvalds/linux@857c416
-https://github.com/torvalds/linux/commit/857c416e58dc306b15b7919117b6225544662bfa
-- updating ipts patch · jakeday/linux-surface@adc8ed9
-https://github.com/jakeday/linux-surface/commit/adc8ed95d0135612caf25e8f53a983810ac53548
 ---
- drivers/gpu/drm/i915/display/intel_dp.c | 4 ++--
+ drivers/gpu/drm/i915_legacy/intel_dp.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/display/intel_dp.c b/drivers/gpu/drm/i915/display/intel_dp.c
-index f85f6e533..4336df46f 100644
---- a/drivers/gpu/drm/i915/display/intel_dp.c
-+++ b/drivers/gpu/drm/i915/display/intel_dp.c
-@@ -2970,8 +2970,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
+diff --git a/drivers/gpu/drm/i915_legacy/intel_dp.c b/drivers/gpu/drm/i915_legacy/intel_dp.c
+index e305a35de..560274d1c 100644
+--- a/drivers/gpu/drm/i915_legacy/intel_dp.c
++++ b/drivers/gpu/drm/i915_legacy/intel_dp.c
+@@ -2899,8 +2899,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
  		return;
  
  	if (mode != DRM_MODE_DPMS_ON) {
@@ -31,5 +23,5 @@ index f85f6e533..4336df46f 100644
  		ret = drm_dp_dpcd_writeb(&intel_dp->aux, DP_SET_POWER,
  					 DP_SET_POWER_D3);
 -- 
-2.22.0
+2.23.0
 

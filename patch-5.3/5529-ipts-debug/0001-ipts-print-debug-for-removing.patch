@@ -1,18 +1,18 @@
 From 9b85b28ae6ea8f3b6fd68df534a50794f81104d1 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 1 Aug 2019 18:43:19 +0900
-Subject: [PATCH] ipts: print debug for removing
+Subject: [PATCH] ipts: print debug for removing for i915_legacy
 
 ---
- drivers/gpu/drm/i915/intel_ipts.c    | 3 +++
+ drivers/gpu/drm/i915_legacy/intel_ipts.c    | 3 +++
  drivers/misc/ipts/ipts-mei.c         | 2 ++
  drivers/misc/ipts/ipts-msg-handler.c | 7 +++++++
  3 files changed, 12 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
+diff --git a/drivers/gpu/drm/i915_legacy/intel_ipts.c b/drivers/gpu/drm/i915_legacy/intel_ipts.c
 index 155cbf719..eb6aa6bf0 100644
---- a/drivers/gpu/drm/i915/intel_ipts.c
-+++ b/drivers/gpu/drm/i915/intel_ipts.c
+--- a/drivers/gpu/drm/i915_legacy/intel_ipts.c
++++ b/drivers/gpu/drm/i915_legacy/intel_ipts.c
 @@ -602,6 +602,7 @@ int intel_ipts_init(struct drm_device *dev)
  {
  	int ret = 0;

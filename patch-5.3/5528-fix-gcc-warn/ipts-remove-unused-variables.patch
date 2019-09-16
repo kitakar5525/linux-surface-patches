@@ -1,16 +1,16 @@
 From dbbf2639cdb5be7829c18b58879f8b0bbe00ec9e Mon Sep 17 00:00:00 2001
 From: "Hayataka@kitakar5525" <Hayataka@kitakar5525>
 Date: Wed, 13 Feb 2019 23:20:31 +0900
-Subject: [PATCH 21/28] ipts: remove unused variables
+Subject: [PATCH 21/28] ipts: remove unused variables for i915_legacy
 
 ---
- drivers/gpu/drm/i915/intel_guc_submission.c | 1 -
+ drivers/gpu/drm/i915_legacy/intel_guc_submission.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
+diff --git a/drivers/gpu/drm/i915_legacy/intel_guc_submission.c b/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
 index a8ad92366..7deed5b03 100644
---- a/drivers/gpu/drm/i915/intel_guc_submission.c
-+++ b/drivers/gpu/drm/i915/intel_guc_submission.c
+--- a/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
++++ b/drivers/gpu/drm/i915_legacy/intel_guc_submission.c
 @@ -107,7 +107,6 @@ static inline bool is_high_priority_kmd(struct intel_guc_client *client)
  
  static int reserve_doorbell(struct intel_guc_client *client)
