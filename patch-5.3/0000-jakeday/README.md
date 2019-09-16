@@ -1,5 +1,8 @@
 # Changes from 5.2 to 5.3rc
 
+## 2019-09-16
+Currently, using i915 modules from 5.2.y (i915_legacy) to use GuC submission (StollD/linux-surface-patches@ce48afa).
+
 ## IPTS changes
 
 IPTS is not working. It turned out that GuC submission will not be allowed on 5.3. Thus, IPTS will not work on 5.3.
