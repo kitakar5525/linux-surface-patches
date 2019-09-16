@@ -372,6 +372,7 @@ index 5ca04106e..b9f788dae 100644
 
 ## 0008-wifi.patch changes
 
+`spin_unlock_irqrestore()` to `spin_unlock_bh()`
 - [mwifiex: don't disable hardirqs; just softirqs · torvalds/linux@8a7f9fd](https://github.com/torvalds/linux/commit/8a7f9fd8a3e09c829c9fc2a86fe2d370ebcafd95#diff-bd00101a648dddd22d709b04ec311460)
 
 Resolved .rej files for wifi-5.2

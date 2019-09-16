@@ -1,7 +1,7 @@
-From c14beca76be6855b49479b42494d8564c0c87b8e Mon Sep 17 00:00:00 2001
+From ed8097edcaf445f76c1ce5213600a680d4f6e14d Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 2 Aug 2019 06:31:57 +0900
-Subject: [PATCH 02/12] suspend-5.3rc
+Date: Wed, 31 Jul 2019 08:41:30 +0900
+Subject: [PATCH 02/12] suspend-5.3
 
 ---
  kernel/power/suspend.c | 11 +++++++++++
@@ -38,10 +38,10 @@ index c874a7026..8057e8647 100644
  	pm_notifier_call_chain(PM_POST_SUSPEND);
  	pm_restore_console();
 diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-index 078950d96..91dc487d6 100644
+index baead3605..9fc3541e0 100644
 --- a/kernel/sysctl.c
 +++ b/kernel/sysctl.c
-@@ -315,7 +315,16 @@ static int min_extfrag_threshold;
+@@ -318,7 +318,16 @@ static int min_extfrag_threshold;
  static int max_extfrag_threshold = 1000;
  #endif
  
@@ -59,5 +59,5 @@ index 078950d96..91dc487d6 100644
  		.procname	= "sched_child_runs_first",
  		.data		= &sysctl_sched_child_runs_first,
 -- 
-2.22.0
+2.23.0
 

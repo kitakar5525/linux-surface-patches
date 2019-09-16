@@ -1,7 +1,7 @@
-From be907c4532290b978042402ffb226f7858983386 Mon Sep 17 00:00:00 2001
+From 5cfd8ffc64d2a10f7664b201306fccde21a911a1 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 2 Aug 2019 06:47:51 +0900
-Subject: [PATCH 08/12] sdcard-reader-5.3rc
+Date: Mon, 16 Sep 2019 14:46:06 +0900
+Subject: [PATCH 07/12] sdcard-reader-5.3
 
 ---
  drivers/usb/core/hub.c | 3 ++-
@@ -22,5 +22,5 @@ index 236313f41..33185fb44 100644
  
  	udev->lpm_disable_count--;
 -- 
-2.22.0
+2.23.0
 

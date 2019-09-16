@@ -1,7 +1,7 @@
-From 94d2a6ef8f8135d16de9cb45b6449f5ab6a2fb08 Mon Sep 17 00:00:00 2001
+From 31aae671b155a961bad4e154d61efcb0d83aa878 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 2 Aug 2019 06:34:46 +0900
-Subject: [PATCH 04/12] cameras-5.3rc
+Date: Mon, 16 Sep 2019 14:42:50 +0900
+Subject: [PATCH 04/12] cameras-5.3
 
 ---
  drivers/media/usb/uvc/uvc_driver.c |   40 +
@@ -2749,5 +2749,5 @@ index 000000000..79aef6966
 +};
 +#endif
 -- 
-2.22.0
+2.23.0
 

@@ -20,5 +20,5 @@ index 613f91add03d..e1428222dd73 100644
  	/* Huawei devices */
  	{DEVICE_HWI(0x03f0, 0x581d)},	/* HP lt4112 LTE/HSPA+ Gobi 4G Modem (Huawei me906e) */
 -- 
-2.22.0
+2.23.0
 
