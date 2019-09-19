@@ -1,13 +1,13 @@
-From 97c3d9f751f4f44962560691f13262d895f668c5 Mon Sep 17 00:00:00 2001
+From 8a0a93dca585b8f9d96b79e7b687ac4a6cf302c8 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 6 Sep 2019 12:37:18 +0900
-Subject: [PATCH] 4416-01-5525-ipu_patches-chromeos-4.19
+Date: Thu, 19 Sep 2019 23:35:54 +0900
+Subject: [PATCH] ipu_patches-chromeos-4.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From
-・ [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
+- [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
 
 Concatenated below patchset:
 0001-v4l-Add-Intel-IPU3-meta-buffer-formats.patch
@@ -22076,13 +22076,13 @@ index 000000000000..8abae6d31747
 +
 +#endif
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index a3ee9af5428c..62e1c398df1e 100644
+index a38bc4ac3eb8..a6eef2326e2f 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
-@@ -1338,6 +1338,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
- 	case V4L2_META_FMT_MTISP_LCS:	descr = "Local Contrast Enhancement Stat"; break;
+@@ -1339,6 +1339,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
  	case V4L2_META_FMT_MTISP_LMV:	descr = "Local Motion Vector Histogram"; break;
  	case V4L2_META_FMT_MTISP_PARAMS: descr = "MTK ISP Tuning Metadata"; break;
+ 	case V4L2_PIX_FMT_MM21:		descr = "Mediatek 8-bit block format"; break;
 +	case V4L2_META_FMT_IPU3_PARAMS:	descr = "IPU3 processing parameters"; break;
 +	case V4L2_META_FMT_IPU3_STAT_3A:	descr = "IPU3 3A statistics"; break;
  
@@ -25010,12 +25010,12 @@ index 000000000000..7ad42b63342e
 +};
 +#endif
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 5b08a870f1d6..fd81ec626252 100644
+index 986104702b6c..3ede0a6c08e3 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
-@@ -758,6 +758,10 @@ struct v4l2_pix_format {
- #define V4L2_META_FMT_MTISP_LMV   v4l2_fourcc('M', 'T', 'f', 'm') /* Local motion vector histogram */
- #define V4L2_META_FMT_MTISP_PARAMS v4l2_fourcc('M', 'T', 'f', 'p') /* ISP tuning parameters */
+@@ -762,6 +762,10 @@ struct v4l2_pix_format {
+ /* Vendor specific - Mediatek Face Detection meta buffer format for firmware */
+ #define V4L2_META_FMT_MTFD_RESULT  v4l2_fourcc('M', 'T', 'f', 'd') /* FD meta capture buffer */
  
 +/* Vendor specific - used for IPU3 camera sub-system */
 +#define V4L2_META_FMT_IPU3_PARAMS	v4l2_fourcc('i', 'p', '3', 'p') /* IPU3 params */
