@@ -1,0 +1,86 @@
+From d4d0d1c01ff8593d626c93af7eca090dbbc007d3 Mon Sep 17 00:00:00 2001
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Date: Thu, 8 Aug 2019 23:58:38 +0200
+Subject: [PATCH 3/3] nvme-pci: Allow PCI bus-level PM to be used if ASPM is
+ disabled
+
+One of the modifications made by commit d916b1be94b6 ("nvme-pci: use
+host managed power state for suspend") was adding a pci_save_state()
+call to nvme_suspend() so as to instruct the PCI bus type to leave
+devices handled by the nvme driver in D0 during suspend-to-idle.
+That was done with the assumption that ASPM would transition the
+device's PCIe link into a low-power state when the device became
+inactive.  However, if ASPM is disabled for the device, its PCIe
+link will stay in L0 and in that case commit d916b1be94b6 is likely
+to cause the energy used by the system while suspended to increase.
+
+Namely, if the device in question works in accordance with the PCIe
+specification, putting it into D3hot causes its PCIe link to go to
+L1 or L2/L3 Ready, which is lower-power than L0.  Since the energy
+used by the system while suspended depends on the state of its PCIe
+link (as a general rule, the lower-power the state of the link, the
+less energy the system will use), putting the device into D3hot
+during suspend-to-idle should be more energy-efficient that leaving
+it in D0 with disabled ASPM.
+
+For this reason, avoid leaving NVMe devices with disabled ASPM in D0
+during suspend-to-idle.  Instead, shut them down entirely and let
+the PCI bus type put them into D3.
+
+Fixes: d916b1be94b6 ("nvme-pci: use host managed power state for suspend")
+Link: https://lore.kernel.org/linux-pm/2763495.NmdaWeg79L@kreacher/T/#t
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reviewed-by: Keith Busch <keith.busch@intel.com>
+---
+ drivers/nvme/host/pci.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index 4fb9609b5..897ec6a2c 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2866,7 +2866,7 @@ static int nvme_resume(struct device *dev)
+ 	struct nvme_dev *ndev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct nvme_ctrl *ctrl = &ndev->ctrl;
+ 
+-	if (pm_resume_via_firmware() || !ctrl->npss ||
++	if (ndev->last_ps == U32_MAX ||
+ 	    nvme_set_power_state(ctrl, ndev->last_ps) != 0)
+ 		nvme_reset_ctrl(ctrl);
+ 	return 0;
+@@ -2879,6 +2879,8 @@ static int nvme_suspend(struct device *dev)
+ 	struct nvme_ctrl *ctrl = &ndev->ctrl;
+ 	int ret = -EBUSY;
+ 
++	ndev->last_ps = U32_MAX;
++
+ 	/*
+ 	 * The platform does not remove power for a kernel managed suspend so
+ 	 * use host managed nvme power settings for lowest idle power if
+@@ -2886,8 +2888,14 @@ static int nvme_suspend(struct device *dev)
+ 	 * shutdown.  But if the firmware is involved after the suspend or the
+ 	 * device does not support any non-default power states, shut down the
+ 	 * device fully.
++	 *
++	 * If ASPM is not enabled for the device, shut down the device and allow
++	 * the PCI bus layer to put it into D3 in order to take the PCIe link
++	 * down, so as to allow the platform to achieve its minimum low-power
++	 * state (which may not be possible if the link is up).
+ 	 */
+-	if (pm_suspend_via_firmware() || !ctrl->npss) {
++	if (pm_suspend_via_firmware() || !ctrl->npss ||
++	    !pcie_aspm_enabled(pdev)) {
+ 		nvme_dev_disable(ndev, true);
+ 		return 0;
+ 	}
+@@ -2900,7 +2908,6 @@ static int nvme_suspend(struct device *dev)
+ 	    ctrl->state != NVME_CTRL_ADMIN_ONLY)
+ 		goto unfreeze;
+ 
+-	ndev->last_ps = 0;
+ 	ret = nvme_get_power_state(ctrl, &ndev->last_ps);
+ 	if (ret < 0)
+ 		goto unfreeze;
+-- 
+2.23.0
+
