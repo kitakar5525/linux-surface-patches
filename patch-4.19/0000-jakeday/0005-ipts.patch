@@ -1,4 +1,4 @@
-From 903df87282438297ec3e5d244aa31854c2ce7c7b Mon Sep 17 00:00:00 2001
+From 694cb53bc941b057ead3a4bbaee31f6c0ffb652e Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Tue, 10 Sep 2019 21:52:46 +0900
 Subject: [PATCH 05/12] ipts
@@ -24,20 +24,27 @@ Subject: [PATCH 05/12] ipts
  drivers/hid/hid-multitouch.c                |   22 +-
  drivers/misc/Kconfig                        |    1 +
  drivers/misc/Makefile                       |    1 +
- drivers/misc/ipts/Kconfig                   |    9 +
- drivers/misc/ipts/Makefile                  |   13 +
+ drivers/misc/ipts/Kconfig                   |   11 +
+ drivers/misc/ipts/Makefile                  |   17 +
+ drivers/misc/ipts/companion/Kconfig         |    9 +
+ drivers/misc/ipts/companion/Makefile        |    1 +
+ drivers/misc/ipts/companion/ipts-surface.c  |   82 ++
  drivers/misc/ipts/ipts-binary-spec.h        |  118 +++
  drivers/misc/ipts/ipts-dbgfs.c              |  364 +++++++
+ drivers/misc/ipts/ipts-fw.c                 |  113 ++
+ drivers/misc/ipts/ipts-fw.h                 |   12 +
  drivers/misc/ipts/ipts-gfx.c                |  185 ++++
  drivers/misc/ipts/ipts-gfx.h                |   24 +
- drivers/misc/ipts/ipts-hid.c                |  504 +++++++++
+ drivers/misc/ipts/ipts-hid.c                |  497 +++++++++
  drivers/misc/ipts/ipts-hid.h                |   34 +
- drivers/misc/ipts/ipts-kernel.c             | 1050 +++++++++++++++++++
+ drivers/misc/ipts/ipts-kernel.c             | 1042 +++++++++++++++++++
  drivers/misc/ipts/ipts-kernel.h             |   23 +
  drivers/misc/ipts/ipts-mei-msgs.h           |  585 +++++++++++
- drivers/misc/ipts/ipts-mei.c                |  282 +++++
+ drivers/misc/ipts/ipts-mei.c                |  290 ++++++
  drivers/misc/ipts/ipts-msg-handler.c        |  437 ++++++++
  drivers/misc/ipts/ipts-msg-handler.h        |   33 +
+ drivers/misc/ipts/ipts-params.c             |   21 +
+ drivers/misc/ipts/ipts-params.h             |   14 +
  drivers/misc/ipts/ipts-resource.c           |  277 +++++
  drivers/misc/ipts/ipts-resource.h           |   30 +
  drivers/misc/ipts/ipts-sensor-regs.h        |  700 +++++++++++++
@@ -45,14 +52,20 @@ Subject: [PATCH 05/12] ipts
  drivers/misc/ipts/ipts.h                    |  200 ++++
  drivers/misc/mei/hw-me-regs.h               |    1 +
  drivers/misc/mei/pci-me.c                   |    1 +
+ include/linux/intel_ipts_fw.h               |   14 +
  include/linux/intel_ipts_if.h               |   76 ++
- 42 files changed, 5889 insertions(+), 26 deletions(-)
+ 50 files changed, 6154 insertions(+), 26 deletions(-)
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.c
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.h
  create mode 100644 drivers/misc/ipts/Kconfig
  create mode 100644 drivers/misc/ipts/Makefile
+ create mode 100644 drivers/misc/ipts/companion/Kconfig
+ create mode 100644 drivers/misc/ipts/companion/Makefile
+ create mode 100644 drivers/misc/ipts/companion/ipts-surface.c
  create mode 100644 drivers/misc/ipts/ipts-binary-spec.h
  create mode 100644 drivers/misc/ipts/ipts-dbgfs.c
+ create mode 100644 drivers/misc/ipts/ipts-fw.c
+ create mode 100644 drivers/misc/ipts/ipts-fw.h
  create mode 100644 drivers/misc/ipts/ipts-gfx.c
  create mode 100644 drivers/misc/ipts/ipts-gfx.h
  create mode 100644 drivers/misc/ipts/ipts-hid.c
@@ -63,15 +76,18 @@ Subject: [PATCH 05/12] ipts
  create mode 100644 drivers/misc/ipts/ipts-mei.c
  create mode 100644 drivers/misc/ipts/ipts-msg-handler.c
  create mode 100644 drivers/misc/ipts/ipts-msg-handler.h
+ create mode 100644 drivers/misc/ipts/ipts-params.c
+ create mode 100644 drivers/misc/ipts/ipts-params.h
  create mode 100644 drivers/misc/ipts/ipts-resource.c
  create mode 100644 drivers/misc/ipts/ipts-resource.h
  create mode 100644 drivers/misc/ipts/ipts-sensor-regs.h
  create mode 100644 drivers/misc/ipts/ipts-state.h
  create mode 100644 drivers/misc/ipts/ipts.h
+ create mode 100644 include/linux/intel_ipts_fw.h
  create mode 100644 include/linux/intel_ipts_if.h
 
 diff --git a/drivers/gpu/drm/i915/Makefile b/drivers/gpu/drm/i915/Makefile
-index 5794f102f..6ae0e91a2 100644
+index 5794f102f9b8..6ae0e91a213a 100644
 --- a/drivers/gpu/drm/i915/Makefile
 +++ b/drivers/gpu/drm/i915/Makefile
 @@ -155,6 +155,9 @@ i915-y += dvo_ch7017.o \
@@ -85,7 +101,7 @@ index 5794f102f..6ae0e91a2 100644
  i915-$(CONFIG_DRM_I915_CAPTURE_ERROR) += i915_gpu_error.o
  i915-$(CONFIG_DRM_I915_SELFTEST) += \
 diff --git a/drivers/gpu/drm/i915/i915_debugfs.c b/drivers/gpu/drm/i915/i915_debugfs.c
-index f9ce35da4..c8b88b1b7 100644
+index e063e98d1e82..32d648c8adc5 100644
 --- a/drivers/gpu/drm/i915/i915_debugfs.c
 +++ b/drivers/gpu/drm/i915/i915_debugfs.c
 @@ -31,6 +31,7 @@
@@ -96,7 +112,7 @@ index f9ce35da4..c8b88b1b7 100644
  
  static inline struct drm_i915_private *node_to_i915(struct drm_info_node *node)
  {
-@@ -4691,6 +4692,64 @@ static const struct file_operations i915_fifo_underrun_reset_ops = {
+@@ -4695,6 +4696,64 @@ static const struct file_operations i915_fifo_underrun_reset_ops = {
  	.llseek = default_llseek,
  };
  
@@ -161,7 +177,7 @@ index f9ce35da4..c8b88b1b7 100644
  static const struct drm_info_list i915_debugfs_list[] = {
  	{"i915_capabilities", i915_capabilities, 0},
  	{"i915_gem_objects", i915_gem_object_info, 0},
-@@ -4769,7 +4828,9 @@ static const struct i915_debugfs_files {
+@@ -4773,7 +4832,9 @@ static const struct i915_debugfs_files {
  	{"i915_hpd_storm_ctl", &i915_hpd_storm_ctl_fops},
  	{"i915_ipc_status", &i915_ipc_status_fops},
  	{"i915_drrs_ctl", &i915_drrs_ctl_fops},
@@ -173,7 +189,7 @@ index f9ce35da4..c8b88b1b7 100644
  
  int i915_debugfs_register(struct drm_i915_private *dev_priv)
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index f8cfd16be..f48122746 100644
+index a4b4ab7b9f8e..19a1d35c2315 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -53,6 +53,7 @@
@@ -194,7 +210,7 @@ index f8cfd16be..f48122746 100644
  	return 0;
  
  cleanup_gem:
-@@ -1432,6 +1436,9 @@ void i915_driver_unload(struct drm_device *dev)
+@@ -1438,6 +1442,9 @@ void i915_driver_unload(struct drm_device *dev)
  	struct drm_i915_private *dev_priv = to_i915(dev);
  	struct pci_dev *pdev = dev_priv->drm.pdev;
  
@@ -205,7 +221,7 @@ index f8cfd16be..f48122746 100644
  
  	if (i915_gem_suspend(dev_priv))
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index d6c25bea4..d6b507fb7 100644
+index d6c25bea4382..d6b507fb7626 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
 @@ -3213,6 +3213,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
@@ -219,7 +235,7 @@ index d6c25bea4..d6b507fb7 100644
  __i915_gem_context_lookup_rcu(struct drm_i915_file_private *file_priv, u32 id)
  {
 diff --git a/drivers/gpu/drm/i915/i915_gem_context.c b/drivers/gpu/drm/i915/i915_gem_context.c
-index b10770cfc..0222f0a55 100644
+index b10770cfccd2..0222f0a55262 100644
 --- a/drivers/gpu/drm/i915/i915_gem_context.c
 +++ b/drivers/gpu/drm/i915/i915_gem_context.c
 @@ -467,6 +467,18 @@ static bool needs_preempt_context(struct drm_i915_private *i915)
@@ -242,7 +258,7 @@ index b10770cfc..0222f0a55 100644
  {
  	struct i915_gem_context *ctx;
 diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-index 298779693..f98fdb5fc 100644
+index 29877969310d..f98fdb5fc282 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
 @@ -36,6 +36,7 @@
@@ -274,7 +290,7 @@ index 298779693..f98fdb5fc 100644
  			GT_RENDER_USER_INTERRUPT << GEN8_BCS_IRQ_SHIFT |
  			GT_CONTEXT_SWITCH_INTERRUPT << GEN8_BCS_IRQ_SHIFT,
 diff --git a/drivers/gpu/drm/i915/i915_params.c b/drivers/gpu/drm/i915/i915_params.c
-index 295e981e4..84415814c 100644
+index 295e981e4a39..84415814c007 100644
 --- a/drivers/gpu/drm/i915/i915_params.c
 +++ b/drivers/gpu/drm/i915/i915_params.c
 @@ -145,7 +145,10 @@ i915_param_named_unsafe(edp_vswing, int, 0400,
@@ -290,7 +306,7 @@ index 295e981e4..84415814c 100644
  i915_param_named(guc_log_level, int, 0400,
  	"GuC firmware logging level. Requires GuC to be loaded. "
 diff --git a/drivers/gpu/drm/i915/i915_params.h b/drivers/gpu/drm/i915/i915_params.h
-index 6c4d4a214..4ab800c3d 100644
+index 6c4d4a21474b..4ab800c3de6d 100644
 --- a/drivers/gpu/drm/i915/i915_params.h
 +++ b/drivers/gpu/drm/i915/i915_params.h
 @@ -46,7 +46,7 @@ struct drm_printer;
@@ -313,7 +329,7 @@ index 6c4d4a214..4ab800c3d 100644
  #define MEMBER(T, member, ...) T member;
  struct i915_params {
 diff --git a/drivers/gpu/drm/i915/intel_dp.c b/drivers/gpu/drm/i915/intel_dp.c
-index f92079e19..7c2d78044 100644
+index 20cd4c8acecc..6ec301a91e87 100644
 --- a/drivers/gpu/drm/i915/intel_dp.c
 +++ b/drivers/gpu/drm/i915/intel_dp.c
 @@ -2634,8 +2634,8 @@ void intel_dp_sink_dpms(struct intel_dp *intel_dp, int mode)
@@ -328,7 +344,7 @@ index f92079e19..7c2d78044 100644
  		ret = drm_dp_dpcd_writeb(&intel_dp->aux, DP_SET_POWER,
  					 DP_SET_POWER_D3);
 diff --git a/drivers/gpu/drm/i915/intel_guc.h b/drivers/gpu/drm/i915/intel_guc.h
-index 4121928a4..8967376ac 100644
+index 4121928a495e..8967376accf3 100644
 --- a/drivers/gpu/drm/i915/intel_guc.h
 +++ b/drivers/gpu/drm/i915/intel_guc.h
 @@ -69,6 +69,7 @@ struct intel_guc {
@@ -340,7 +356,7 @@ index 4121928a4..8967376ac 100644
  	struct guc_preempt_work preempt_work[I915_NUM_ENGINES];
  	struct workqueue_struct *preempt_wq;
 diff --git a/drivers/gpu/drm/i915/intel_guc_submission.c b/drivers/gpu/drm/i915/intel_guc_submission.c
-index 4aa5e6463..f60c42390 100644
+index 4aa5e6463e7b..f60c42390006 100644
 --- a/drivers/gpu/drm/i915/intel_guc_submission.c
 +++ b/drivers/gpu/drm/i915/intel_guc_submission.c
 @@ -88,12 +88,17 @@ static inline struct i915_priolist *to_priolist(struct rb_node *rb)
@@ -473,7 +489,7 @@ index 4aa5e6463..f60c42390 100644
  #include "selftests/intel_guc.c"
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_guc_submission.h b/drivers/gpu/drm/i915/intel_guc_submission.h
-index fb081cefe..71fc79865 100644
+index fb081cefef93..71fc7986585a 100644
 --- a/drivers/gpu/drm/i915/intel_guc_submission.h
 +++ b/drivers/gpu/drm/i915/intel_guc_submission.h
 @@ -79,5 +79,9 @@ void intel_guc_submission_disable(struct intel_guc *guc);
@@ -488,7 +504,7 @@ index fb081cefe..71fc79865 100644
  #endif
 diff --git a/drivers/gpu/drm/i915/intel_ipts.c b/drivers/gpu/drm/i915/intel_ipts.c
 new file mode 100644
-index 000000000..8ad1d22df
+index 000000000000..8ad1d22df5cd
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.c
 @@ -0,0 +1,651 @@
@@ -1145,7 +1161,7 @@ index 000000000..8ad1d22df
 +}
 diff --git a/drivers/gpu/drm/i915/intel_ipts.h b/drivers/gpu/drm/i915/intel_ipts.h
 new file mode 100644
-index 000000000..a6965d102
+index 000000000000..a6965d102417
 --- /dev/null
 +++ b/drivers/gpu/drm/i915/intel_ipts.h
 @@ -0,0 +1,34 @@
@@ -1184,7 +1200,7 @@ index 000000000..a6965d102
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 6937ef0b4..f669087d6 100644
+index 6937ef0b4bfc..f669087d6419 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -164,9 +164,6 @@
@@ -1235,7 +1251,7 @@ index 6937ef0b4..f669087d6 100644
  					    struct intel_context *ce)
  {
 diff --git a/drivers/gpu/drm/i915/intel_lrc.h b/drivers/gpu/drm/i915/intel_lrc.h
-index 4dfb78e3e..32159231a 100644
+index 4dfb78e3ec7e..32159231a16e 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.h
 +++ b/drivers/gpu/drm/i915/intel_lrc.h
 @@ -106,4 +106,12 @@ void intel_lr_context_resume(struct drm_i915_private *dev_priv);
@@ -1252,7 +1268,7 @@ index 4dfb78e3e..32159231a 100644
 +
  #endif /* _INTEL_LRC_H_ */
 diff --git a/drivers/gpu/drm/i915/intel_panel.c b/drivers/gpu/drm/i915/intel_panel.c
-index 4a9f139e7..a800b93cf 100644
+index 4a9f139e7b73..a800b93cf33d 100644
 --- a/drivers/gpu/drm/i915/intel_panel.c
 +++ b/drivers/gpu/drm/i915/intel_panel.c
 @@ -34,6 +34,7 @@
@@ -1284,7 +1300,7 @@ index 4a9f139e7..a800b93cf 100644
  
  static void pch_enable_backlight(const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index f9167d0e0..28b729c9d 100644
+index f9167d0e095c..28b729c9d804 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -173,6 +173,7 @@ struct mt_device {
@@ -1360,7 +1376,7 @@ index f9167d0e0..28b729c9d 100644
  
  	INIT_LIST_HEAD(&td->applications);
 diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 3726eacdf..77263b5f5 100644
+index 3726eacdf65d..77263b5f5915 100644
 --- a/drivers/misc/Kconfig
 +++ b/drivers/misc/Kconfig
 @@ -520,6 +520,7 @@ source "drivers/misc/ti-st/Kconfig"
@@ -1372,7 +1388,7 @@ index 3726eacdf..77263b5f5 100644
  source "drivers/misc/mic/Kconfig"
  source "drivers/misc/genwqe/Kconfig"
 diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index af22bbc3d..eb1eb0d58 100644
+index af22bbc3d00c..eb1eb0d58c32 100644
 --- a/drivers/misc/Makefile
 +++ b/drivers/misc/Makefile
 @@ -44,6 +44,7 @@ obj-y				+= lis3lv02d/
@@ -1385,10 +1401,10 @@ index af22bbc3d..eb1eb0d58 100644
  obj-$(CONFIG_SRAM)		+= sram.o
 diff --git a/drivers/misc/ipts/Kconfig b/drivers/misc/ipts/Kconfig
 new file mode 100644
-index 000000000..360ed3861
+index 000000000000..a24c4daaed42
 --- /dev/null
 +++ b/drivers/misc/ipts/Kconfig
-@@ -0,0 +1,9 @@
+@@ -0,0 +1,11 @@
 +config INTEL_IPTS
 +	tristate "Intel Precise Touch & Stylus"
 +	select INTEL_MEI
@@ -1398,28 +1414,144 @@ index 000000000..360ed3861
 +	  Supported SoCs:
 +	  Intel Skylake
 +	  Intel Kabylake
++
++source "drivers/misc/ipts/companion/Kconfig"
 diff --git a/drivers/misc/ipts/Makefile b/drivers/misc/ipts/Makefile
 new file mode 100644
-index 000000000..1783e9cf1
+index 000000000000..78bb61933387
 --- /dev/null
 +++ b/drivers/misc/ipts/Makefile
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,17 @@
 +#
 +# Makefile - Intel Precise Touch & Stylus device driver
 +# Copyright (c) 2016, Intel Corporation.
 +#
 +
 +obj-$(CONFIG_INTEL_IPTS)+= intel-ipts.o
++intel-ipts-objs += ipts-fw.o
 +intel-ipts-objs += ipts-mei.o
 +intel-ipts-objs += ipts-hid.o
 +intel-ipts-objs += ipts-msg-handler.o
 +intel-ipts-objs += ipts-kernel.o
++intel-ipts-objs += ipts-params.o
 +intel-ipts-objs += ipts-resource.o
 +intel-ipts-objs += ipts-gfx.o
 +intel-ipts-$(CONFIG_DEBUG_FS) += ipts-dbgfs.o
++
++obj-y += companion/
+diff --git a/drivers/misc/ipts/companion/Kconfig b/drivers/misc/ipts/companion/Kconfig
+new file mode 100644
+index 000000000000..877a04494779
+--- /dev/null
++++ b/drivers/misc/ipts/companion/Kconfig
+@@ -0,0 +1,9 @@
++config INTEL_IPTS_SURFACE
++	tristate "IPTS companion driver for Microsoft Surface"
++	depends on INTEL_IPTS
++	depends on ACPI
++	help
++	  IPTS companion driver for Microsoft Surface. This driver is responsible
++	  for loading firmware using surface-specific hardware IDs.
++
++	  If you have a Microsoft Surface using IPTS, select y or m here.
+diff --git a/drivers/misc/ipts/companion/Makefile b/drivers/misc/ipts/companion/Makefile
+new file mode 100644
+index 000000000000..fb4d58935f01
+--- /dev/null
++++ b/drivers/misc/ipts/companion/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_INTEL_IPTS_SURFACE)+= ipts-surface.o
+diff --git a/drivers/misc/ipts/companion/ipts-surface.c b/drivers/misc/ipts/companion/ipts-surface.c
+new file mode 100644
+index 000000000000..4d6116dfa728
+--- /dev/null
++++ b/drivers/misc/ipts/companion/ipts-surface.c
+@@ -0,0 +1,82 @@
++#include <linux/acpi.h>
++#include <linux/firmware.h>
++#include <linux/intel_ipts_fw.h>
++#include <linux/intel_ipts_if.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++
++#define IPTS_SURFACE_FW_PATH_FMT "intel/ipts/%s/%s"
++
++int ipts_surface_request_firmware(const struct firmware **fw, const char *name,
++	struct device *device, void *data)
++{
++	char fw_path[MAX_IOCL_FILE_PATH_LEN];
++
++	if (data == NULL) {
++		return -ENOENT;
++	}
++
++	snprintf(fw_path, MAX_IOCL_FILE_PATH_LEN, IPTS_SURFACE_FW_PATH_FMT,
++		(const char *)data, name);
++	return request_firmware(fw, fw_path, device);
++}
++
++static int ipts_surface_probe(struct platform_device *pdev)
++{
++	int ret;
++	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
++
++	if (!adev) {
++		dev_err(&pdev->dev, "Unable to find ACPI info for device\n");
++		return -ENODEV;
++	}
++
++	ret = intel_ipts_add_fw_handler(&ipts_surface_request_firmware,
++		(void *)acpi_device_hid(adev));
++	if (ret) {
++		dev_info(&pdev->dev, "Adding IPTS firmware handler failed, "
++			"error: %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int ipts_surface_remove(struct platform_device *pdev)
++{
++	int ret;
++
++	ret = intel_ipts_rm_fw_handler(&ipts_surface_request_firmware);
++	if (ret) {
++		dev_info(&pdev->dev, "Removing IPTS firmware handler failed, "
++			"error: %d\n", ret);
++	}
++
++	return 0;
++}
++
++static const struct acpi_device_id ipts_surface_acpi_match[] = {
++	{ "MSHW0076", 0 },	/* Surface Book 1 / Surface Studio */
++	{ "MSHW0078", 0 },	/* Surface Pro 4 */
++	{ "MSHW0079", 0 },	/* Surface Laptop 1 / 2 */
++	{ "MSHW0101", 0 },	/* Surface Book 2 15" */
++	{ "MSHW0102", 0 },	/* Surface Pro 2017 / 6 */
++	{ "MSHW0103", 0 },	/* unknown, but firmware exists */
++	{ "MSHW0137", 0 },	/* Surface Book 2 */
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, ipts_surface_acpi_match);
++
++static struct platform_driver ipts_surface_driver = {
++	.probe = ipts_surface_probe,
++	.remove = ipts_surface_remove,
++	.driver = {
++		.name = "ipts_surface",
++		.acpi_match_table = ACPI_PTR(ipts_surface_acpi_match),
++	},
++};
++module_platform_driver(ipts_surface_driver);
++
++MODULE_AUTHOR("Dorian Stoll <dorian.stoll@tmsp.io>");
++MODULE_DESCRIPTION("IPTS companion driver for Microsoft Surface");
++MODULE_LICENSE("GPL v2");
 diff --git a/drivers/misc/ipts/ipts-binary-spec.h b/drivers/misc/ipts/ipts-binary-spec.h
 new file mode 100644
-index 000000000..87d4bc413
+index 000000000000..87d4bc4133c4
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-binary-spec.h
 @@ -0,0 +1,118 @@
@@ -1543,7 +1675,7 @@ index 000000000..87d4bc413
 +#endif /* _IPTS_BINARY_SPEC_H */
 diff --git a/drivers/misc/ipts/ipts-dbgfs.c b/drivers/misc/ipts/ipts-dbgfs.c
 new file mode 100644
-index 000000000..7581b21f8
+index 000000000000..7581b21f81e0
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-dbgfs.c
 @@ -0,0 +1,364 @@
@@ -1911,9 +2043,146 @@ index 000000000..7581b21f8
 +	ipts_dbgfs_deregister(ipts);
 +	return -ENODEV;
 +}
+diff --git a/drivers/misc/ipts/ipts-fw.c b/drivers/misc/ipts/ipts-fw.c
+new file mode 100644
+index 000000000000..82e6e44c9908
+--- /dev/null
++++ b/drivers/misc/ipts/ipts-fw.c
+@@ -0,0 +1,113 @@
++#include <linux/firmware.h>
++#include <linux/intel_ipts_fw.h>
++#include <linux/intel_ipts_if.h>
++#include <linux/mutex.h>
++
++#include "ipts.h"
++#include "ipts-fw.h"
++#include "ipts-params.h"
++
++#define IPTS_GENERIC_FW_PATH_FMT "intel/ipts/%s"
++
++/*
++ * This function pointer allows a companion driver to register a custom logic
++ * for loading firmware files. This can be used to detect devices that can
++ * be used for IPTS versioning, but that are not connected over the MEI bus,
++ * and cannot be detected by the ME driver.
++ */
++IPTS_FW_HANDLER(ipts_fw_handler);
++DEFINE_MUTEX(ipts_fw_handler_lock);
++void *ipts_fw_handler_data = NULL;
++
++bool ipts_fw_handler_available(void)
++{
++	bool ret;
++	mutex_lock(&ipts_fw_handler_lock);
++
++	ret = ipts_fw_handler != NULL;
++
++	mutex_unlock(&ipts_fw_handler_lock);
++	return ret;
++}
++
++int intel_ipts_add_fw_handler(IPTS_FW_HANDLER(handler), void *data)
++{
++	int ret = 0;
++	mutex_lock(&ipts_fw_handler_lock);
++
++	if (ipts_fw_handler != NULL) {
++		ret = -EBUSY;
++		goto ipts_add_fw_handler_return;
++	}
++
++	ipts_fw_handler = handler;
++	ipts_fw_handler_data = data;
++
++ipts_add_fw_handler_return:
++
++	mutex_unlock(&ipts_fw_handler_lock);
++	return ret;
++}
++EXPORT_SYMBOL(intel_ipts_add_fw_handler);
++
++int intel_ipts_rm_fw_handler(IPTS_FW_HANDLER(handler))
++{
++	int ret = 0;
++	mutex_lock(&ipts_fw_handler_lock);
++
++	if (ipts_fw_handler == NULL) {
++		ret = 0;
++		goto ipts_rm_fw_handler_return;
++	}
++
++	if (*handler != *ipts_fw_handler) {
++		ret = -EPERM;
++		goto ipts_rm_fw_handler_return;
++	}
++
++	ipts_fw_handler = NULL;
++	ipts_fw_handler_data = NULL;
++
++ipts_rm_fw_handler_return:
++
++	mutex_unlock(&ipts_fw_handler_lock);
++	return ret;
++}
++EXPORT_SYMBOL(intel_ipts_rm_fw_handler);
++
++int ipts_request_firmware(const struct firmware **fw, const char *name,
++	struct device *device)
++{
++	int ret = 0;
++	char fw_path[MAX_IOCL_FILE_PATH_LEN];
++	mutex_lock(&ipts_fw_handler_lock);
++
++	// Check if a firmware handler was registered. If not, skip
++	// forward and try to load the firmware from the legacy path
++	if (ipts_fw_handler == NULL || ipts_modparams.ignore_companion) {
++		goto ipts_request_firmware_fallback;
++	}
++
++	ret = (*ipts_fw_handler)(fw, name, device, ipts_fw_handler_data);
++	if (!ret) {
++		goto ipts_request_firmware_return;
++	}
++
++ipts_request_firmware_fallback:
++
++	// If fallback loading for firmware was disabled, abort.
++	// Return -ENOENT as no firmware file was found.
++	if (ipts_modparams.ignore_fw_fallback) {
++		ret = -ENOENT;
++		goto ipts_request_firmware_return;
++	}
++
++	// No firmware was found by the companion driver, try the generic path now.
++	snprintf(fw_path, MAX_IOCL_FILE_PATH_LEN, IPTS_GENERIC_FW_PATH_FMT, name);
++	ret = request_firmware(fw, fw_path, device);
++
++ipts_request_firmware_return:
++
++	mutex_unlock(&ipts_fw_handler_lock);
++	return ret;
++}
+diff --git a/drivers/misc/ipts/ipts-fw.h b/drivers/misc/ipts/ipts-fw.h
+new file mode 100644
+index 000000000000..4c1c9a0dd77f
+--- /dev/null
++++ b/drivers/misc/ipts/ipts-fw.h
+@@ -0,0 +1,12 @@
++#ifndef _IPTS_FW_H_
++#define _IPTS_FW_H_
++
++#include <linux/firmware.h>
++
++#include "ipts.h"
++
++int ipts_request_firmware(const struct firmware **fw, const char *name,
++	struct device *device);
++bool ipts_fw_handler_available(void);
++
++#endif // _IPTS_FW_H_
 diff --git a/drivers/misc/ipts/ipts-gfx.c b/drivers/misc/ipts/ipts-gfx.c
 new file mode 100644
-index 000000000..4989a2222
+index 000000000000..4989a22227d2
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-gfx.c
 @@ -0,0 +1,185 @@
@@ -2104,7 +2373,7 @@ index 000000000..4989a2222
 +}
 diff --git a/drivers/misc/ipts/ipts-gfx.h b/drivers/misc/ipts/ipts-gfx.h
 new file mode 100644
-index 000000000..03a5f3551
+index 000000000000..03a5f3551ddf
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-gfx.h
 @@ -0,0 +1,24 @@
@@ -2134,10 +2403,10 @@ index 000000000..03a5f3551
 +#endif // _IPTS_GFX_H_
 diff --git a/drivers/misc/ipts/ipts-hid.c b/drivers/misc/ipts/ipts-hid.c
 new file mode 100644
-index 000000000..84e3fb6c3
+index 000000000000..32cf5927f949
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-hid.c
-@@ -0,0 +1,504 @@
+@@ -0,0 +1,497 @@
 +/*
 + * Intel Precise Touch & Stylus HID driver
 + *
@@ -2160,16 +2429,16 @@ index 000000000..84e3fb6c3
 +#include <linux/dmi.h>
 +
 +#include "ipts.h"
++#include "ipts-fw.h"
++#include "ipts-params.h"
 +#include "ipts-resource.h"
 +#include "ipts-sensor-regs.h"
 +#include "ipts-msg-handler.h"
 +
 +#define BUS_MEI				0x44
 +
-+#define	HID_DESC_INTEL	"intel/ipts/intel_desc.bin"
-+#define	HID_DESC_VENDOR	"intel/ipts/vendor_desc.bin"
-+MODULE_FIRMWARE(HID_DESC_INTEL);
-+MODULE_FIRMWARE(HID_DESC_VENDOR);
++#define	HID_DESC_INTEL	"intel_desc.bin"
++#define	HID_DESC_VENDOR	"vendor_desc.bin"
 +
 +typedef enum output_buffer_payload_type {
 +	OUTPUT_BUFFER_PAYLOAD_ERROR = 0,
@@ -2211,14 +2480,6 @@ index 000000000..84e3fb6c3
 +	{ }
 +};
 +
-+int no_feedback = -1;
-+module_param(no_feedback, int, 0644);
-+MODULE_PARM_DESC(no_feedback,
-+				"Disable sending feedback in order to work around the issue that IPTS "
-+				"stops working after some amount of use. "
-+				"-1=auto (true if your model is SB1/SP4, false if another model), "
-+				"0=false, 1=true, (default: -1)");
-+
 +static int ipts_hid_get_hid_descriptor(ipts_info_t *ipts, u8 **desc, int *size)
 +{
 +	u8 *buf;
@@ -2228,13 +2489,13 @@ index 000000000..84e3fb6c3
 +	const char *intel_desc_path = HID_DESC_INTEL;
 +	const char *vendor_desc_path = HID_DESC_VENDOR;
 +
-+	ret = request_firmware(&intel_desc, intel_desc_path, &ipts->cldev->dev);
++	ret = ipts_request_firmware(&intel_desc, intel_desc_path, &ipts->cldev->dev);
 +	if (ret) {
 +		goto no_hid;
 +	}
 +	hid_size = intel_desc->size;
 +
-+	ret = request_firmware(&vendor_desc, vendor_desc_path, &ipts->cldev->dev);
++	ret = ipts_request_firmware(&vendor_desc, vendor_desc_path, &ipts->cldev->dev);
 +	if (ret) {
 +		ipts_dbg(ipts, "error in reading HID Vendor Descriptor\n");
 +	} else {
@@ -2598,10 +2859,11 @@ index 000000000..84e3fb6c3
 +	 */
 +	if (fb_buf) {
 +		/* A negative value means "decide by dmi table" */
-+		if (no_feedback < 0)
-+			no_feedback = dmi_check_system(no_feedback_dmi_table) ? true : false;
++		if (ipts_modparams.no_feedback < 0)
++			ipts_modparams.no_feedback =
++				dmi_check_system(no_feedback_dmi_table) ? true : false;
 +
-+		if (no_feedback)
++		if (ipts_modparams.no_feedback)
 +			return 0;
 +
 +		ret = ipts_send_feedback(ipts, parallel_idx, transaction_id);
@@ -2644,7 +2906,7 @@ index 000000000..84e3fb6c3
 +}
 diff --git a/drivers/misc/ipts/ipts-hid.h b/drivers/misc/ipts/ipts-hid.h
 new file mode 100644
-index 000000000..f1b22c912
+index 000000000000..f1b22c912df7
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-hid.h
 @@ -0,0 +1,34 @@
@@ -2684,24 +2946,23 @@ index 000000000..f1b22c912
 +#endif /* _IPTS_HID_H_ */
 diff --git a/drivers/misc/ipts/ipts-kernel.c b/drivers/misc/ipts/ipts-kernel.c
 new file mode 100644
-index 000000000..86fd359d2
+index 000000000000..5933b190cdaf
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-kernel.c
-@@ -0,0 +1,1050 @@
+@@ -0,0 +1,1042 @@
 +#include <linux/module.h>
 +#include <linux/firmware.h>
 +#include <linux/vmalloc.h>
++#include <linux/intel_ipts_fw.h>
 +#include <linux/intel_ipts_if.h>
 +
 +#include "ipts.h"
++#include "ipts-fw.h"
 +#include "ipts-resource.h"
 +#include "ipts-binary-spec.h"
 +#include "ipts-state.h"
 +#include "ipts-msg-handler.h"
 +#include "ipts-gfx.h"
-+
-+#define MAX_IOCL_FILE_NAME_LEN		80
-+#define MAX_IOCL_FILE_PATH_LEN		256
 +
 +#pragma pack(1)
 +typedef struct bin_data_file_info {
@@ -2784,10 +3045,7 @@ index 000000000..86fd359d2
 +#define SBA_OFFSET_BYTES			16384
 +#define LASTSUBMITID_DEFAULT_VALUE		-1
 +
-+#define IPTS_FW_PATH_FMT			"intel/ipts/%s"
-+#define IPTS_FW_CONFIG_FILE			"intel/ipts/ipts_fw_config.bin"
-+
-+MODULE_FIRMWARE(IPTS_FW_CONFIG_FILE);
++#define IPTS_FW_CONFIG_FILE			"ipts_fw_config.bin"
 +
 +#define IPTS_INPUT_ON				((u32)1 << IPTS_INPUT)
 +#define IPTS_OUTPUT_ON				((u32)1 << IPTS_OUTPUT)
@@ -2802,13 +3060,11 @@ index 000000000..86fd359d2
 +						u8* data, int size)
 +{
 +	const struct firmware *fw = NULL;
-+	char fw_path[MAX_IOCL_FILE_PATH_LEN];
 +	int ret = 0;
 +
-+	snprintf(fw_path, MAX_IOCL_FILE_PATH_LEN, IPTS_FW_PATH_FMT, fw_name);
-+	ret = request_firmware(&fw, fw_path, &ipts->cldev->dev);
++	ret = ipts_request_firmware(&fw, fw_name, &ipts->cldev->dev);
 +	if (ret) {
-+		ipts_err(ipts, "cannot read fw %s\n", fw_path);
++		ipts_err(ipts, "cannot read fw %s\n", fw_name);
 +		return ret;
 +	}
 +
@@ -3587,7 +3843,6 @@ index 000000000..86fd359d2
 +	bin_parse_info_t parse_info;
 +	int ret = 0, kernel_idx = 0, num_of_kernels = 0;
 +	int vendor_output_idx, total_workload = 0;
-+	char fw_path[MAX_IOCL_FILE_PATH_LEN];
 +
 +	num_of_kernels = fw_list->num_of_fws;
 +	kernel_list = vmalloc(sizeof(*kernel) * num_of_kernels + sizeof(*kernel_list));
@@ -3603,10 +3858,9 @@ index 000000000..86fd359d2
 +		fw_info = (bin_fw_info_t *)fw_data;
 +		fw_name = &fw_info->fw_name[0];
 +		vendor_output_idx = fw_info->vendor_output;
-+		snprintf(fw_path, MAX_IOCL_FILE_PATH_LEN, IPTS_FW_PATH_FMT, fw_name);
-+		ret = request_firmware(&fw, (const char *)fw_path, &ipts->cldev->dev);
++		ret = ipts_request_firmware(&fw, fw_name, &ipts->cldev->dev);
 +		if (ret) {
-+			ipts_err(ipts, "cannot read fw %s\n", fw_path);
++			ipts_err(ipts, "cannot read fw %s\n", fw_name);
 +			goto error_exit;
 +		}
 +
@@ -3707,7 +3961,7 @@ index 000000000..86fd359d2
 +		return ret;
 +	}
 +
-+	ret = request_firmware(&config_fw, config_fw_path, &ipts->cldev->dev);
++	ret = ipts_request_firmware(&config_fw, config_fw_path,	&ipts->cldev->dev);
 +	if (ret) {
 +		ipts_err(ipts, "request firmware error : %d\n", ret);
 +		goto close_gpu;
@@ -3740,7 +3994,7 @@ index 000000000..86fd359d2
 +}
 diff --git a/drivers/misc/ipts/ipts-kernel.h b/drivers/misc/ipts/ipts-kernel.h
 new file mode 100644
-index 000000000..0e7f1393b
+index 000000000000..0e7f1393b807
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-kernel.h
 @@ -0,0 +1,23 @@
@@ -3769,7 +4023,7 @@ index 000000000..0e7f1393b
 +#endif
 diff --git a/drivers/misc/ipts/ipts-mei-msgs.h b/drivers/misc/ipts/ipts-mei-msgs.h
 new file mode 100644
-index 000000000..8ca146800
+index 000000000000..8ca146800a47
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-mei-msgs.h
 @@ -0,0 +1,585 @@
@@ -4360,10 +4614,10 @@ index 000000000..8ca146800
 +#endif // _IPTS_MEI_MSGS_H_
 diff --git a/drivers/misc/ipts/ipts-mei.c b/drivers/misc/ipts/ipts-mei.c
 new file mode 100644
-index 000000000..199e49cb8
+index 000000000000..6fbe257bc7cc
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-mei.c
-@@ -0,0 +1,282 @@
+@@ -0,0 +1,290 @@
 +/*
 + * MEI client driver for Intel Precise Touch and Stylus
 + *
@@ -4388,7 +4642,9 @@ index 000000000..199e49cb8
 +#include <linux/intel_ipts_if.h>
 +
 +#include "ipts.h"
++#include "ipts-fw.h"
 +#include "ipts-hid.h"
++#include "ipts-params.h"
 +#include "ipts-msg-handler.h"
 +#include "ipts-mei-msgs.h"
 +#include "ipts-binary-spec.h"
@@ -4540,6 +4796,12 @@ index 000000000..199e49cb8
 +	int ret = 0;
 +	ipts_info_t *ipts = NULL;
 +
++	// Check if a companion driver for firmware loading was registered
++	// If not, defer probing until it was properly registere
++	if (!ipts_fw_handler_available() && !ipts_modparams.ignore_companion) {
++		return -EPROBE_DEFER;
++	}
++
 +	pr_info("probing Intel Precise Touch & Stylus\n");
 +
 +	// setup the DMA BIT mask, the system will choose the best possible
@@ -4648,7 +4910,7 @@ index 000000000..199e49cb8
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/misc/ipts/ipts-msg-handler.c b/drivers/misc/ipts/ipts-msg-handler.c
 new file mode 100644
-index 000000000..db5356a1c
+index 000000000000..db5356a1c84e
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-msg-handler.c
 @@ -0,0 +1,437 @@
@@ -5091,7 +5353,7 @@ index 000000000..db5356a1c
 +}
 diff --git a/drivers/misc/ipts/ipts-msg-handler.h b/drivers/misc/ipts/ipts-msg-handler.h
 new file mode 100644
-index 000000000..f37d9ad9a
+index 000000000000..f37d9ad9af8c
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-msg-handler.h
 @@ -0,0 +1,33 @@
@@ -5128,9 +5390,56 @@ index 000000000..f37d9ad9a
 +int ipts_restart(ipts_info_t *ipts);
 +
 +#endif /* _IPTS_MSG_HANDLER_H */
+diff --git a/drivers/misc/ipts/ipts-params.c b/drivers/misc/ipts/ipts-params.c
+new file mode 100644
+index 000000000000..b4faa1afc046
+--- /dev/null
++++ b/drivers/misc/ipts/ipts-params.c
+@@ -0,0 +1,21 @@
++#include <linux/moduleparam.h>
++
++#include "ipts-params.h"
++
++struct ipts_params ipts_modparams = {
++	.ignore_fw_fallback = false,
++	.ignore_companion = false,
++	.no_feedback = -1,
++};
++
++module_param_named(ignore_fw_fallback, ipts_modparams.ignore_fw_fallback, bool, 0400);
++MODULE_PARM_DESC(ignore_fw_fallback, "Don't use the IPTS firmware fallback path");
++
++module_param_named(ignore_companion, ipts_modparams.ignore_companion, bool, 0400);
++MODULE_PARM_DESC(ignore_companion, "Don't use a companion driver to load firmware");
++
++module_param_named(no_feedback, ipts_modparams.no_feedback, int, 0644);
++MODULE_PARM_DESC(no_feedback, "Disable sending feedback in order to work around the issue that IPTS "
++	"stops working after some amount of use. "
++	"-1=auto (true if your model is SB1/SP4, false if another model), "
++	"0=false, 1=true, (default: -1)");
+diff --git a/drivers/misc/ipts/ipts-params.h b/drivers/misc/ipts/ipts-params.h
+new file mode 100644
+index 000000000000..6fd62fb46d26
+--- /dev/null
++++ b/drivers/misc/ipts/ipts-params.h
+@@ -0,0 +1,14 @@
++#ifndef _IPTS_PARAMS_H_
++#define _IPTS_PARAMS_H_
++
++#include <linux/types.h>
++
++struct ipts_params {
++	bool ignore_fw_fallback;
++	bool ignore_companion;
++	int no_feedback;
++};
++
++extern struct ipts_params ipts_modparams;
++
++#endif // _IPTS_PARAMS_H_
 diff --git a/drivers/misc/ipts/ipts-resource.c b/drivers/misc/ipts/ipts-resource.c
 new file mode 100644
-index 000000000..47607ef7c
+index 000000000000..47607ef7c461
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-resource.c
 @@ -0,0 +1,277 @@
@@ -5413,7 +5722,7 @@ index 000000000..47607ef7c
 +}
 diff --git a/drivers/misc/ipts/ipts-resource.h b/drivers/misc/ipts/ipts-resource.h
 new file mode 100644
-index 000000000..7d66ac72b
+index 000000000000..7d66ac72b475
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-resource.h
 @@ -0,0 +1,30 @@
@@ -5449,7 +5758,7 @@ index 000000000..7d66ac72b
 +#endif // _IPTS_RESOURCE_H_
 diff --git a/drivers/misc/ipts/ipts-sensor-regs.h b/drivers/misc/ipts/ipts-sensor-regs.h
 new file mode 100644
-index 000000000..96812b0eb
+index 000000000000..96812b0eb980
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-sensor-regs.h
 @@ -0,0 +1,700 @@
@@ -6155,7 +6464,7 @@ index 000000000..96812b0eb
 +#endif // _TOUCH_SENSOR_REGS_H
 diff --git a/drivers/misc/ipts/ipts-state.h b/drivers/misc/ipts/ipts-state.h
 new file mode 100644
-index 000000000..39a2eaf5f
+index 000000000000..39a2eaf5f004
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts-state.h
 @@ -0,0 +1,29 @@
@@ -6190,7 +6499,7 @@ index 000000000..39a2eaf5f
 +#endif // _IPTS_STATE_H_
 diff --git a/drivers/misc/ipts/ipts.h b/drivers/misc/ipts/ipts.h
 new file mode 100644
-index 000000000..9c34b55ff
+index 000000000000..9c34b55ff036
 --- /dev/null
 +++ b/drivers/misc/ipts/ipts.h
 @@ -0,0 +1,200 @@
@@ -6395,7 +6704,7 @@ index 000000000..9c34b55ff
 +
 +#endif // _IPTS_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index 225373e4a..828342db0 100644
+index cdd7af16d5ee..c1bd39324c98 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -6407,7 +6716,7 @@ index 225373e4a..828342db0 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index a66ebceea..030e8f429 100644
+index e41f9e0a3fdf..e61be367d7e4 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -6418,9 +6727,29 @@ index a66ebceea..030e8f429 100644
  	{MEI_PCI_DEVICE(MEI_DEV_ID_SPT_H, MEI_ME_PCH8_SPS_CFG)},
  	{MEI_PCI_DEVICE(MEI_DEV_ID_SPT_H_2, MEI_ME_PCH8_SPS_CFG)},
  	{MEI_PCI_DEVICE(MEI_DEV_ID_LBG, MEI_ME_PCH12_CFG)},
+diff --git a/include/linux/intel_ipts_fw.h b/include/linux/intel_ipts_fw.h
+new file mode 100644
+index 000000000000..adbfd29459a2
+--- /dev/null
++++ b/include/linux/intel_ipts_fw.h
+@@ -0,0 +1,14 @@
++#ifndef _INTEL_IPTS_FW_H_
++#define _INTEL_IPTS_FW_H_
++
++#include <linux/firmware.h>
++
++#define MAX_IOCL_FILE_NAME_LEN 80
++#define MAX_IOCL_FILE_PATH_LEN 256
++#define IPTS_FW_HANDLER(name) int(*name)(const struct firmware **, \
++	const char *, struct device *, void *)
++
++int intel_ipts_add_fw_handler(IPTS_FW_HANDLER(handler), void *data);
++int intel_ipts_rm_fw_handler(IPTS_FW_HANDLER(handler));
++
++#endif // _INTEL_IPTS_FW_H_
 diff --git a/include/linux/intel_ipts_if.h b/include/linux/intel_ipts_if.h
 new file mode 100644
-index 000000000..bad44fb4f
+index 000000000000..bad44fb4f233
 --- /dev/null
 +++ b/include/linux/intel_ipts_if.h
 @@ -0,0 +1,76 @@
@@ -6501,5 +6830,5 @@ index 000000000..bad44fb4f
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.23.0
+2.21.0
 
