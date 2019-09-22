@@ -1,7 +1,7 @@
-From 55d520718530c27a92b8ccd347944a819a35573d Mon Sep 17 00:00:00 2001
+From 0f5e5015d22257a7c6efd569a291e66c51fdfd70 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 26 Jul 2019 03:42:15 +0200
-Subject: [PATCH 03/12] buttons
+Subject: [PATCH 3/9] buttons
 
 ---
  drivers/input/misc/Kconfig                |   6 +-
@@ -10,7 +10,7 @@ Subject: [PATCH 03/12] buttons
  3 files changed, 143 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
-index ca59a2be9bc5..ea69610370e8 100644
+index ca59a2be9..ea6961037 100644
 --- a/drivers/input/misc/Kconfig
 +++ b/drivers/input/misc/Kconfig
 @@ -781,10 +781,10 @@ config INPUT_IDEAPAD_SLIDEBAR
@@ -28,7 +28,7 @@ index ca59a2be9bc5..ea69610370e8 100644
  	  To compile this driver as a module, choose M here: the
  	  module will be called soc_button_array.
 diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index 55cd6e0b409c..8f21c062c85d 100644
+index 55cd6e0b4..8f21c062c 100644
 --- a/drivers/input/misc/soc_button_array.c
 +++ b/drivers/input/misc/soc_button_array.c
 @@ -29,6 +29,11 @@ struct soc_button_info {
@@ -191,7 +191,7 @@ index 55cd6e0b409c..8f21c062c85d 100644
  };
  
 diff --git a/drivers/platform/x86/surfacepro3_button.c b/drivers/platform/x86/surfacepro3_button.c
-index 1b491690ce07..96627627060e 100644
+index 1b491690c..966276270 100644
 --- a/drivers/platform/x86/surfacepro3_button.c
 +++ b/drivers/platform/x86/surfacepro3_button.c
 @@ -24,6 +24,12 @@
