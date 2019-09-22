@@ -1,7 +1,7 @@
-From 8f120efa25f58bc8b842cdacb1358f7c7d9ecc18 Mon Sep 17 00:00:00 2001
+From 6414e9b14bb14ca609c9739421bfefd95a4146a0 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 26 Jul 2019 03:40:41 +0200
-Subject: [PATCH 01/12] surface-acpi
+Subject: [PATCH 1/9] surface-acpi
 
 ---
  drivers/acpi/acpica/dsopcode.c      |    2 +-
@@ -14,7 +14,7 @@ Subject: [PATCH 01/12] surface-acpi
  create mode 100644 drivers/platform/x86/surface_acpi.c
 
 diff --git a/drivers/acpi/acpica/dsopcode.c b/drivers/acpi/acpica/dsopcode.c
-index 2f4641e5ecde..beb22d7e245e 100644
+index 2f4641e5e..beb22d7e2 100644
 --- a/drivers/acpi/acpica/dsopcode.c
 +++ b/drivers/acpi/acpica/dsopcode.c
 @@ -123,7 +123,7 @@ acpi_ds_init_buffer_field(u16 aml_opcode,
@@ -27,7 +27,7 @@ index 2f4641e5ecde..beb22d7e245e 100644
  		bit_count = (u32) length_desc->integer.value;
  
 diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index b272c329d45d..cf547883a993 100644
+index b272c329d..cf547883a 100644
 --- a/drivers/acpi/acpica/exfield.c
 +++ b/drivers/acpi/acpica/exfield.c
 @@ -102,6 +102,7 @@ acpi_ex_read_data_from_field(struct acpi_walk_state *walk_state,
@@ -80,7 +80,7 @@ index b272c329d45d..cf547883a993 100644
  		} else {	/* IPMI */
  
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 1e2524de6a63..9a47363a0c30 100644
+index 1e2524de6..9a47363a0 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -573,6 +573,103 @@ config THINKPAD_ACPI_HOTKEY_POLL
@@ -188,7 +188,7 @@ index 1e2524de6a63..9a47363a0c30 100644
  	tristate "Thinkpad Hard Drive Active Protection System (hdaps)"
  	depends on INPUT
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index dc29af4d8e2f..2250a32a5527 100644
+index dc29af4d8..2250a32a5 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -35,6 +35,7 @@ obj-$(CONFIG_TC1100_WMI)	+= tc1100-wmi.o
@@ -201,7 +201,7 @@ index dc29af4d8e2f..2250a32a5527 100644
  obj-$(CONFIG_FUJITSU_TABLET)	+= fujitsu-tablet.o
 diff --git a/drivers/platform/x86/surface_acpi.c b/drivers/platform/x86/surface_acpi.c
 new file mode 100644
-index 000000000000..f62aecb0df69
+index 000000000..f62aecb0d
 --- /dev/null
 +++ b/drivers/platform/x86/surface_acpi.c
 @@ -0,0 +1,3913 @@
@@ -4119,7 +4119,7 @@ index 000000000000..f62aecb0df69
 +MODULE_DESCRIPTION("ACPI/Platform Drivers for Microsoft Surface Devices");
 +MODULE_LICENSE("GPL v2");
 diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-index 9db93f500b4e..9cfb5ffc034f 100644
+index 9db93f500..9cfb5ffc0 100644
 --- a/drivers/tty/serdev/core.c
 +++ b/drivers/tty/serdev/core.c
 @@ -526,6 +526,81 @@ static acpi_status acpi_serdev_register_device(struct serdev_controller *ctrl,
