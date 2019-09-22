@@ -1,3 +1,6 @@
+v3.3.2:
+b377f34 - kitakar5525, 2019-09-23 : chromeos-4.19: Update configs
+
 v3.3.1:
 5320075 - kitakar5525, 2019-09-22 : patch-chromeos-4.19: Update to kitakar5525/linux-surface@fa1a7ae1826371c251d0960446ccce7cec264eb8
 335137c - kitakar5525, 2019-09-22 : patch-4.19: Update to kitakar5525/linux-surface@fa1a7ae1826371c251d0960446ccce7cec264eb8
