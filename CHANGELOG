@@ -1,3 +1,6 @@
+v3.3.3:
+f7ffe9d - kitakar5525, 2019-09-27 : chromeos-4.19: config: Fix accidentally disabled some configs after commit b377f34
+
 v3.3.2:
 b377f34 - kitakar5525, 2019-09-23 : chromeos-4.19: Update configs
 
