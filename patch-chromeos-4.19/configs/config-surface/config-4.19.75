@@ -4,7 +4,7 @@
 #
 
 #
-# Compiler: Chromium OS 9.0_pre353983_p20190325-r19 clang version 9.0.0 (/var/cache/chromeos-cache/distfiles/host/egit-src/llvm-project de7a0a152648d1a74cf4319920b1848aa00d1ca3) (based on LLVM 9.0.0svn)
+# Compiler: Chromium OS 9.0_pre365631_p20190821-r18 clang version 9.0.0 (/var/cache/chromeos-cache/distfiles/host/egit-src/llvm-project 6b043f051836635a1e88da4d0464e6569bd7b625) (based on LLVM 9.0.0svn)
 #
 CONFIG_GCC_VERSION=0
 CONFIG_CC_IS_CLANG=y
@@ -542,7 +542,7 @@ CONFIG_PCIEAER=y
 # CONFIG_PCIEAER_INJECT is not set
 # CONFIG_PCIE_ECRC is not set
 CONFIG_PCIEASPM=y
-# CONFIG_PCIEASPM_DEBUG is not set
+CONFIG_PCIEASPM_DEBUG=y
 CONFIG_PCIEASPM_DEFAULT=y
 # CONFIG_PCIEASPM_POWERSAVE is not set
 # CONFIG_PCIEASPM_POWER_SUPERSAVE is not set
