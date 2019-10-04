@@ -1,3 +1,9 @@
+v3.4
+ecb03e5 - kitakar5525, 2019-10-04 : chromeos-4.19: configs: Update to v4.19.75.r7048 and CONFIG_PCIEASPM_DEBUG=y
+354ea22 - kitakar5525, 2019-10-04 : patch-5.3: Update to qzed/linux-surface@a6c6b97da238af28dfb5fea4cd71c69f61d8d24e
+63b0714 - kitakar5525, 2019-10-04 : patch-chromeos-4.19: Update to qzed/linux-surface@a6c6b97da238af28dfb5fea4cd71c69f61d8d24e
+7ef8349 - kitakar5525, 2019-10-04 : patch-4.19: Update to qzed/linux-surface@a6c6b97da238af28dfb5fea4cd71c69f61d8d24e
+
 v3.3.3:
 f7ffe9d - kitakar5525, 2019-09-27 : chromeos-4.19: config: Fix accidentally disabled some configs after commit b377f34
 
