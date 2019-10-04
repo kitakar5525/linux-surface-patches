@@ -1,4 +1,4 @@
-From aaf8394a64b9409e67778cb07ac795c69535f294 Mon Sep 17 00:00:00 2001
+From 1781d6bb5e2985e0b60f2821e22d624aac89e757 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 26 Jul 2019 03:44:10 +0200
 Subject: [PATCH 9/9] surfacebook2-dgpu
@@ -11,7 +11,7 @@ Subject: [PATCH 9/9] surfacebook2-dgpu
  create mode 100644 drivers/platform/x86/surfacebook2_dgpu_hps.c
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index d6695d8fc..16f401093 100644
+index e6f55c3065c0..7f2e90d45dea 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
 @@ -436,6 +436,15 @@ config SURFACE3_WMI
@@ -31,7 +31,7 @@ index d6695d8fc..16f401093 100644
  	tristate "ThinkPad ACPI Laptop Extras"
  	depends on ACPI
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index dd045ccf3..6d24ede71 100644
+index 2ab34842164c..b1f2e553d59a 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
 @@ -45,6 +45,7 @@ obj-$(CONFIG_ACPI_WMI)		+= wmi.o
@@ -44,7 +44,7 @@ index dd045ccf3..6d24ede71 100644
  obj-$(CONFIG_INTEL_WMI_THUNDERBOLT)	+= intel-wmi-thunderbolt.o
 diff --git a/drivers/platform/x86/surfacebook2_dgpu_hps.c b/drivers/platform/x86/surfacebook2_dgpu_hps.c
 new file mode 100644
-index 000000000..7639fb002
+index 000000000000..7639fb0029d8
 --- /dev/null
 +++ b/drivers/platform/x86/surfacebook2_dgpu_hps.c
 @@ -0,0 +1,306 @@
