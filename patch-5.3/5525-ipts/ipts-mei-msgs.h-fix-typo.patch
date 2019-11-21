@@ -1,0 +1,25 @@
+From faa1cd9e10a35d8e9077d1bee9856a71c1672b62 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 21 Nov 2019 18:26:27 +0900
+Subject: [PATCH] ipts: mei-msgs.h: fix typo
+
+---
+ drivers/misc/ipts/mei-msgs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/misc/ipts/mei-msgs.h b/drivers/misc/ipts/mei-msgs.h
+index 4759a28db..4a8e89eee 100644
+--- a/drivers/misc/ipts/mei-msgs.h
++++ b/drivers/misc/ipts/mei-msgs.h
+@@ -575,7 +575,7 @@ static_assert(sizeof(struct touch_sensor_set_mem_window_rsp_data) == 12);
+  *         Indicates that Quiesce I/O is already in progress and this
+  *         command cannot be accepted at this time.
+  *
+- *     TOUCH_STATIS_TIMEOUT:
++ *     TOUCH_STATUS_TIMEOUT:
+  *         Indicates ME timed out waiting for Quiesce I/O flow to complete.
+  */
+ struct touch_sensor_quiesce_io_rsp_data {
+-- 
+2.24.0
+
