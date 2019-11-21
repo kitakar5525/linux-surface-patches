@@ -1,7 +1,7 @@
-From d6266566f81074553b3e79fa527700bf8496e663 Mon Sep 17 00:00:00 2001
+From 810ebe900e48d6a50c715b9b0b6d3fc842976ae4 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 26 Jul 2019 03:43:57 +0200
-Subject: [PATCH 8/9] surface-lte
+Subject: [PATCH 11/12] surface-lte
 
 ---
  drivers/usb/serial/qcserial.c | 1 +

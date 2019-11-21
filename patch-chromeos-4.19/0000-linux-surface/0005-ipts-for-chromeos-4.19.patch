@@ -1,7 +1,7 @@
-From 4b1c15c1df028eda61dbd128585bb6458a21eb2b Mon Sep 17 00:00:00 2001
+From c32c8427da01370a9ca6fa1de60c96c6c024c38d Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Fri, 4 Oct 2019 21:54:17 +0900
-Subject: [PATCH 4/9] ipts for chromeos-4.19
+Date: Thu, 21 Nov 2019 18:48:47 +0900
+Subject: [PATCH] ipts-for-chromeos-4.19
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -189,7 +189,7 @@ index a850e9d2bda2..428be19f12a6 100644
  
  int i915_debugfs_register(struct drm_i915_private *dev_priv)
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index f5e71e4eb245..50d8f5614896 100644
+index 499680c57a10..a9268ea8640b 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -53,6 +53,7 @@
@@ -210,21 +210,21 @@ index f5e71e4eb245..50d8f5614896 100644
  	return 0;
  
  cleanup_gem:
-@@ -1771,6 +1775,9 @@ void i915_driver_unload(struct drm_device *dev)
- 
- 	disable_rpm_wakeref_asserts(dev_priv);
+@@ -1769,6 +1773,9 @@ void i915_driver_unload(struct drm_device *dev)
+ 	struct drm_i915_private *dev_priv = to_i915(dev);
+ 	struct pci_dev *pdev = dev_priv->drm.pdev;
  
 +	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
 +		intel_ipts_cleanup(dev);
 +
- 	i915_driver_unregister(dev_priv);
+ 	disable_rpm_wakeref_asserts(dev_priv);
  
- 	if (i915_gem_suspend(dev_priv))
+ 	i915_driver_unregister(dev_priv);
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 9140e7652ab9..af523821f1b9 100644
+index 139d7b89f00a..922ad87909c5 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -3290,6 +3290,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
+@@ -3309,6 +3309,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
  void i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj,
  					 struct sg_table *pages);
  
@@ -235,10 +235,10 @@ index 9140e7652ab9..af523821f1b9 100644
  __i915_gem_context_lookup_rcu(struct drm_i915_file_private *file_priv, u32 id)
  {
 diff --git a/drivers/gpu/drm/i915/i915_gem_context.c b/drivers/gpu/drm/i915/i915_gem_context.c
-index c7d8d324b0d4..e5454375d5f1 100644
+index 9423cb8ea1bc..d0abc0219fef 100644
 --- a/drivers/gpu/drm/i915/i915_gem_context.c
 +++ b/drivers/gpu/drm/i915/i915_gem_context.c
-@@ -532,6 +532,18 @@ static bool needs_preempt_context(struct drm_i915_private *i915)
+@@ -537,6 +537,18 @@ static bool needs_preempt_context(struct drm_i915_private *i915)
  	return HAS_LOGICAL_RING_PREEMPTION(i915);
  }
  
@@ -6704,7 +6704,7 @@ index 000000000000..9c34b55ff036
 +
 +#endif // _IPTS_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index cdd7af16d5ee..c1bd39324c98 100644
+index f85aa3f4042d..2daace422dce 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -6716,7 +6716,7 @@ index cdd7af16d5ee..c1bd39324c98 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index e41f9e0a3fdf..e61be367d7e4 100644
+index 28cdd87851cb..c13ba550435c 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -6830,5 +6830,5 @@ index 000000000000..bad44fb4f233
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.23.0
+2.24.0
 
