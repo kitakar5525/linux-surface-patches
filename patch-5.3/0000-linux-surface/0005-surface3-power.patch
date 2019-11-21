@@ -1,7 +1,7 @@
-From 02cfa881044c1ad2779c493b24b128411904ede1 Mon Sep 17 00:00:00 2001
+From b224f8a7da4e4614a3cf4540326777b3ea36f222 Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Tue, 17 Sep 2019 17:17:56 +0200
-Subject: [PATCH 5/9] surface3 power
+Subject: [PATCH 05/10] surface3-power
 
 ---
  drivers/platform/x86/Kconfig          |   7 +
@@ -11,10 +11,10 @@ Subject: [PATCH 5/9] surface3 power
  create mode 100644 drivers/platform/x86/surface3_power.c
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index c8abd3d70461..c381d14dea20 100644
+index 0c8971f1774e..c3d68aeec587 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -1315,6 +1315,13 @@ config SURFACE_3_BUTTON
+@@ -1218,6 +1218,13 @@ config SURFACE_3_BUTTON
  	---help---
  	  This driver handles the power/home/volume buttons on the Microsoft Surface 3 tablet.
  
@@ -29,10 +29,10 @@ index c8abd3d70461..c381d14dea20 100644
  	tristate "Intel P-Unit IPC Driver"
  	---help---
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index c33d76577b5a..5c88172c0649 100644
+index 725dedf5fbfe..705525ff99a7 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
-@@ -87,6 +87,7 @@ obj-$(CONFIG_INTEL_PMC_IPC)	+= intel_pmc_ipc.o
+@@ -86,6 +86,7 @@ obj-$(CONFIG_INTEL_PMC_IPC)	+= intel_pmc_ipc.o
  obj-$(CONFIG_TOUCHSCREEN_DMI)	+= touchscreen_dmi.o
  obj-$(CONFIG_SURFACE_PRO3_BUTTON)	+= surfacepro3_button.o
  obj-$(CONFIG_SURFACE_3_BUTTON)	+= surface3_button.o
@@ -651,5 +651,5 @@ index 000000000000..e0af01a60302
 +MODULE_DESCRIPTION("mshw0011 driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.23.0
+2.24.0
 

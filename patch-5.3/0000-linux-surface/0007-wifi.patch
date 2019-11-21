@@ -1,7 +1,7 @@
-From d74cf106de188669286d18943bdfb86538aae0eb Mon Sep 17 00:00:00 2001
+From d4cb98022b8cace0fba9fa4a1b48900dea9959c2 Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Wed, 18 Sep 2019 03:18:25 +0200
-Subject: [PATCH 7/9] wifi
+Subject: [PATCH 07/10] wifi
 
 ---
  drivers/net/wireless/marvell/mwifiex/11n_aggr.c |  3 +--
@@ -263,5 +263,5 @@ diff --git a/scripts/leaking_addresses.pl b/scripts/leaking_addresses.pl
 old mode 100755
 new mode 100644
 -- 
-2.23.0
+2.24.0
 
