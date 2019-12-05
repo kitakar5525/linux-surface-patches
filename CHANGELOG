@@ -1,3 +1,6 @@
+v3.6.1
+2eb7605 - kitakar5525, 2019-12-05 : patch-5.4: mark legacy-i915 and IPTS patches as WORK_IN_PROGRESS
+
 v3.6
 4ed766b - kitakar5525, 2019-12-05 : patch-4.19: update patches for s0ix debug
 a9fe2cb - kitakar5525, 2019-12-05 : patch-5.4: add patches for 5.4
