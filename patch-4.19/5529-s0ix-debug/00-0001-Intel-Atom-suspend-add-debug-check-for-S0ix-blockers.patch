@@ -1,6 +1,6 @@
-From a2dc840d3af09b49edd057be5d664191d0f506ca Mon Sep 17 00:00:00 2001
-From: Johannes Stezenbach <js@sig21.net>
-Date: Wed, 26 Jul 2017 23:22:21 +0200
+From 134572fded124dd06c33e7a8821551d35e09831d Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 5 Dec 2019 16:08:27 +0900
 Subject: [PATCH] Intel Atom suspend: add debug check for S0ix blockers
 
 Add a notifier called just before entering S0ix
@@ -21,16 +21,19 @@ Signed-off-by: Takashi Iwai <tiwai@suse.de>
 v2: fix compile fail with !CONFIG_INTEL_IDLE found by kbuild test robot
 v3: fix v2, kbuild test robot mercilessly uncovers sloppy coding
 
- arch/x86/include/asm/intel_idle.h         | 12 +++++++
- arch/x86/platform/atom/punit_atom_debug.c | 49 ++++++++++++++++++++++++++
- drivers/idle/intel_idle.c                 | 20 +++++++++++
- drivers/platform/x86/pmc_atom.c           | 58 +++++++++++++++++++++++++++++++
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Ported for 4.19
+---
+ arch/x86/include/asm/intel_idle.h         | 12 +++++
+ arch/x86/platform/atom/punit_atom_debug.c | 49 +++++++++++++++++++
+ drivers/idle/intel_idle.c                 | 20 ++++++++
+ drivers/platform/x86/pmc_atom.c           | 58 +++++++++++++++++++++++
  4 files changed, 139 insertions(+)
  create mode 100644 arch/x86/include/asm/intel_idle.h
 
 diff --git a/arch/x86/include/asm/intel_idle.h b/arch/x86/include/asm/intel_idle.h
 new file mode 100644
-index 000000000000..401fcc3ca1e4
+index 000000000..401fcc3ca
 --- /dev/null
 +++ b/arch/x86/include/asm/intel_idle.h
 @@ -0,0 +1,12 @@
@@ -47,7 +50,7 @@ index 000000000000..401fcc3ca1e4
 +
 +#endif /* _ASM_X86_INTEL_IDLE_H */
 diff --git a/arch/x86/platform/atom/punit_atom_debug.c b/arch/x86/platform/atom/punit_atom_debug.c
-index d49d3be81953..7a20e184d1f9 100644
+index 41dae0f0d..a740e10a2 100644
 --- a/arch/x86/platform/atom/punit_atom_debug.c
 +++ b/arch/x86/platform/atom/punit_atom_debug.c
 @@ -25,6 +25,7 @@
@@ -58,7 +61,7 @@ index d49d3be81953..7a20e184d1f9 100644
  
  /* Subsystem config/status Video processor */
  #define VED_SS_PM0		0x32
-@@ -149,6 +150,47 @@ static void punit_dbgfs_unregister(void)
+@@ -138,6 +139,47 @@ static void punit_dbgfs_unregister(void)
  	debugfs_remove_recursive(punit_dbg_file);
  }
  
@@ -106,7 +109,7 @@ index d49d3be81953..7a20e184d1f9 100644
  #define ICPU(model, drv_data) \
  	{ X86_VENDOR_INTEL, 6, model, X86_FEATURE_MWAIT,\
  	  (kernel_ulong_t)&drv_data }
-@@ -175,11 +217,18 @@ static int __init punit_atom_debug_init(void)
+@@ -164,11 +206,18 @@ static int __init punit_atom_debug_init(void)
  	if (ret < 0)
  		return ret;
  
@@ -126,7 +129,7 @@ index d49d3be81953..7a20e184d1f9 100644
  }
  
 diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index c2ae819a871c..bc96a2f94e9b 100644
+index c4bb67ed8..0dc4b0ff5 100644
 --- a/drivers/idle/intel_idle.c
 +++ b/drivers/idle/intel_idle.c
 @@ -63,6 +63,7 @@
@@ -160,7 +163,7 @@ index c2ae819a871c..bc96a2f94e9b 100644
  struct idle_cpu {
  	struct cpuidle_state *state_table;
  
-@@ -947,6 +964,9 @@ static void intel_idle_freeze(struct cpuidle_device *dev,
+@@ -953,6 +970,9 @@ static void intel_idle_s2idle(struct cpuidle_device *dev,
  	unsigned long ecx = 1; /* break on interrupt flag */
  	unsigned long eax = flg2MWAIT(drv->states[index].flags);
  
@@ -171,10 +174,10 @@ index c2ae819a871c..bc96a2f94e9b 100644
  }
  
 diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
-index 77bac859342d..8d13c86cc418 100644
+index 429166e6e..dcdf99bea 100644
 --- a/drivers/platform/x86/pmc_atom.c
 +++ b/drivers/platform/x86/pmc_atom.c
-@@ -24,6 +24,7 @@
+@@ -25,6 +25,7 @@
  #include <linux/platform_device.h>
  #include <linux/pci.h>
  #include <linux/seq_file.h>
@@ -182,7 +185,7 @@ index 77bac859342d..8d13c86cc418 100644
  
  struct pmc_bit_map {
  	const char *name;
-@@ -447,6 +448,58 @@ static int pmc_setup_clks(struct pci_dev *pdev, void __iomem *pmc_regmap,
+@@ -486,6 +487,58 @@ static int pmc_setup_clks(struct pci_dev *pdev, void __iomem *pmc_regmap,
  	return 0;
  }
  
@@ -241,7 +244,7 @@ index 77bac859342d..8d13c86cc418 100644
  static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
  {
  	struct pmc_dev *pmc = &pmc_device;
-@@ -486,6 +539,11 @@ static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -525,6 +578,11 @@ static int pmc_setup_dev(struct pci_dev *pdev, const struct pci_device_id *ent)
  		dev_warn(&pdev->dev, "platform clocks register failed: %d\n",
  			 ret);
  
@@ -254,5 +257,5 @@ index 77bac859342d..8d13c86cc418 100644
  	return ret;
  }
 -- 
-2.14.1
+2.24.0
 

@@ -1,0 +1,38 @@
+From 4195853bcd0c514e4961cb2c031dbba9952d047e Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 5 Dec 2019 15:54:14 +0900
+Subject: [PATCH 3/3] PM: debug output for last active wakeup source
+
+---
+ drivers/base/power/wakeup.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
+index f1d6fca26..682e854ee 100644
+--- a/drivers/base/power/wakeup.c
++++ b/drivers/base/power/wakeup.c
+@@ -847,6 +847,8 @@ void pm_print_active_wakeup_sources(void)
+ 	int srcuidx, active = 0;
+ 	struct wakeup_source *last_activity_ws = NULL;
+ 
++	pr_alert("DEBUG: %s called \n",__FUNCTION__);
++
+ 	srcuidx = srcu_read_lock(&wakeup_srcu);
+ 	list_for_each_entry_rcu(ws, &wakeup_sources, entry) {
+ 		if (ws->active) {
+@@ -860,9 +862,11 @@ void pm_print_active_wakeup_sources(void)
+ 		}
+ 	}
+ 
+-	if (!active && last_activity_ws)
++	if (!active && last_activity_ws) {
++		pr_alert("DEBUG: Passed %s %d \n",__FUNCTION__,__LINE__);
+ 		pr_info("last active wakeup source: %s\n",
+ 			last_activity_ws->name);
++	}
+ 	srcu_read_unlock(&wakeup_srcu, srcuidx);
+ }
+ EXPORT_SYMBOL_GPL(pm_print_active_wakeup_sources);
+-- 
+2.24.0
+

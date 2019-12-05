@@ -1,8 +1,8 @@
-From d0f62c0e44a9188544928588b6a85ec9ded317f5 Mon Sep 17 00:00:00 2001
+From 6ea60f6d971640850ae9115289b7bb7c72345494 Mon Sep 17 00:00:00 2001
 From: Wenkai Du <wenkai.du@intel.com>
 Date: Thu, 14 Jun 2018 09:29:17 -0700
-Subject: [PATCH] CHROMIUM: PM: Do not silence the print of last active wakeup
- source
+Subject: [PATCH 2/3] CHROMIUM: PM: Do not silence the print of last active
+ wakeup source
 
 Last active wakeup source information is very useful in debugging
 issues with sleep and suprious wakeup. However it was silenced from
@@ -23,10 +23,10 @@ Reviewed-by: Justin TerAvest <teravest@chromium.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
-index e75512dd9733..0755575394e1 100644
+index ecbe625f4..f1d6fca26 100644
 --- a/drivers/base/power/wakeup.c
 +++ b/drivers/base/power/wakeup.c
-@@ -855,7 +855,7 @@ void pm_print_active_wakeup_sources(void)
+@@ -861,7 +861,7 @@ void pm_print_active_wakeup_sources(void)
  	}
  
  	if (!active && last_activity_ws)
@@ -36,5 +36,5 @@ index e75512dd9733..0755575394e1 100644
  	srcu_read_unlock(&wakeup_srcu, srcuidx);
  }
 -- 
-2.23.0
+2.24.0
 
