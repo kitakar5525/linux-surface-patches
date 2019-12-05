@@ -1,0 +1,26 @@
+From bd1db6f4429ec27054e44b1a3b4367221f336a02 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 24 Oct 2019 06:57:33 +0900
+Subject: [PATCH 4/4] mwifiex: s0ix test: revert patch to sta_cmd.c
+
+This patch seems to be not necessary on at least Surface Book 1.
+---
+ drivers/net/wireless/marvell/mwifiex/sta_cmd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+index ab16c2d75..485360e85 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+@@ -2395,7 +2395,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
+ 	if (ret)
+ 		return -1;
+ 
+-	if (0 && !disable_auto_ds && first_sta &&
++	if (!disable_auto_ds && first_sta &&
+ 	    priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
+ 		/* Enable auto deep sleep */
+ 		auto_ds.auto_ds = DEEP_SLEEP_ON;
+-- 
+2.24.0
+

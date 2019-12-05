@@ -1,0 +1,93 @@
+From 2bb3ddaa921c9d234f1fc77a21da16165c6e180e Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 21 Nov 2019 10:59:03 +0900
+Subject: [PATCH 3/4] mwifiex: s0ix test: move mwifiex_pcie_suspend2 above
+ mwifiex_pcie_resume2
+
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 62 ++++++++++-----------
+ 1 file changed, 31 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 61faf86f4..7f89f6e4c 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -218,37 +218,6 @@ static int __maybe_unused mwifiex_pcie_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int mwifiex_pcie_resume2(struct device *dev)
+-{
+-	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct pcie_service_card *card;
+-	int ret;
+-
+-	pr_debug("info: vendor=0x%4.04X device=0x%4.04X rev=%d\n",
+-		 pdev->vendor, pdev->device, pdev->revision);
+-
+-	card = pci_get_drvdata(pdev);
+-
+-	init_completion(&card->fw_done);
+-
+-	card->dev = pdev;
+-
+-	/* device tree node parsing and platform specific configuration*/
+-	if (pdev->dev.of_node) {
+-		ret = mwifiex_pcie_probe_of(&pdev->dev);
+-		if (ret)
+-			return ret;
+-	}
+-
+-	if (mwifiex_add_card(card, &card->fw_done, &pcie_ops,
+-			     MWIFIEX_PCIE, &pdev->dev)) {
+-		pr_err("%s failed\n", __func__);
+-		return -1;
+-	}
+-
+-	return 0;
+-}
+-
+ static int mwifiex_pcie_suspend2(struct device *dev)
+ {
+ 	struct pcie_service_card *card;
+@@ -287,6 +256,37 @@ static int mwifiex_pcie_suspend2(struct device *dev)
+ 
+ 	return 0;
+ }
++
++static int mwifiex_pcie_resume2(struct device *dev)
++{
++	struct pci_dev *pdev = to_pci_dev(dev);
++	struct pcie_service_card *card;
++	int ret;
++
++	pr_debug("info: vendor=0x%4.04X device=0x%4.04X rev=%d\n",
++		 pdev->vendor, pdev->device, pdev->revision);
++
++	card = pci_get_drvdata(pdev);
++
++	init_completion(&card->fw_done);
++
++	card->dev = pdev;
++
++	/* device tree node parsing and platform specific configuration*/
++	if (pdev->dev.of_node) {
++		ret = mwifiex_pcie_probe_of(&pdev->dev);
++		if (ret)
++			return ret;
++	}
++
++	if (mwifiex_add_card(card, &card->fw_done, &pcie_ops,
++			     MWIFIEX_PCIE, &pdev->dev)) {
++		pr_err("%s failed\n", __func__);
++		return -1;
++	}
++
++	return 0;
++}
+ #endif
+ 
+ /*
+-- 
+2.24.0
+
