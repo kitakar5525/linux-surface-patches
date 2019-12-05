@@ -1,3 +1,9 @@
+v3.6
+4ed766b - kitakar5525, 2019-12-05 : patch-4.19: update patches for s0ix debug
+a9fe2cb - kitakar5525, 2019-12-05 : patch-5.4: add patches for 5.4
+84183ad - kitakar5525, 2019-12-05 : patch-5.3: move to OLD
+b7fadb3 - kitakar5525, 2019-11-30 : chromeos-4.19: configs: Update to configs-v4.19.85.r7768.aeb1bca-default
+
 v3.5
 3b2c2c4 - kitakar5525, 2019-11-21 : chromeos-4.19: configs: Update to configs-v4.19.84.r7712.55704cf-default and set CONFIG_INTEL_PMC_CORE to m from y
 4d2756b - kitakar5525, 2019-11-21 : patches: remove patch as already unnecessary
