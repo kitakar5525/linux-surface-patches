@@ -1,29 +1,26 @@
-From 7ad7fb00a407503b104f1ba8df6404b301eaebaf Mon Sep 17 00:00:00 2001
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Date: Wed, 28 Nov 2018 13:45:29 +0200
-Subject: [PATCH 16/32] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
+From 42ea9d8f7b019136bed3c4a49e3242c4629976da Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 12 Dec 2019 21:14:30 +0900
+Subject: [PATCH] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
 
 Besides current two users one more is coming. Definitely makes sense to
 introduce a helper.
 
 No functional change intended.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Update to apply cleanly for chromeos-4.19
 ---
  drivers/i2c/i2c-core-acpi.c | 41 ++++++++++++++++++++++++++-----------
  include/linux/acpi.h        | 11 ++++++++++
  2 files changed, 40 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-index 139f83186565..bc2c69833a19 100644
+index 6ffec257a043..e63b4adf3157 100644
 --- a/drivers/i2c/i2c-core-acpi.c
 +++ b/drivers/i2c/i2c-core-acpi.c
-@@ -45,6 +45,33 @@ struct i2c_acpi_lookup {
- 	u32 min_speed;
+@@ -46,6 +46,33 @@ struct i2c_acpi_lookup {
+ 	u32 force_speed;
  };
  
 +/**
@@ -56,7 +53,7 @@ index 139f83186565..bc2c69833a19 100644
  static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
  {
  	struct i2c_acpi_lookup *lookup = data;
-@@ -52,11 +79,7 @@ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
+@@ -53,11 +80,7 @@ static int i2c_acpi_fill_info(struct acpi_resource *ares, void *data)
  	struct acpi_resource_i2c_serialbus *sb;
  	acpi_status status;
  
@@ -69,7 +66,7 @@ index 139f83186565..bc2c69833a19 100644
  		return 1;
  
  	if (lookup->index != -1 && lookup->n++ != lookup->index)
-@@ -535,13 +558,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
+@@ -561,13 +584,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
  		goto err;
  	}
  
@@ -85,10 +82,10 @@ index 139f83186565..bc2c69833a19 100644
  		goto err;
  	}
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 67dedc9520a9..82519e157b6d 100644
+index 289abd5b383c..4c13fceb4648 100644
 --- a/include/linux/acpi.h
 +++ b/include/linux/acpi.h
-@@ -1063,6 +1063,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
+@@ -1072,6 +1072,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
  }
  #endif
  
@@ -107,5 +104,5 @@ index 67dedc9520a9..82519e157b6d 100644
  
  #ifdef CONFIG_ACPI
 -- 
-2.22.0
+2.24.1
 

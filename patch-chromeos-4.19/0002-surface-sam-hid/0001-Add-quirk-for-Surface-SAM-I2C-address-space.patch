@@ -1,7 +1,10 @@
-From 2427294a5c216ab9ad98164c3df7d8e21bee6713 Mon Sep 17 00:00:00 2001
-From: qzed <qzed@users.noreply.github.com>
-Date: Fri, 5 Apr 2019 18:17:59 +0200
-Subject: [PATCH 17/32] Add quirk for Surface SAM I2C address space
+From a12fbd32ef42158af3cf2618bc43c2763c5d2596 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 12 Dec 2019 21:17:08 +0900
+Subject: [PATCH] Add quirk for Surface SAM I2C address space
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 The module does not work as there is already an address-space handler
 attached to the device. Thus we need to patch this handler.
@@ -12,16 +15,18 @@ https://github.com/qzed/linux-surface-sam-hid
 ・[SB] SAM Support (dGPU-detection, clipboard-detach handling) #286
 https://github.com/jakeday/linux-surface/issues/286
 
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Update to apply cleanly for chromeos-4.19
 ---
  drivers/i2c/i2c-core-acpi.c | 179 +++++++++++++++++++++++++++++++++---
  1 file changed, 166 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-index bc2c69833a19..849a7d2004b6 100644
+index e63b4adf3157..79f11d5f4e39 100644
 --- a/drivers/i2c/i2c-core-acpi.c
 +++ b/drivers/i2c/i2c-core-acpi.c
-@@ -45,6 +45,21 @@ struct i2c_acpi_lookup {
- 	u32 min_speed;
+@@ -46,6 +46,21 @@ struct i2c_acpi_lookup {
+ 	u32 force_speed;
  };
  
 +
@@ -42,7 +47,7 @@ index bc2c69833a19..849a7d2004b6 100644
  /**
   * i2c_acpi_get_i2c_resource - Gets I2cSerialBus resource if type matches
   * @ares:	ACPI resource
-@@ -651,7 +666,9 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
+@@ -677,7 +692,9 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
  int i2c_acpi_install_space_handler(struct i2c_adapter *adapter)
  {
  	acpi_handle handle;
@@ -52,7 +57,7 @@ index bc2c69833a19..849a7d2004b6 100644
  	acpi_status status;
  
  	if (!adapter->dev.parent)
-@@ -674,16 +691,23 @@ int i2c_acpi_install_space_handler(struct i2c_adapter *adapter)
+@@ -700,16 +717,23 @@ int i2c_acpi_install_space_handler(struct i2c_adapter *adapter)
  		return -ENOMEM;
  	}
  
@@ -86,7 +91,7 @@ index bc2c69833a19..849a7d2004b6 100644
  	}
  
  	acpi_walk_dep_device_list(handle);
-@@ -693,7 +717,9 @@ int i2c_acpi_install_space_handler(struct i2c_adapter *adapter)
+@@ -719,7 +743,9 @@ int i2c_acpi_install_space_handler(struct i2c_adapter *adapter)
  void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
  {
  	acpi_handle handle;
@@ -96,7 +101,7 @@ index bc2c69833a19..849a7d2004b6 100644
  	acpi_status status;
  
  	if (!adapter->dev.parent)
-@@ -704,9 +730,16 @@ void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
+@@ -730,9 +756,16 @@ void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
  	if (!handle)
  		return;
  
@@ -116,7 +121,7 @@ index bc2c69833a19..849a7d2004b6 100644
  
  	status = acpi_bus_get_private_data(handle, (void **)&data);
  	if (ACPI_SUCCESS(status))
-@@ -715,3 +748,123 @@ void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
+@@ -741,3 +774,123 @@ void i2c_acpi_remove_space_handler(struct i2c_adapter *adapter)
  	acpi_bus_detach_private_data(handle);
  }
  #endif /* CONFIG_ACPI_I2C_OPREGION */
@@ -241,5 +246,5 @@ index bc2c69833a19..849a7d2004b6 100644
 +	return quirks_check_surface_sam(handle);
 +}
 -- 
-2.22.0
+2.24.1
 
