@@ -4,7 +4,8 @@ Date: Thu, 21 Nov 2019 10:56:45 +0900
 Subject: [PATCH 2/4] mwifiex: s0ix test: add __maybe_unused to
  mwifiex_pcie_suspend/mwifiex_pcie_resume
 
-Added __maybe_unused to suppress warning on build.
+Add __maybe_unused to old mwifiex_pcie_suspend/mwifiex_pcie_resume
+functions to suppress warning on build.
 
 ---
  drivers/net/wireless/marvell/mwifiex/pcie.c | 4 ++--

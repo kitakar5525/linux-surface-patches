@@ -4,6 +4,10 @@ Date: Thu, 21 Nov 2019 10:59:03 +0900
 Subject: [PATCH 3/4] mwifiex: s0ix test: move mwifiex_pcie_suspend2 above
  mwifiex_pcie_resume2
 
+This commit moves mwifiex_pcie_suspend2 definition above
+mwifiex_pcie_resume2 to conform to existing original
+mwifiex_pcie_suspend and mwifiex_pcie_resume definition order.
+
 ---
  drivers/net/wireless/marvell/mwifiex/pcie.c | 62 ++++++++++-----------
  1 file changed, 31 insertions(+), 31 deletions(-)

@@ -3,6 +3,19 @@ From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 21 Nov 2019 10:53:21 +0900
 Subject: [PATCH 1/4] mwifiex: s0ix test
 
+This patch is from sebanc; trying to fix the following issues:
+- wifi crash after suspend when mwifiex modules remain loaded during suspend
+- s0ix achievement when mwifiex modules remain loaded during suspend
+
+The function mwifiex_pcie_suspend2 is from mwifiex_pcie_remove and
+the function mwifiex_pcie_resume2 is largely from mwifiex_pcie_probe.
+So, it behaves in the same way as we unload modules before suspend
+and load modules after suspend.
+Also disables bridge_d3 regarding wifi.
+
+Link to the comment where sebanc posted this patch:
+https://github.com/jakeday/linux-surface/issues/420#issuecomment-544615371
+
 ---
  drivers/net/wireless/marvell/mwifiex/pcie.c   | 78 ++++++++++++++++++-
  .../net/wireless/marvell/mwifiex/sta_cmd.c    |  2 +-
