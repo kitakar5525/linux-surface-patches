@@ -1,7 +1,7 @@
-From d85d589ae623fa8dbec22756aa0fd2a2296a6487 Mon Sep 17 00:00:00 2001
+From bd28b11662cc9fba2f92d69e3d132c5a50b3537a Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Tue, 17 Sep 2019 17:17:56 +0200
-Subject: [PATCH 4/8] surface3-power
+Subject: [PATCH 4/7] surface3-power
 
 ---
  drivers/platform/x86/Kconfig          |   7 +
@@ -11,10 +11,10 @@ Subject: [PATCH 4/8] surface3-power
  create mode 100644 drivers/platform/x86/surface3_power.c
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 1cef3c858..b8f019db9 100644
+index 675ec12cbc0e..cf709b3dd0cd 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -1219,6 +1219,13 @@ config SURFACE_3_BUTTON
+@@ -1210,6 +1210,13 @@ config SURFACE_3_BUTTON
  	---help---
  	  This driver handles the power/home/volume buttons on the Microsoft Surface 3 tablet.
  
@@ -29,10 +29,10 @@ index 1cef3c858..b8f019db9 100644
  	tristate "Intel P-Unit IPC Driver"
  	---help---
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index 725dedf5f..705525ff9 100644
+index 18f5a4ba7244..19b56f2181eb 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
-@@ -86,6 +86,7 @@ obj-$(CONFIG_INTEL_PMC_IPC)	+= intel_pmc_ipc.o
+@@ -85,6 +85,7 @@ obj-$(CONFIG_INTEL_PMC_IPC)	+= intel_pmc_ipc.o
  obj-$(CONFIG_TOUCHSCREEN_DMI)	+= touchscreen_dmi.o
  obj-$(CONFIG_SURFACE_PRO3_BUTTON)	+= surfacepro3_button.o
  obj-$(CONFIG_SURFACE_3_BUTTON)	+= surface3_button.o
@@ -42,7 +42,7 @@ index 725dedf5f..705525ff9 100644
  obj-$(CONFIG_INTEL_TELEMETRY)	+= intel_telemetry_core.o \
 diff --git a/drivers/platform/x86/surface3_power.c b/drivers/platform/x86/surface3_power.c
 new file mode 100644
-index 000000000..e0af01a60
+index 000000000000..e0af01a60302
 --- /dev/null
 +++ b/drivers/platform/x86/surface3_power.c
 @@ -0,0 +1,604 @@
@@ -651,5 +651,5 @@ index 000000000..e0af01a60
 +MODULE_DESCRIPTION("mshw0011 driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.24.0
+2.24.1
 

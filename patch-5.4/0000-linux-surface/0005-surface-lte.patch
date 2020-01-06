@@ -1,14 +1,14 @@
-From 9584298b15a08c1829ee5b17ee2d19f6241b21fe Mon Sep 17 00:00:00 2001
+From 1ac8e97c8765f1e89ede2a981559b10571b5b5a2 Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Tue, 17 Sep 2019 17:21:43 +0200
-Subject: [PATCH 5/8] surface-lte
+Subject: [PATCH 5/7] surface-lte
 
 ---
  drivers/usb/serial/qcserial.c | 1 +
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/serial/qcserial.c b/drivers/usb/serial/qcserial.c
-index 613f91add..e1428222d 100644
+index 613f91add03d..e1428222dd73 100644
 --- a/drivers/usb/serial/qcserial.c
 +++ b/drivers/usb/serial/qcserial.c
 @@ -177,6 +177,7 @@ static const struct usb_device_id id_table[] = {
@@ -20,5 +20,5 @@ index 613f91add..e1428222d 100644
  	/* Huawei devices */
  	{DEVICE_HWI(0x03f0, 0x581d)},	/* HP lt4112 LTE/HSPA+ Gobi 4G Modem (Huawei me906e) */
 -- 
-2.24.0
+2.24.1
 
