@@ -1,3 +1,19 @@
+v3.7
+ca60d50 - kitakar5525, 2020-01-07 : chromeos-5.4: configs: Add Surface configs based on configs-v5.4.6.r920.3ff4367
+a65ef1d - kitakar5525, 2020-01-07 : chromeos-4.19: configs: Update to configs-v4.19.91.r7992.631a077
+63ad4c5 - kitakar5525, 2020-01-06 : patch-chromeos-5.4: Update patch to follow latest kernel version
+4d80e81 - kitakar5525, 2020-01-06 : patches: add patch to fix gcc warnings
+e1530fd - kitakar5525, 2020-01-06 : patch-chromeos-5.4: Add patches from linux-surface_linux-surface@b931b147da670fd9507391d41e56d34953ae687b
+6851516 - kitakar5525, 2020-01-06 : patch-chromeos-4.19: Update to linux-surface_linux-surface@b931b147da670fd9507391d41e56d34953ae687b
+7570619 - kitakar5525, 2020-01-06 : patch-4.19: Update to linux-surface_linux-surface@b931b147da670fd9507391d41e56d34953ae687b
+dda04fc - kitakar5525, 2020-01-06 : patch-5.4: Update to linux-surface_linux-surface@b931b147da670fd9507391d41e56d34953ae687b
+149873a - Hayataka, 2019-12-29 : Update README.md
+26ba31d - kitakar5525, 2019-12-20 : patches: mwifiex: s0ix-test: Update commit messages
+5789448 - kitakar5525, 2019-12-13 : chromeos-4.19: configs: Update to configs-v4.19.88.r7846.24b3f9bd0738-default
+2487677 - kitakar5525, 2019-12-12 : chromeos-4.19: Update to apply cleanly for latest chromeos-4.19 kernel
+f01dfa8 - kitakar5525, 2019-12-06 : chromeos-4.19: configs: Update to configs-v4.19.86.r7785.749545020325-default
+e22e763 - Hayataka, 2019-12-05 : Update README.md for 5.4
+
 v3.6.1
 2eb7605 - kitakar5525, 2019-12-05 : patch-5.4: mark legacy-i915 and IPTS patches as WORK_IN_PROGRESS
 
