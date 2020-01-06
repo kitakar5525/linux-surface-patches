@@ -1,15 +1,14 @@
-From c2e0f66b7c9a2100bfc84a2572ecef338f27d603 Mon Sep 17 00:00:00 2001
+From d63ae78ee99fb9c0684a1fb23fed472f0b9ea2b3 Mon Sep 17 00:00:00 2001
 From: Tuowen Zhao <ztuowen@gmail.com>
-Date: Wed, 16 Oct 2019 15:06:27 -0600
-Subject: [PATCH 13/13] ioremap_uc
+Date: Wed, 16 Oct 2019 15:06:28 -0600
+Subject: [PATCH 12/13] ioremap_uc
 
 ---
  Documentation/driver-model/devres.txt |  1 +
- arch/sparc/include/asm/io_64.h        |  1 +
  drivers/mfd/intel-lpss.c              |  2 +-
  include/linux/io.h                    |  2 ++
  lib/devres.c                          | 19 +++++++++++++++++++
- 5 files changed, 24 insertions(+), 1 deletion(-)
+ 4 files changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
 index 43681ca0837f..7b1ee4190208 100644
@@ -23,18 +22,6 @@ index 43681ca0837f..7b1ee4190208 100644
    devm_ioremap_wc()
    devm_ioremap_resource() : checks resource, requests memory region, ioremaps
    devm_iounmap()
-diff --git a/arch/sparc/include/asm/io_64.h b/arch/sparc/include/asm/io_64.h
-index b162c23ae8c2..7a836d21ff0c 100644
---- a/arch/sparc/include/asm/io_64.h
-+++ b/arch/sparc/include/asm/io_64.h
-@@ -409,6 +409,7 @@ static inline void __iomem *ioremap(unsigned long offset, unsigned long size)
- }
- 
- #define ioremap_nocache(X,Y)		ioremap((X),(Y))
-+#define ioremap_uc(X,Y)			ioremap((X),(Y))
- #define ioremap_wc(X,Y)			ioremap((X),(Y))
- #define ioremap_wt(X,Y)			ioremap((X),(Y))
- 
 diff --git a/drivers/mfd/intel-lpss.c b/drivers/mfd/intel-lpss.c
 index ff3fba16e735..37a5bb09d228 100644
 --- a/drivers/mfd/intel-lpss.c
@@ -106,5 +93,5 @@ index faccf1a037d0..97c56f9893a4 100644
   * devm_ioremap_nocache - Managed ioremap_nocache()
   * @dev: Generic device to remap IO address for
 -- 
-2.24.0
+2.24.1
 

@@ -1,7 +1,7 @@
-From c32c8427da01370a9ca6fa1de60c96c6c024c38d Mon Sep 17 00:00:00 2001
+From 9fec41f4b8b9780389c2bf23429e96b4198ce0d5 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 21 Nov 2019 18:48:47 +0900
-Subject: [PATCH] ipts-for-chromeos-4.19
+Date: Mon, 6 Jan 2020 18:58:27 +0900
+Subject: [PATCH] ipts-chromeos-4.19
 
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
@@ -28,7 +28,7 @@ Subject: [PATCH] ipts-for-chromeos-4.19
  drivers/misc/ipts/Makefile                  |   17 +
  drivers/misc/ipts/companion/Kconfig         |    9 +
  drivers/misc/ipts/companion/Makefile        |    1 +
- drivers/misc/ipts/companion/ipts-surface.c  |   82 ++
+ drivers/misc/ipts/companion/ipts-surface.c  |  100 ++
  drivers/misc/ipts/ipts-binary-spec.h        |  118 +++
  drivers/misc/ipts/ipts-dbgfs.c              |  364 +++++++
  drivers/misc/ipts/ipts-fw.c                 |  113 ++
@@ -54,7 +54,7 @@ Subject: [PATCH] ipts-for-chromeos-4.19
  drivers/misc/mei/pci-me.c                   |    1 +
  include/linux/intel_ipts_fw.h               |   14 +
  include/linux/intel_ipts_if.h               |   76 ++
- 50 files changed, 6154 insertions(+), 26 deletions(-)
+ 50 files changed, 6172 insertions(+), 26 deletions(-)
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.c
  create mode 100644 drivers/gpu/drm/i915/intel_ipts.h
  create mode 100644 drivers/misc/ipts/Kconfig
@@ -189,7 +189,7 @@ index a850e9d2bda2..428be19f12a6 100644
  
  int i915_debugfs_register(struct drm_i915_private *dev_priv)
 diff --git a/drivers/gpu/drm/i915/i915_drv.c b/drivers/gpu/drm/i915/i915_drv.c
-index 499680c57a10..a9268ea8640b 100644
+index 499680c57a10..2c54c811d20f 100644
 --- a/drivers/gpu/drm/i915/i915_drv.c
 +++ b/drivers/gpu/drm/i915/i915_drv.c
 @@ -53,6 +53,7 @@
@@ -210,16 +210,16 @@ index 499680c57a10..a9268ea8640b 100644
  	return 0;
  
  cleanup_gem:
-@@ -1769,6 +1773,9 @@ void i915_driver_unload(struct drm_device *dev)
- 	struct drm_i915_private *dev_priv = to_i915(dev);
- 	struct pci_dev *pdev = dev_priv->drm.pdev;
+@@ -1771,6 +1775,9 @@ void i915_driver_unload(struct drm_device *dev)
+ 
+ 	disable_rpm_wakeref_asserts(dev_priv);
  
 +	if (INTEL_GEN(dev_priv) >= 9 && i915_modparams.enable_guc && i915_modparams.enable_ipts)
 +		intel_ipts_cleanup(dev);
 +
- 	disable_rpm_wakeref_asserts(dev_priv);
- 
  	i915_driver_unregister(dev_priv);
+ 
+ 	if (i915_gem_suspend(dev_priv))
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
 index 139d7b89f00a..922ad87909c5 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
@@ -1401,14 +1401,14 @@ index f4d0fd9afcb8..c85feb39320a 100644
  obj-$(CONFIG_SRAM)		+= sram.o
 diff --git a/drivers/misc/ipts/Kconfig b/drivers/misc/ipts/Kconfig
 new file mode 100644
-index 000000000000..a24c4daaed42
+index 000000000000..992a51061b38
 --- /dev/null
 +++ b/drivers/misc/ipts/Kconfig
 @@ -0,0 +1,11 @@
 +config INTEL_IPTS
 +	tristate "Intel Precise Touch & Stylus"
 +	select INTEL_MEI
-+	depends on X86 && PCI && HID
++	depends on X86 && PCI && HID && DRM_I915
 +	help
 +	  Intel Precise Touch & Stylus support
 +	  Supported SoCs:
@@ -1463,10 +1463,10 @@ index 000000000000..fb4d58935f01
 +obj-$(CONFIG_INTEL_IPTS_SURFACE)+= ipts-surface.o
 diff --git a/drivers/misc/ipts/companion/ipts-surface.c b/drivers/misc/ipts/companion/ipts-surface.c
 new file mode 100644
-index 000000000000..4d6116dfa728
+index 000000000000..6f5aabb14e5a
 --- /dev/null
 +++ b/drivers/misc/ipts/companion/ipts-surface.c
-@@ -0,0 +1,82 @@
+@@ -0,0 +1,100 @@
 +#include <linux/acpi.h>
 +#include <linux/firmware.h>
 +#include <linux/intel_ipts_fw.h>
@@ -1475,6 +1475,24 @@ index 000000000000..4d6116dfa728
 +#include <linux/platform_device.h>
 +
 +#define IPTS_SURFACE_FW_PATH_FMT "intel/ipts/%s/%s"
++
++#define __IPTS_SURFACE_FIRMWARE(X, Y)				\
++	MODULE_FIRMWARE("intel/ipts/" X "/" Y)
++
++#define IPTS_SURFACE_FIRMWARE(X)				\
++	__IPTS_SURFACE_FIRMWARE(X, "config.bin");		\
++	__IPTS_SURFACE_FIRMWARE(X, "intel_desc.bin");		\
++	__IPTS_SURFACE_FIRMWARE(X, "intel_fw_config.bin");	\
++	__IPTS_SURFACE_FIRMWARE(X, "vendor_desc.bin");		\
++	__IPTS_SURFACE_FIRMWARE(X, "vendor_kernel.bin")
++
++IPTS_SURFACE_FIRMWARE("MSHW0076");
++IPTS_SURFACE_FIRMWARE("MSHW0078");
++IPTS_SURFACE_FIRMWARE("MSHW0079");
++IPTS_SURFACE_FIRMWARE("MSHW0101");
++IPTS_SURFACE_FIRMWARE("MSHW0102");
++IPTS_SURFACE_FIRMWARE("MSHW0103");
++IPTS_SURFACE_FIRMWARE("MSHW0137");
 +
 +int ipts_surface_request_firmware(const struct firmware **fw, const char *name,
 +	struct device *device, void *data)
@@ -6704,7 +6722,7 @@ index 000000000000..9c34b55ff036
 +
 +#endif // _IPTS_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index f85aa3f4042d..2daace422dce 100644
+index 9c4042420022..5d63ebba3e9f 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -6716,7 +6734,7 @@ index f85aa3f4042d..2daace422dce 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 28cdd87851cb..c13ba550435c 100644
+index 41a10e392839..2b93a067cebc 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -6830,5 +6848,5 @@ index 000000000000..bad44fb4f233
 +
 +#endif // INTEL_IPTS_IF_H
 -- 
-2.24.0
+2.24.1
 

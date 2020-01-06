@@ -1,0 +1,63 @@
+From de66d1c49b58fd508b374cc3c11e25ce6ccdce50 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Fri, 4 Oct 2019 21:23:02 +0900
+Subject: [PATCH 1/8] Revert "power/suspend: Add delay for device quirks"
+
+---
+ kernel/power/suspend.c | 11 -----------
+ kernel/sysctl.c        |  9 ---------
+ 2 files changed, 20 deletions(-)
+
+diff --git a/kernel/power/suspend.c b/kernel/power/suspend.c
+index a8385e889..0bd595a0b 100644
+--- a/kernel/power/suspend.c
++++ b/kernel/power/suspend.c
+@@ -526,8 +526,6 @@ int suspend_devices_and_enter(suspend_state_t state)
+ 	goto Resume_devices;
+ }
+ 
+-unsigned int resume_delay = 3000;
+-
+ /**
+  * suspend_finish - Clean up before finishing the suspend sequence.
+  *
+@@ -536,15 +534,6 @@ unsigned int resume_delay = 3000;
+  */
+ static void suspend_finish(void)
+ {
+-	if (resume_delay) {
+-		/* Give kernel threads a head start, such that usb-storage
+-		 * can detect devices before syslog attempts to write log
+-		 * messages from the suspend code.
+-		 */
+-		thaw_kernel_threads();
+-		pr_debug("PM: Sleeping for %d milliseconds.\n", resume_delay);
+-		msleep(resume_delay);
+-	}
+ 	suspend_thaw_processes();
+ 	pm_notifier_call_chain(PM_POST_SUSPEND);
+ 	pm_restore_console();
+diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+index b2533de80..4c4fd4339 100644
+--- a/kernel/sysctl.c
++++ b/kernel/sysctl.c
+@@ -313,16 +313,7 @@ static int min_extfrag_threshold;
+ static int max_extfrag_threshold = 1000;
+ #endif
+ 
+-extern unsigned int resume_delay;
+-
+ static struct ctl_table kern_table[] = {
+-	{
+-		.procname	= "resume_delay",
+-		.data		= &resume_delay,
+-		.maxlen		= sizeof(unsigned int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec,
+-	},
+ 	{
+ 		.procname	= "sched_child_runs_first",
+ 		.data		= &sysctl_sched_child_runs_first,
+-- 
+2.24.1
+
