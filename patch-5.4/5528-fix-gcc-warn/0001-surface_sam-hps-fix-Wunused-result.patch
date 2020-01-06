@@ -1,0 +1,53 @@
+From 921d9ffa21d4508cea9568b2160074a026947a47 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 6 Jan 2020 20:46:44 +0900
+Subject: [PATCH] surface_sam: hps: fix Wunused-result
+
+Fix following warnings:
+          CC [M]  drivers/platform/x86/surface_sam/surface_sam_hps.o
+        /mnt/host/source/src/third_party/kernel/v4.19/drivers/platform/x86/surface_sam/surface_sam_hps.c:378:4: error: ignoring return value of function declared with 'warn_unused_result' attribute [-Werror,-Wunused-result]
+                                pci_enable_device(rp);
+                                ^~~~~~~~~~~~~~~~~ ~~
+        /mnt/host/source/src/third_party/kernel/v4.19/drivers/platform/x86/surface_sam/surface_sam_hps.c:780:3: error: ignoring return value of function declared with 'warn_unused_result' attribute [-Werror,-Wunused-result]
+                        pci_enable_device(rp);
+                        ^~~~~~~~~~~~~~~~~ ~~
+        2 errors generated.
+---
+ drivers/platform/x86/surface_sam/surface_sam_hps.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/platform/x86/surface_sam/surface_sam_hps.c b/drivers/platform/x86/surface_sam/surface_sam_hps.c
+index 3b123bd3dcfe..1fc5df2f738e 100644
+--- a/drivers/platform/x86/surface_sam/surface_sam_hps.c
++++ b/drivers/platform/x86/surface_sam/surface_sam_hps.c
+@@ -374,8 +374,11 @@ static int __shps_dgpu_rp_set_power_unlocked(struct platform_device *pdev, enum
+ 
+ 		pci_restore_state(rp);
+ 
+-		if (!pci_is_enabled(rp))
+-			pci_enable_device(rp);
++		if (!pci_is_enabled(rp)) {
++			status = pci_enable_device(rp);
++			if (status)
++				return status;
++		}
+ 
+ 		pci_set_master(rp);
+ 		clear_bit(SHPS_STATE_BIT_RPPWRON_SYNC, &drvdata->state);
+@@ -776,8 +779,11 @@ static int shps_dgpu_powered_on(struct platform_device *pdev)
+ 	if (drvdata->dgpu_root_port_state)
+ 		pci_load_and_free_saved_state(rp, &drvdata->dgpu_root_port_state);
+ 	pci_restore_state(rp);
+-	if (!pci_is_enabled(rp))
+-		pci_enable_device(rp);
++	if (!pci_is_enabled(rp)) {
++		status = pci_enable_device(rp);
++		if (status)
++			return status;
++	}
+ 	pci_set_master(rp);
+ 	dbg_dump_drvsta(pdev, "shps_dgpu_powered_on.2");
+ 	dbg_dump_power_states(pdev, "shps_dgpu_powered_on.2");
+-- 
+2.24.1
+
