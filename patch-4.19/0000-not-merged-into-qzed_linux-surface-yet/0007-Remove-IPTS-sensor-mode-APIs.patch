@@ -1,7 +1,7 @@
-From 2ad454460102e3c01706c7ad2347ae0ff31d24d0 Mon Sep 17 00:00:00 2001
+From 5b4f28a279451bdfd44a19a9ef66551bb0104a79 Mon Sep 17 00:00:00 2001
 From: Dorian Stoll <dorian.stoll@tmsp.io>
 Date: Wed, 18 Sep 2019 22:35:26 +0200
-Subject: [PATCH 7/7] Remove IPTS sensor mode APIs
+Subject: [PATCH 7/8] Remove IPTS sensor mode APIs
 
 The previous commit reverted the changes to hid-multitouch that were done by
 the IPTS patch. The original implementation modified hid-multitouch to make the
@@ -231,5 +231,5 @@ index f37d9ad9a..4ee8301db 100644
                       u32 msg_len);
  int ipts_handle_processed_data(ipts_info_t *ipts);
 -- 
-2.23.0
+2.24.1
 

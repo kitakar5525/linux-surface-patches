@@ -1,7 +1,7 @@
-From 1136264b812678a734f240a75a707a8606cdd92c Mon Sep 17 00:00:00 2001
+From 8b92a1b4120d3ad398551477307f1b4ade5fa5ce Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Fri, 6 Sep 2019 10:51:12 +0900
-Subject: [PATCH 6/7] ipts: hid-multitouch: revert all the changes for 4.19
+Subject: [PATCH 6/8] ipts: hid-multitouch: revert all the changes for 4.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -18,7 +18,7 @@ Link: https://github.com/jakeday/linux-surface/issues/549
  1 file changed, 3 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/hid/hid-multitouch.c b/drivers/hid/hid-multitouch.c
-index 334afd385..31d941a7d 100644
+index 28b729c9d..f9167d0e0 100644
 --- a/drivers/hid/hid-multitouch.c
 +++ b/drivers/hid/hid-multitouch.c
 @@ -173,7 +173,6 @@ struct mt_device {
@@ -94,5 +94,5 @@ index 334afd385..31d941a7d 100644
  
  	INIT_LIST_HEAD(&td->applications);
 -- 
-2.23.0
+2.24.1
 

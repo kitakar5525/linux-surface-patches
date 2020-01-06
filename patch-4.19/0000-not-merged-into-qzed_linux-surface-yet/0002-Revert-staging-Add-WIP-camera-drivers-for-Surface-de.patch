@@ -1,7 +1,7 @@
-From 03294359c49cf3cfec692b9f06fa86595018b600 Mon Sep 17 00:00:00 2001
+From e3a241defff53ebb7f18a105c760dc9b2cbbfd67 Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Fri, 4 Oct 2019 21:23:47 +0900
-Subject: [PATCH 2/7] Revert "staging: Add WIP camera drivers for Surface
+Subject: [PATCH 2/8] Revert "staging: Add WIP camera drivers for Surface
  devices"
 
 ---
@@ -22,10 +22,10 @@ Subject: [PATCH 2/7] Revert "staging: Add WIP camera drivers for Surface
  delete mode 100644 drivers/staging/ov5693/ov5693.h
 
 diff --git a/drivers/media/usb/uvc/uvc_driver.c b/drivers/media/usb/uvc/uvc_driver.c
-index 15143bbef..c3ddbf6c2 100644
+index 355777bb8..063e229ea 100644
 --- a/drivers/media/usb/uvc/uvc_driver.c
 +++ b/drivers/media/usb/uvc/uvc_driver.c
-@@ -2365,46 +2365,6 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
+@@ -2389,46 +2389,6 @@ static const struct uvc_device_info uvc_quirk_force_y8 = {
   * though they are compliant.
   */
  static const struct usb_device_id uvc_ids[] = {
@@ -2750,5 +2750,5 @@ index 79aef6966..000000000
 -};
 -#endif
 -- 
-2.23.0
+2.24.1
 
