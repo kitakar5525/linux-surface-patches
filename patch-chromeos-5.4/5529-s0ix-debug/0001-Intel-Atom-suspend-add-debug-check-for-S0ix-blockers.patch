@@ -1,4 +1,4 @@
-From 9ceb6a288adb07c5cdc13ba25187b550faf18840 Mon Sep 17 00:00:00 2001
+From 72e01f1a7665f407434eea4f29959592220ccb6c Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 5 Dec 2019 16:05:07 +0900
 Subject: [PATCH] Intel Atom suspend: add debug check for S0ix blockers
@@ -22,7 +22,7 @@ v2: fix compile fail with !CONFIG_INTEL_IDLE found by kbuild test robot
 v3: fix v2, kbuild test robot mercilessly uncovers sloppy coding
 
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Ported for 5.4
+Ported for chromeos-5.4
 ---
  arch/x86/include/asm/intel_idle.h         | 12 +++++
  arch/x86/platform/atom/punit_atom_debug.c | 49 +++++++++++++++++++
@@ -33,7 +33,7 @@ Ported for 5.4
 
 diff --git a/arch/x86/include/asm/intel_idle.h b/arch/x86/include/asm/intel_idle.h
 new file mode 100644
-index 000000000..401fcc3ca
+index 000000000000..401fcc3ca1e4
 --- /dev/null
 +++ b/arch/x86/include/asm/intel_idle.h
 @@ -0,0 +1,12 @@
@@ -50,7 +50,7 @@ index 000000000..401fcc3ca
 +
 +#endif /* _ASM_X86_INTEL_IDLE_H */
 diff --git a/arch/x86/platform/atom/punit_atom_debug.c b/arch/x86/platform/atom/punit_atom_debug.c
-index ee6b0780b..edf08c978 100644
+index ee6b0780bea1..edf08c9788dc 100644
 --- a/arch/x86/platform/atom/punit_atom_debug.c
 +++ b/arch/x86/platform/atom/punit_atom_debug.c
 @@ -16,6 +16,7 @@
@@ -129,7 +129,7 @@ index ee6b0780b..edf08c978 100644
  }
  
 diff --git a/drivers/idle/intel_idle.c b/drivers/idle/intel_idle.c
-index 347b08b56..cd04aa160 100644
+index a5d6adc5b399..08e0e0508d1e 100644
 --- a/drivers/idle/intel_idle.c
 +++ b/drivers/idle/intel_idle.c
 @@ -51,6 +51,7 @@
@@ -163,7 +163,7 @@ index 347b08b56..cd04aa160 100644
  struct idle_cpu {
  	struct cpuidle_state *state_table;
  
-@@ -941,6 +958,9 @@ static void intel_idle_s2idle(struct cpuidle_device *dev,
+@@ -941,6 +958,9 @@ static int intel_idle_s2idle(struct cpuidle_device *dev,
  	unsigned long ecx = 1; /* break on interrupt flag */
  	unsigned long eax = flg2MWAIT(drv->states[index].flags);
  
@@ -171,10 +171,10 @@ index 347b08b56..cd04aa160 100644
 +	raw_notifier_call_chain(&intel_idle_freeze_notifier, dev->cpu, NULL);
 +#endif
  	mwait_idle_with_hints(eax, ecx);
- }
  
+ 	return 0;
 diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
-index 07d1b911e..c919930db 100644
+index 07d1b911e72f..c919930dbc94 100644
 --- a/drivers/platform/x86/pmc_atom.c
 +++ b/drivers/platform/x86/pmc_atom.c
 @@ -16,6 +16,7 @@
@@ -257,5 +257,5 @@ index 07d1b911e..c919930db 100644
  	return ret;
  }
 -- 
-2.24.0
+2.24.1
 
