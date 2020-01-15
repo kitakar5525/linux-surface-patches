@@ -1,0 +1,64 @@
+From b3e12aa5877944df0e843befade8bca2cac2e17c Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Sat, 11 Jan 2020 23:24:09 +0900
+Subject: [PATCH 2/2] Surface3-OEMB: surface3-wmi: add quirk for Surface 3 with
+ broken DMI table
+
+(made referring to http://git.osdn.net/view?p=android-x86/kernel.git;a=commitdiff;h=18e2e857c57633b25b3b4120f212224a108cd883)
+
+On some Surface 3, DMI table gets corrupted for unknown reasons
+and breaks existing DMI matching used for device-specific quirks.
+
+This commit adds the (broken) DMI info for the affected Surface 3.
+Fixes surface3-wmi probe on Surface 3 with broken DMI table.
+
+Note here that this issue will not necessarily happen after playing
+around with Android-x86. I heard a report from a person on the IRC
+channel that on the affected system, only Manjaro was used.
+
+On affected systems, dmidecode will look like this:
+        $ sudo dmidecode
+        [...]
+        BIOS Information
+            Vendor: American Megatrends Inc.
+        [...]
+        System Information
+            Manufacturer: OEMB
+            Product Name: OEMB
+        [...]
+
+Expected:
+        $ sudo dmidecode
+        [...]
+        BIOS Information
+            Vendor: (???, I think something like "Microsoft Corporation")
+        [...]
+        System Information
+            Manufacturer: Microsoft Corporation
+            Product Name: Surface 3
+        [...]
+---
+ drivers/platform/x86/surface3-wmi.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/platform/x86/surface3-wmi.c b/drivers/platform/x86/surface3-wmi.c
+index 25b176996..58d118776 100644
+--- a/drivers/platform/x86/surface3-wmi.c
++++ b/drivers/platform/x86/surface3-wmi.c
+@@ -41,6 +41,13 @@ static const struct dmi_system_id surface3_dmi_table[] = {
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Surface 3"),
+ 		},
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
++			DMI_MATCH(DMI_SYS_VENDOR, "OEMB"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "OEMB"),
++		},
++	},
+ #endif
+ 	{ }
+ };
+-- 
+2.24.1
+
