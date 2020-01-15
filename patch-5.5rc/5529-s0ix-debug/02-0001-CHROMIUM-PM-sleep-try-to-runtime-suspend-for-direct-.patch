@@ -1,0 +1,47 @@
+From d789efd32090ccbd6013ec34f2d58c8394f77315 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 5 Dec 2019 15:48:18 +0900
+Subject: [PATCH 1/2] CHROMIUM: PM / sleep: try to runtime suspend for direct
+ complete
+
+This tries to runtime suspend devices that are still active for direct
+complete. This is for cases such as autosuspend delays which leaves devices
+able to runtime suspend but still active. It's beneficial in this case to
+runtime suspend the device to take advantage of direct complete when
+possible.
+
+BUG=chrome-os-partner:46491
+TEST=suspend_stress_test on glados with usb drive plugged in
+
+Change-Id: Ia935eee214ef6cd59097f9c60c39dbb89a0bb27e
+Signed-off-by: Derek Basehore <dbasehore@chromium.org>
+Reviewed-on: https://chromium-review.googlesource.com/307565
+Reviewed-by: Eric Caruso <ejcaruso@chromium.org>
+
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Ported for 5.4
+---
+ drivers/base/power/main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/base/power/main.c b/drivers/base/power/main.c
+index f545b4526..fa1f97d34 100644
+--- a/drivers/base/power/main.c
++++ b/drivers/base/power/main.c
+@@ -1723,7 +1723,12 @@ static int __device_suspend(struct device *dev, pm_message_t state, bool async)
+ 		dev->power.direct_complete = false;
+ 
+ 	if (dev->power.direct_complete) {
+-		if (pm_runtime_status_suspended(dev)) {
++		/*
++		 * Check if we're runtime suspended. If not, try to runtime
++		 * suspend for autosuspend cases.
++		 */
++		if (pm_runtime_status_suspended(dev) ||
++		    !pm_runtime_suspend(dev)) {
+ 			pm_runtime_disable(dev);
+ 			if (pm_runtime_status_suspended(dev)) {
+ 				pm_dev_dbg(dev, state, "direct-complete ");
+-- 
+2.24.0
+
