@@ -1,3 +1,16 @@
+v3.8
+f7ae688 - kitakar5525, 2020-01-30 : chromeos-5.4: configs: Update to configs-v5.4.14.r1405.9694aa8
+2d57f80 - kitakar5525, 2020-01-30 : chromeos-4.19: configs: Update to configs-v4.19.98.r8048.ddd13fe
+877efec - kitakar5525, 2020-01-30 : patch-5.4-series: add ipts patch from 5.5 dir
+6c1db46 - kitakar5525, 2020-01-30 : patch-chromeos-5.4: Update to linux-surface/linux-surface@2fb7e9ae91350098db9a280277f424272816a9ab
+c7ac19a - kitakar5525, 2020-01-30 : patch-chromeos-4.19: Update to linux-surface/linux-surface@2fb7e9ae91350098db9a280277f424272816a9ab
+b5ffad4 - kitakar5525, 2020-01-30 : patch-5.5: Update to linux-surface/linux-surface@2fb7e9ae91350098db9a280277f424272816a9ab
+139eda9 - kitakar5525, 2020-01-30 : patch-5.4: Update to linux-surface/linux-surface@2fb7e9ae91350098db9a280277f424272816a9ab
+75b4066 - kitakar5525, 2020-01-29 : patch-4.19: Update to linux-surface/linux-surface@2fb7e9ae91350098db9a280277f424272816a9ab
+2f66fc8 - kitakar5525, 2020-01-29 : patch-5.5: rename from 5.5rc to 5.5
+15391f8 - kitakar5525, 2020-01-15 : Surface3-OEMB: add quirk for Surface 3 with broken DMI table
+a5649a3 - kitakar5525, 2020-01-15 : patch-5.5rc: Add patches from linux-surface_linux-surface@b931b147da670fd9507391d41e56d34953ae687b
+
 v3.7
 ca60d50 - kitakar5525, 2020-01-07 : chromeos-5.4: configs: Add Surface configs based on configs-v5.4.6.r920.3ff4367
 a65ef1d - kitakar5525, 2020-01-07 : chromeos-4.19: configs: Update to configs-v4.19.91.r7992.631a077
