@@ -1,7 +1,7 @@
-From b1e6d87cfcce6fda5891ad261907acb780c0486f Mon Sep 17 00:00:00 2001
+From 9715bc9a94fa7b9f30b3b12a6a09160a9aca43ec Mon Sep 17 00:00:00 2001
 From: sebanc <22224731+sebanc@users.noreply.github.com>
 Date: Mon, 4 Nov 2019 09:30:57 +0100
-Subject: [PATCH] wireless/mwifiex: Fix S0ix / suspend
+Subject: [PATCH 10/10] wifi
 
 ---
  drivers/net/wireless/marvell/mwifiex/pcie.c   | 75 ++++++++++---------
@@ -9,7 +9,7 @@ Subject: [PATCH] wireless/mwifiex: Fix S0ix / suspend
  2 files changed, 40 insertions(+), 50 deletions(-)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 918c69936..5f188c0f3 100644
+index 991b9cc18000..4549359ee19b 100644
 --- a/drivers/net/wireless/marvell/mwifiex/pcie.c
 +++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
 @@ -149,37 +149,39 @@ static bool mwifiex_pcie_ok_to_access_hw(struct mwifiex_adapter *adapter)
@@ -128,7 +128,7 @@ index 918c69936..5f188c0f3 100644
  }
  
 diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
-index 4ed10cf82..013db4386 100644
+index 4ed10cf82f9a..013db4386c39 100644
 --- a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
 +++ b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
 @@ -2265,14 +2265,13 @@ int mwifiex_sta_prepare_cmd(struct mwifiex_private *priv, uint16_t cmd_no,
@@ -167,5 +167,5 @@ index 4ed10cf82..013db4386 100644
  		/* Send cmd to FW to enable/disable 11D function */
  		state_11d = ENABLE_11D;
 -- 
-2.24.1
+2.25.0
 
