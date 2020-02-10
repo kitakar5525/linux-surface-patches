@@ -1,0 +1,43 @@
+From d650708fdc7b776aee2ccb6428e08fba3bbffe11 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 5 Dec 2019 15:50:04 +0900
+Subject: [PATCH 2/2] CHROMIUM: PM: Do not silence the print of last active
+ wakeup source
+
+Last active wakeup source information is very useful in debugging
+issues with sleep and suprious wakeup. However it was silenced from
+commit 9320f95c0b8f1d074f570385e6855d4554f693e4. Change back the
+print from pr_debug() to pr_info() to reenable this print.
+
+BUG=b:110133453
+TEST=run suspend_stress_test and check following messages in kernel:
+	"last active wakeup source: rtc_cmos"
+
+Change-Id: I6cff3944c61eb7d6b9ffcc21e7dad87fbe4c4bad
+Signed-off-by: Wenkai Du <wenkai.du@intel.com>
+Reviewed-on: https://chromium-review.googlesource.com/1100941
+Commit-Ready: ChromeOS CL Exonerator Bot <chromiumos-cl-exonerator@appspot.gserviceaccount.com>
+Reviewed-by: Justin TerAvest <teravest@chromium.org>
+
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Ported for 5.4
+---
+ drivers/base/power/wakeup.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/base/power/wakeup.c b/drivers/base/power/wakeup.c
+index 06b3ce836..c00c557c5 100644
+--- a/drivers/base/power/wakeup.c
++++ b/drivers/base/power/wakeup.c
+@@ -865,7 +865,7 @@ void pm_print_active_wakeup_sources(void)
+ 	}
+ 
+ 	if (!active && last_activity_ws)
+-		pm_pr_dbg("last active wakeup source: %s\n",
++		pr_info("last active wakeup source: %s\n",
+ 			last_activity_ws->name);
+ 	srcu_read_unlock(&wakeup_srcu, srcuidx);
+ }
+-- 
+2.24.0
+
