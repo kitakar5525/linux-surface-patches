@@ -1,3 +1,17 @@
+v3.9
+1cd9811 - kitakar5525, 2020-03-14 : chromeos-5.4: configs: Update to configs-v5.4.24.r2688.fadc498c2509
+c209eff - kitakar5525, 2020-03-14 : chromeos-4.19: configs: Update to v4.19.107.r8285.70ad78f34459
+5f7fb93 - kitakar5525, 2020-03-14 : patch-chromeos-4.19: add upstream fix for "report too long"
+8468ec7 - kitakar5525, 2020-03-14 : patch-all-series: add patches not merged into linux-surface yet
+0622c55 - kitakar5525, 2020-03-14 : patch-5.6rc: Update patches by copying patch-5.5
+360f00b - kitakar5525, 2020-03-14 : patch-5.4-series: add ipts patch from 5.5 dir
+339a087 - kitakar5525, 2020-03-14 : patch-chromeos-5.5: Update to linux-surface/linux-surface@ab2c76bfe87b37811a0ea727aa8f0d2d908e1a2b
+f1451cf - kitakar5525, 2020-03-14 : patch-chromeos-4.19: Update to linux-surface/linux-surface@ab2c76bfe87b37811a0ea727aa8f0d2d908e1a2b
+e70655d - kitakar5525, 2020-03-14 : patch-5.5: Update to linux-surface/linux-surface@ab2c76bfe87b37811a0ea727aa8f0d2d908e1a2b
+e30a3bc - kitakar5525, 2020-03-14 : patch-5.4: Update to linux-surface/linux-surface@ab2c76bfe87b37811a0ea727aa8f0d2d908e1a2b
+fb2c8b6 - kitakar5525, 2020-03-14 : patch-4.19: Update to linux-surface/linux-surface@ab2c76bfe87b37811a0ea727aa8f0d2d908e1a2b
+387ae61 - kitakar5525, 2020-02-10 : patch-5.6rc: Add patches by copying patch-5.5
+
 v3.8
 f7ae688 - kitakar5525, 2020-01-30 : chromeos-5.4: configs: Update to configs-v5.4.14.r1405.9694aa8
 2d57f80 - kitakar5525, 2020-01-30 : chromeos-4.19: configs: Update to configs-v4.19.98.r8048.ddd13fe
