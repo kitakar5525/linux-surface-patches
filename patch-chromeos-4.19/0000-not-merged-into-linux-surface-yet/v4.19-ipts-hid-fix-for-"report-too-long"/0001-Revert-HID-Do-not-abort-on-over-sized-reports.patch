@@ -1,0 +1,36 @@
+From 44ce43c39b85fba73e00c8c9e50f54f9863e0077 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Sat, 7 Mar 2020 00:32:47 +0900
+Subject: [PATCH 1/3] Revert "HID: Do not abort on over-sized reports"
+
+This reverts commit 44c036ba808e1df71a4262999399a160bdd0d519.
+
+Reason for revert:
+  Following upstream fixes incoming
+  - fa616c09626198ecea736fff251b72f8116c19f4
+    (HID: core: increase HID report buffer size to 8KiB)
+  - 75c3955b160d32a7faac6db094960c35723eebd4
+    (HID: core: fix off-by-one memset in hid_report_raw_event())
+---
+ drivers/hid/hid-core.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index 11795c7a1662..e723156057a6 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -290,9 +290,8 @@ static int hid_add_field(struct hid_parser *parser, unsigned report_type, unsign
+ 
+ 	/* Total size check: Allow for possible report index byte */
+ 	if (report->size > (HID_MAX_BUFFER_SIZE - 1) << 3) {
+-		hid_warn(parser->device, "report is too long (%u), skipping\n",
+-			 report->size);
+-		return 0;
++		hid_err(parser->device, "report is too long\n");
++		return -1;
+ 	}
+ 
+ 	if (!parser->local.usage_index) /* Ignore padding fields */
+-- 
+2.25.1
+
