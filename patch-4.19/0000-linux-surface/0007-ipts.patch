@@ -1,4 +1,4 @@
-From f75f69ab7c9af49ceedabfdd5fedc3bb44375f01 Mon Sep 17 00:00:00 2001
+From b21b644fa09c55bf82156425ced981bedec9f3fc Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Sat, 28 Sep 2019 17:58:17 +0200
 Subject: [PATCH 07/10] ipts
@@ -1292,7 +1292,7 @@ index 4a9f139e7b73..c137a57f6702 100644
  
  static void pch_enable_backlight(const struct intel_crtc_state *crtc_state,
 diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index e723156057a6..11795c7a1662 100644
+index 2c85d075daee..f7bb8bd47115 100644
 --- a/drivers/hid/hid-core.c
 +++ b/drivers/hid/hid-core.c
 @@ -290,8 +290,9 @@ static int hid_add_field(struct hid_parser *parser, unsigned report_type, unsign
@@ -7117,7 +7117,7 @@ index 000000000000..ef73d28db47c
 +
 +#endif // _IPTS_STATE_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index 9c4042420022..5d63ebba3e9f 100644
+index d80372d21c14..6e14bde0a819 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -7129,7 +7129,7 @@ index 9c4042420022..5d63ebba3e9f 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 41a10e392839..2b93a067cebc 100644
+index 3498c10b8263..4442c6366f0d 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -7441,5 +7441,5 @@ index 000000000000..bfa8e1375926
 +
 +#endif // IPTS_H
 -- 
-2.25.0
+2.25.1
 

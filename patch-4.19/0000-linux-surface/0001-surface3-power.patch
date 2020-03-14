@@ -1,4 +1,4 @@
-From 1c901a05cc530f763b1e78f2dd3608acccb3f74d Mon Sep 17 00:00:00 2001
+From 746918ced9d5b0f5baeb4ec32bf44b6028a8b4bd Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Sat, 28 Sep 2019 18:00:43 +0200
 Subject: [PATCH 01/10] surface3-power
@@ -651,5 +651,5 @@ index 000000000000..e0af01a60302
 +MODULE_DESCRIPTION("mshw0011 driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.25.0
+2.25.1
 

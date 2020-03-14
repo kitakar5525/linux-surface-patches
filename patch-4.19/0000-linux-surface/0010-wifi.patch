@@ -1,4 +1,4 @@
-From 9715bc9a94fa7b9f30b3b12a6a09160a9aca43ec Mon Sep 17 00:00:00 2001
+From 33efe792576afcc65e6d5cb69d9d6c518fa6a5df Mon Sep 17 00:00:00 2001
 From: sebanc <22224731+sebanc@users.noreply.github.com>
 Date: Mon, 4 Nov 2019 09:30:57 +0100
 Subject: [PATCH 10/10] wifi
@@ -167,5 +167,5 @@ index 4ed10cf82f9a..013db4386c39 100644
  		/* Send cmd to FW to enable/disable 11D function */
  		state_11d = ENABLE_11D;
 -- 
-2.25.0
+2.25.1
 

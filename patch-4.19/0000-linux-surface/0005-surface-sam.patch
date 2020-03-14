@@ -1,4 +1,4 @@
-From 84a947d275f9d1bd02854f402f2e5867eb7772a0 Mon Sep 17 00:00:00 2001
+From 38084d4c4749b6944c3c2051d91d65af86d47230 Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Mon, 26 Aug 2019 01:15:40 +0200
 Subject: [PATCH 05/10] surface-sam
@@ -7609,5 +7609,5 @@ index c66a04d24f1d..1b18d12d217f 100644
  	if (!ctrl->serdev)
  		return -ENODEV;
 -- 
-2.25.0
+2.25.1
 
