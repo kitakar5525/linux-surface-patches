@@ -1,4 +1,4 @@
-From 30b3275ff57c77da523db26582675c74e0cceee1 Mon Sep 17 00:00:00 2001
+From cddf1036eb105a0d934f07af2702a39605a9542d Mon Sep 17 00:00:00 2001
 From: Tuowen Zhao <ztuowen@gmail.com>
 Date: Wed, 16 Oct 2019 15:06:28 -0600
 Subject: [PATCH 09/10] ioremap_uc
@@ -93,5 +93,5 @@ index aa0f5308ac6b..75ea32d9b661 100644
   * devm_ioremap_nocache - Managed ioremap_nocache()
   * @dev: Generic device to remap IO address for
 -- 
-2.25.0
+2.25.1
 

@@ -1,9 +1,9 @@
-From 8bbde8045171f65c9cb0b5745c60521adfebd6ed Mon Sep 17 00:00:00 2001
+From 135b92cdd0856d8775a49b6dbb26dac4ecd67ade Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Sat, 28 Sep 2019 17:58:17 +0200
 Subject: [PATCH] ipts for chromeos-4.19
 
-[Resolved conflicts caused by chromium specific commits]
+[Resolved some misc conflicts manually]
 ---
  drivers/gpu/drm/i915/Makefile               |    3 +
  drivers/gpu/drm/i915/i915_debugfs.c         |   63 +-
@@ -231,10 +231,10 @@ index 499680c57a10..ad92731e0703 100644
  
  	i915_driver_unregister(dev_priv);
 diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index adb5461e5a8b..5f9f36f66557 100644
+index 4e47348e0d2d..7a12af47ce8a 100644
 --- a/drivers/gpu/drm/i915/i915_drv.h
 +++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -3309,6 +3309,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
+@@ -3315,6 +3315,9 @@ void i915_gem_object_do_bit_17_swizzle(struct drm_i915_gem_object *obj,
  void i915_gem_object_save_bit_17_swizzle(struct drm_i915_gem_object *obj,
  					 struct sg_table *pages);
  
@@ -268,7 +268,7 @@ index 68563a4840f1..b33da6474e6b 100644
  {
  	struct i915_gem_context *ctx;
 diff --git a/drivers/gpu/drm/i915/i915_irq.c b/drivers/gpu/drm/i915/i915_irq.c
-index c75b1d268dfa..1b89599a40c0 100644
+index 72703e63b54e..6c18e854a6fc 100644
 --- a/drivers/gpu/drm/i915/i915_irq.c
 +++ b/drivers/gpu/drm/i915/i915_irq.c
 @@ -38,6 +38,7 @@
@@ -279,7 +279,7 @@ index c75b1d268dfa..1b89599a40c0 100644
  #include "intel_psr.h"
  
  /**
-@@ -1510,6 +1511,9 @@ gen8_cs_irq_handler(struct intel_engine_cs *engine, u32 iir)
+@@ -1506,6 +1507,9 @@ gen8_cs_irq_handler(struct intel_engine_cs *engine, u32 iir)
  		tasklet |= USES_GUC_SUBMISSION(engine->i915);
  	}
  
@@ -289,7 +289,7 @@ index c75b1d268dfa..1b89599a40c0 100644
  	if (tasklet)
  		tasklet_hi_schedule(&engine->execlists.tasklet);
  }
-@@ -4143,7 +4147,8 @@ static void gen8_gt_irq_postinstall(struct drm_i915_private *dev_priv)
+@@ -4139,7 +4143,8 @@ static void gen8_gt_irq_postinstall(struct drm_i915_private *dev_priv)
  {
  	/* These are interrupts we'll toggle with the ring mask register */
  	uint32_t gt_interrupts[] = {
@@ -1193,7 +1193,7 @@ index 000000000000..67f90b72f237
 +
 +#endif //_INTEL_IPTS_H_
 diff --git a/drivers/gpu/drm/i915/intel_lrc.c b/drivers/gpu/drm/i915/intel_lrc.c
-index 8fef287239b4..ccedf168ab1e 100644
+index 24f86f307c24..7d605fd4f322 100644
 --- a/drivers/gpu/drm/i915/intel_lrc.c
 +++ b/drivers/gpu/drm/i915/intel_lrc.c
 @@ -164,9 +164,6 @@
@@ -1206,7 +1206,7 @@ index 8fef287239b4..ccedf168ab1e 100644
  static void execlists_init_reg_state(u32 *reg_state,
  				     struct i915_gem_context *ctx,
  				     struct intel_engine_cs *engine,
-@@ -1287,7 +1284,7 @@ static void execlists_context_destroy(struct intel_context *ce)
+@@ -1292,7 +1289,7 @@ static void execlists_context_destroy(struct intel_context *ce)
  	i915_gem_object_put(ce->state->obj);
  }
  
@@ -1215,7 +1215,7 @@ index 8fef287239b4..ccedf168ab1e 100644
  {
  	i915_gem_context_unpin_hw_id(ce->gem_context);
  
-@@ -1385,7 +1382,7 @@ static const struct intel_context_ops execlists_context_ops = {
+@@ -1390,7 +1387,7 @@ static const struct intel_context_ops execlists_context_ops = {
  	.destroy = execlists_context_destroy,
  };
  
@@ -1224,7 +1224,7 @@ index 8fef287239b4..ccedf168ab1e 100644
  execlists_context_pin(struct intel_engine_cs *engine,
  		      struct i915_gem_context *ctx)
  {
-@@ -2475,6 +2472,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
+@@ -2480,6 +2477,9 @@ int logical_render_ring_init(struct intel_engine_cs *engine)
  
  	logical_ring_setup(engine);
  
@@ -1234,7 +1234,7 @@ index 8fef287239b4..ccedf168ab1e 100644
  	if (HAS_L3_DPF(dev_priv))
  		engine->irq_keep_mask |= GT_RENDER_L3_PARITY_ERROR_INTERRUPT;
  
-@@ -2816,7 +2816,7 @@ populate_lr_context(struct i915_gem_context *ctx,
+@@ -2821,7 +2821,7 @@ populate_lr_context(struct i915_gem_context *ctx,
  	return ret;
  }
  
@@ -7118,7 +7118,7 @@ index 000000000000..ef73d28db47c
 +
 +#endif // _IPTS_STATE_H_
 diff --git a/drivers/misc/mei/hw-me-regs.h b/drivers/misc/mei/hw-me-regs.h
-index 9c4042420022..5d63ebba3e9f 100644
+index d80372d21c14..6e14bde0a819 100644
 --- a/drivers/misc/mei/hw-me-regs.h
 +++ b/drivers/misc/mei/hw-me-regs.h
 @@ -119,6 +119,7 @@
@@ -7130,7 +7130,7 @@ index 9c4042420022..5d63ebba3e9f 100644
  #define MEI_DEV_ID_SPT_H_2    0xA13B  /* Sunrise Point H 2 */
  
 diff --git a/drivers/misc/mei/pci-me.c b/drivers/misc/mei/pci-me.c
-index 41a10e392839..2b93a067cebc 100644
+index 3498c10b8263..4442c6366f0d 100644
 --- a/drivers/misc/mei/pci-me.c
 +++ b/drivers/misc/mei/pci-me.c
 @@ -86,6 +86,7 @@ static const struct pci_device_id mei_me_pci_tbl[] = {
@@ -7442,5 +7442,5 @@ index 000000000000..bfa8e1375926
 +
 +#endif // IPTS_H
 -- 
-2.25.0
+2.25.1
 
