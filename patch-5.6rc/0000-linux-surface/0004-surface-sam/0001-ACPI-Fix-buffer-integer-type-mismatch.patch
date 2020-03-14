@@ -1,4 +1,4 @@
-From 04f91bab1da38ba90b033ea3d5c03cf2c3f3e37c Mon Sep 17 00:00:00 2001
+From 13cdd5aae9a73cabf622d6845deac0f4e7a663cc Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Mon, 26 Aug 2019 01:11:08 +0200
 Subject: [PATCH 1/2] ACPI: Fix buffer/integer type mismatch
@@ -6,7 +6,8 @@ Subject: [PATCH 1/2] ACPI: Fix buffer/integer type mismatch
 This is actually not a bug in the kernel, but rather Microsoft not
 conforming with the ACPI specification.
 
-[Resolved conflict by accepting current change made by 6d232b29cfce6]
+[Resolved conflict by accepting current change made by 6d232b29cfce6
+on exfield.c]
 ---
  drivers/acpi/acpica/dsopcode.c | 2 +-
  drivers/acpi/acpica/exfield.c  | 9 +++++++--
@@ -58,5 +59,5 @@ index e85eb31e5075..8d060fcc3207 100644
  		buffer_desc = acpi_ut_create_buffer_object(buffer_length);
  		if (!buffer_desc) {
 -- 
-2.25.0
+2.25.1
 

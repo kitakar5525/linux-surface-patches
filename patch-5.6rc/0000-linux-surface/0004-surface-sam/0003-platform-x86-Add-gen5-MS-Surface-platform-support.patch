@@ -1,4 +1,4 @@
-From ebb57b5d5c89078580c92eecf4a4a927d2235d5a Mon Sep 17 00:00:00 2001
+From a1443c308f0cafe3bd3149ccee9c31d3ef029099 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 6 Dec 2019 11:56:12 +0100
 Subject: [PATCH 2/2] platform/x86: Add gen5 MS Surface platform support
@@ -44,10 +44,10 @@ handling for the Surface Book 2 clipboard.
  create mode 100644 drivers/platform/x86/surface_sam/surface_sam_vhf.c
 
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index f90d3d4a86a0..5956ee7895d3 100644
+index 587403c44598..7cdd17bd8156 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -1355,6 +1355,7 @@ config INTEL_UNCORE_FREQ_CONTROL
+@@ -1348,6 +1348,7 @@ config INTEL_UNCORE_FREQ_CONTROL
  	  will be called intel-uncore-frequency.
  
  source "drivers/platform/x86/intel_speed_select_if/Kconfig"
@@ -56,10 +56,10 @@ index f90d3d4a86a0..5956ee7895d3 100644
  config SYSTEM76_ACPI
  	tristate "System76 ACPI Driver"
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index 636833e357f0..7329298fd584 100644
+index 3747b1f07cf1..7042ed22b4b4 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
-@@ -107,3 +107,4 @@ obj-$(CONFIG_PCENGINES_APU2)	+= pcengines-apuv2.o
+@@ -106,3 +106,4 @@ obj-$(CONFIG_PCENGINES_APU2)	+= pcengines-apuv2.o
  obj-$(CONFIG_INTEL_SPEED_SELECT_INTERFACE) += intel_speed_select_if/
  obj-$(CONFIG_SYSTEM76_ACPI)	+= system76_acpi.o
  obj-$(CONFIG_INTEL_UNCORE_FREQ_CONTROL)	+= intel-uncore-frequency.o
@@ -7391,5 +7391,5 @@ index 000000000000..0ed0ebbdb3cb
 +MODULE_DESCRIPTION("Virtual HID Framework Driver for 5th Generation Surface Devices");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.25.0
+2.25.1
 

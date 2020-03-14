@@ -1,7 +1,7 @@
-From b3cb441f8395de4ff77f9bcb12a4cd0b21a89a58 Mon Sep 17 00:00:00 2001
+From a229e405b925f6d740e16a34edd014d9344aa520 Mon Sep 17 00:00:00 2001
 From: Dorian Stoll <dorian.stoll@tmsp.io>
 Date: Mon, 27 Jan 2020 21:16:20 +0100
-Subject: [PATCH] ipts
+Subject: [PATCH 7/7] ipts
 
 ---
  drivers/input/touchscreen/Kconfig             |   2 +
@@ -13,7 +13,7 @@ Subject: [PATCH] ipts
  drivers/input/touchscreen/ipts/control.h      |  18 ++
  drivers/input/touchscreen/ipts/devices.c      |  46 +++
  drivers/input/touchscreen/ipts/devices.h      |  33 +++
- drivers/input/touchscreen/ipts/hid.c          | 122 ++++++++
+ drivers/input/touchscreen/ipts/hid.c          | 126 +++++++++
  drivers/input/touchscreen/ipts/hid.h          |  17 ++
  drivers/input/touchscreen/ipts/init.c         |  93 ++++++
  drivers/input/touchscreen/ipts/math.c         | 103 +++++++
@@ -36,7 +36,7 @@ Subject: [PATCH] ipts
  drivers/misc/mei/hw-me-regs.h                 |   2 +
  drivers/misc/mei/pci-me.c                     |   2 +
  include/uapi/linux/input.h                    |   1 +
- 32 files changed, 1591 insertions(+)
+ 32 files changed, 1595 insertions(+)
  create mode 100644 drivers/input/touchscreen/ipts/Kconfig
  create mode 100644 drivers/input/touchscreen/ipts/Makefile
  create mode 100644 drivers/input/touchscreen/ipts/context.h
@@ -415,10 +415,10 @@ index 000000000000..9bf8da9fbfab
 +#endif /* _IPTS_DEVICES_H_ */
 diff --git a/drivers/input/touchscreen/ipts/hid.c b/drivers/input/touchscreen/ipts/hid.c
 new file mode 100644
-index 000000000000..c9f27b0e3b75
+index 000000000000..866e8f02864f
 --- /dev/null
 +++ b/drivers/input/touchscreen/ipts/hid.c
-@@ -0,0 +1,122 @@
+@@ -0,0 +1,126 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +
 +#include <linux/delay.h>
@@ -439,7 +439,11 @@ index 000000000000..c9f27b0e3b75
 +		struct ipts_context *ipts, struct ipts_touch_data *data)
 +{
 +	// If the buffer contains HID data, we are in single touch mode
-+	if (data->type == IPTS_TOUCH_DATA_TYPE_HID_REPORT)
++	//
++	// On gen7 IPTS will send other data using HID reports,
++	// so we have to additionally filter out the touch reports.
++	if (data->type == IPTS_TOUCH_DATA_TYPE_HID_REPORT &&
++			data->data[0] == 0x40)
 +		return IPTS_REPORT_TYPE_SINGLETOUCH;
 +
 +	// If the buffer doesn't contain touch data
