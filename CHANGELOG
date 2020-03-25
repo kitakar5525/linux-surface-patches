@@ -1,3 +1,12 @@
+v4.0
+851e7c7 - kitakar5525, 2020-03-25 : patch-5.4-series: add ipts patch from 5.5 dir
+90893ac - kitakar5525, 2020-03-25 : patch-chromeos-5.4: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
+c8b410f - kitakar5525, 2020-03-25 : patch-chromeos-4.19: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
+121634e - kitakar5525, 2020-03-25 : patch-5.6rc: Update patches by copying patch-5.5
+5b8379c - kitakar5525, 2020-03-25 : patch-5.5: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
+e7f3ef3 - kitakar5525, 2020-03-25 : patch-5.4: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
+7a9e4ef - kitakar5525, 2020-03-25 : patch-4.19: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
+
 v3.9
 1cd9811 - kitakar5525, 2020-03-14 : chromeos-5.4: configs: Update to configs-v5.4.24.r2688.fadc498c2509
 c209eff - kitakar5525, 2020-03-14 : chromeos-4.19: configs: Update to v4.19.107.r8285.70ad78f34459
