@@ -1,0 +1,36 @@
+From 3876d90f563c5dad84da05cd7627455b593d840a Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Thu, 23 Apr 2020 08:45:04 +0900
+Subject: [PATCH 5/5] mwifiex: sta_cmd: add comment for not enabling ps_mode by
+ default
+
+The commit 541813622549 ("mwifiex: sta_cmd: do not enable ps_mode by
+default") stopped enabling ps_mode by default by just removing the
+relevant code. But it's better to leave a comment there.
+
+This commit adds a comment where the related code existed.
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/sta_cmd.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+index 977b57c0908fb..81f41eea8e43f 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+@@ -2338,6 +2338,11 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
+ 		if (ret)
+ 			return -1;
+ 
++		/* Not enabling ps_mode (IEEE power_save) by default. Enabling
++		 * this causes connection instability, especially on 5GHz APs
++		 * and eventually causes "firmware wakeup failed". Therefore,
++		 * the relevant code was removed from here. */
++
+ 		if (drcs) {
+ 			adapter->drcs_enabled = true;
+ 			if (ISSUPP_DRCS_ENABLED(adapter->fw_cap_info))
+-- 
+2.26.2
+

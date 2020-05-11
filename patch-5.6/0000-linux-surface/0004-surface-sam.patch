@@ -1,17 +1,8 @@
-From a6c22fa96d58f4be22a49d3f4700f508b2a1fdc7 Mon Sep 17 00:00:00 2001
+From 4d2963eea4ac2d2ca1415261e0fefd4c82e9c228 Mon Sep 17 00:00:00 2001
 From: Maximilian Luz <luzmaximilian@gmail.com>
 Date: Fri, 6 Dec 2019 11:56:12 +0100
-Subject: [PATCH] platform/x86: Add gen5 MS Surface platform support
+Subject: [PATCH 4/7] surface-sam
 
-Add platform/ACPI support for 5th and later generation Microsoft Surface
-devices. This provides support for the embedded controller on those
-devices, required for battery-status and thermal events, as well as
-keyboard support for Surface Laptop devices and proper detachment
-handling for the Surface Book 2 clipboard.
-
-Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
-
-[drivers/platform/x86/Makefile: Resolved conflict]
 ---
  drivers/platform/x86/Kconfig                  |    1 +
  drivers/platform/x86/Makefile                 |    1 +
