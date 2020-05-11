@@ -1,0 +1,48 @@
+From bc6019c6df3b8115412050bcc69dd382e12b8ff8 Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Mon, 11 May 2020 17:40:21 +0900
+Subject: [PATCH] Input: soc_button_array - fix Wdiscarded-qualifiers for
+ kernels below 4.20
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+    drivers/input/misc/soc_button_array.c: In function ‘soc_button_probe’:
+    drivers/input/misc/soc_button_array.c:381:19: warning: passing argument 2 of ‘devm_kfree’ discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+      381 |   devm_kfree(dev, button_info);
+          |                   ^~~~~~~~~~~
+    In file included from ./include/linux/input.h:22,
+                     from drivers/input/misc/soc_button_array.c:14:
+    ./include/linux/device.h:695:50: note: expected ‘void *’ but argument is of type ‘const struct soc_button_info *’
+      695 | extern void devm_kfree(struct device *dev, void *p);
+          |                                            ~~~~~~^
+
+This warning happens bacause commit 0571967dfb5d25 ("devres: constify p
+in devm_kfree()") has not been applied to v4.19 series (available after
+v4.20-rc1).
+
+This commit casts button_info to (void *) when calling devm_kfree() to
+avoid compiler warning.
+
+Fixes: b892fc124285ba ("Input: soc_button_array - Add support for newer surface devices")
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/input/misc/soc_button_array.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index 5983733d78dd5..c564ea99f47db 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -378,7 +378,7 @@ static int soc_button_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	if (!device_data || !device_data->button_info)
+-		devm_kfree(dev, button_info);
++		devm_kfree(dev, (void *)button_info);
+ 
+ 	return 0;
+ }
+-- 
+2.26.2
+

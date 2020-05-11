@@ -1,0 +1,42 @@
+From f6b9b27cf569ff1207af201f05db0de51d722017 Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Thu, 19 Mar 2020 23:48:46 +0900
+Subject: [PATCH 2/2] tablet_mode: sysfs: add to Kconfig
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/input/misc/Kconfig  | 9 +++++++++
+ drivers/input/misc/Makefile | 2 +-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/input/misc/Kconfig b/drivers/input/misc/Kconfig
+index 9e0232c517d00..e0edc70f2bf8e 100644
+--- a/drivers/input/misc/Kconfig
++++ b/drivers/input/misc/Kconfig
+@@ -856,4 +856,13 @@ config INPUT_SC27XX_VIBRA
+ 	  To compile this driver as a module, choose M here. The module will
+ 	  be called sc27xx_vibra.
+ 
++config INPUT_TABLET_MODE_SWITCH
++	tristate "Tablet mode switch sysfs trigger"
++	default m
++	help
++	  Tablet mode switch sysfs trigger.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called tablet_mode_switch.
++
+ endif
+diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
+index 9aca7bf3b2222..c40baee54c973 100644
+--- a/drivers/input/misc/Makefile
++++ b/drivers/input/misc/Makefile
+@@ -82,4 +82,4 @@ obj-$(CONFIG_INPUT_WM831X_ON)		+= wm831x-on.o
+ obj-$(CONFIG_INPUT_XEN_KBDDEV_FRONTEND)	+= xen-kbdfront.o
+ obj-$(CONFIG_INPUT_YEALINK)		+= yealink.o
+ obj-$(CONFIG_INPUT_IDEAPAD_SLIDEBAR)	+= ideapad_slidebar.o
+-obj-m					+= tablet_mode_switch.o
++obj-$(CONFIG_INPUT_TABLET_MODE_SWITCH)		+= tablet_mode_switch.o
+-- 
+2.26.2
+

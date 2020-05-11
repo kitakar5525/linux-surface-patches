@@ -1,45 +1,44 @@
-From 8a0a93dca585b8f9d96b79e7b687ac4a6cf302c8 Mon Sep 17 00:00:00 2001
-From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+From de2dfb5e9f2ad096dd1d2d0514b6255e12f2dc8e Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
 Date: Thu, 19 Sep 2019 23:35:54 +0900
-Subject: [PATCH] ipu_patches-chromeos-4.19
+Subject: [PATCH] ipu3 patches for chromeos-4.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-From
-- [201579 – HP Elite x2 1013 G3 unable to enter S0ix](https://bugzilla.kernel.org/show_bug.cgi?id=201579)
+(patches from bugzilla https://bugzilla.kernel.org/show_bug.cgi?id=201579
+("201579 – HP Elite x2 1013 G3 unable to enter S0ix"))
 
+[Modified to match firmware location on Arch Linux
+    -#define IMGU_FW_NAME			"ipu3-fw.bin"
+    +#define IMGU_FW_NAME			"intel/ipu3-fw.bin"
 Concatenated below patchset:
-0001-v4l-Add-Intel-IPU3-meta-buffer-formats.patch
-0002-doc-rst-Add-Intel-IPU3-documentation.patch
-0003-v4l-Add-Intel-IPU3-meta-data-uAPI.patch
-0004-intel-ipu3-abi-Add-register-definitions-and-enum.patch
-0005-intel-ipu3-abi-Add-structs.patch
-0006-intel-ipu3-mmu-Implement-driver.patch
-0007-intel-ipu3-Implement-DMA-mapping-functions.patch
-0008-intel-ipu3-css-Add-dma-buff-pool-utility-functions.patch
-0009-intel-ipu3-css-Add-support-for-firmware-management.patch
-0010-intel-ipu3-css-Add-static-settings-for-image-pipelin.patch
-0011-intel-ipu3-css-Compute-and-program-ccs.patch
-0012-intel-ipu3-css-Initialize-css-hardware.patch
-0013-intel-ipu3-Add-css-pipeline-programming.patch
-0014-intel-ipu3-Add-v4l2-driver-based-on-media-framework.patch
-0015-intel-ipu3-Add-imgu-top-level-pci-device-driver.patch
-0016-intel-ipu3-add-dual-pipe-support.patch
-0017-v4l-Add-support-for-V4L2_BUF_TYPE_META_OUTPUT.patch
-0018-TEST-FOR-DEBUG-PRINTS.patch
-0019-ipu3-cio2-Allow-probe-to-succeed-if-there-are-no-sen.patch
-0020-platform-x86-intel_pmc_core-Show-Latency-Tolerance-i.patch
-0021-platform-x86-intel_pmc_core-Fix-LTR-IGNORE-Max-offse.patch
-0022-platform-x86-intel_pmc_core-Decode-Snoop-Non-Snoop-L.patch
-0023-platform-x86-intel_pmc_core-convert-to-DEFINE_SHOW_A.patch
-0024-platform-x86-intel_telemetry-convert-to-DEFINE_SHOW_.patch
-
-Modified to match firmware location on Arch Linux
--#define IMGU_FW_NAME			"ipu3-fw.bin"
-+#define IMGU_FW_NAME			"intel/ipu3-fw.bin"
-
-Modified to follow latest Chromium OS kernel chromeos-4.19
+    0001-v4l-Add-Intel-IPU3-meta-buffer-formats.patch
+    0002-doc-rst-Add-Intel-IPU3-documentation.patch
+    0003-v4l-Add-Intel-IPU3-meta-data-uAPI.patch
+    0004-intel-ipu3-abi-Add-register-definitions-and-enum.patch
+    0005-intel-ipu3-abi-Add-structs.patch
+    0006-intel-ipu3-mmu-Implement-driver.patch
+    0007-intel-ipu3-Implement-DMA-mapping-functions.patch
+    0008-intel-ipu3-css-Add-dma-buff-pool-utility-functions.patch
+    0009-intel-ipu3-css-Add-support-for-firmware-management.patch
+    0010-intel-ipu3-css-Add-static-settings-for-image-pipelin.patch
+    0011-intel-ipu3-css-Compute-and-program-ccs.patch
+    0012-intel-ipu3-css-Initialize-css-hardware.patch
+    0013-intel-ipu3-Add-css-pipeline-programming.patch
+    0014-intel-ipu3-Add-v4l2-driver-based-on-media-framework.patch
+    0015-intel-ipu3-Add-imgu-top-level-pci-device-driver.patch
+    0016-intel-ipu3-add-dual-pipe-support.patch
+    0017-v4l-Add-support-for-V4L2_BUF_TYPE_META_OUTPUT.patch
+    0018-TEST-FOR-DEBUG-PRINTS.patch
+    0019-ipu3-cio2-Allow-probe-to-succeed-if-there-are-no-sen.patch
+    0020-platform-x86-intel_pmc_core-Show-Latency-Tolerance-i.patch
+    0021-platform-x86-intel_pmc_core-Fix-LTR-IGNORE-Max-offse.patch
+    0022-platform-x86-intel_pmc_core-Decode-Snoop-Non-Snoop-L.patch
+    0023-platform-x86-intel_pmc_core-convert-to-DEFINE_SHOW_A.patch
+    0024-platform-x86-intel_telemetry-convert-to-DEFINE_SHOW_.patch
+Resolved conflicts for chromeos-4.19]
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  Documentation/media/uapi/v4l/meta-formats.rst |    1 +
  .../media/uapi/v4l/pixfmt-meta-intel-ipu3.rst |  181 +
@@ -94,7 +93,7 @@ Modified to follow latest Chromium OS kernel chromeos-4.19
  create mode 100644 include/uapi/linux/intel-ipu3.h
 
 diff --git a/Documentation/media/uapi/v4l/meta-formats.rst b/Documentation/media/uapi/v4l/meta-formats.rst
-index 0c4e1ecf5879..b887fca74008 100644
+index 0c4e1ecf58792..b887fca740080 100644
 --- a/Documentation/media/uapi/v4l/meta-formats.rst
 +++ b/Documentation/media/uapi/v4l/meta-formats.rst
 @@ -12,6 +12,7 @@ These formats are used for the :ref:`metadata` interface only.
@@ -107,7 +106,7 @@ index 0c4e1ecf5879..b887fca74008 100644
      pixfmt-meta-vsp1-hgt
 diff --git a/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst b/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst
 new file mode 100644
-index 000000000000..37298cfc57f1
+index 0000000000000..37298cfc57f17
 --- /dev/null
 +++ b/Documentation/media/uapi/v4l/pixfmt-meta-intel-ipu3.rst
 @@ -0,0 +1,181 @@
@@ -293,7 +292,7 @@ index 000000000000..37298cfc57f1
 +
 +.. kernel-doc:: include/uapi/linux/intel-ipu3.h
 diff --git a/Documentation/media/v4l-drivers/index.rst b/Documentation/media/v4l-drivers/index.rst
-index 679238e786a7..179a393bef92 100644
+index 679238e786a77..179a393bef921 100644
 --- a/Documentation/media/v4l-drivers/index.rst
 +++ b/Documentation/media/v4l-drivers/index.rst
 @@ -44,6 +44,7 @@ For more details see the file COPYING in the source distribution of Linux.
@@ -306,7 +305,7 @@ index 679238e786a7..179a393bef92 100644
  	meye
 diff --git a/Documentation/media/v4l-drivers/ipu3.rst b/Documentation/media/v4l-drivers/ipu3.rst
 new file mode 100644
-index 000000000000..045bf4222b1a
+index 0000000000000..045bf4222b1a0
 --- /dev/null
 +++ b/Documentation/media/v4l-drivers/ipu3.rst
 @@ -0,0 +1,326 @@
@@ -637,7 +636,7 @@ index 000000000000..045bf4222b1a
 +
 +.. [#f4] ImgU limitation requires an additional 16x16 for all input resolutions
 diff --git a/drivers/media/pci/intel/ipu3/Kconfig b/drivers/media/pci/intel/ipu3/Kconfig
-index 715f77651482..44ebcbb98c75 100644
+index 715f77651482b..44ebcbb98c757 100644
 --- a/drivers/media/pci/intel/ipu3/Kconfig
 +++ b/drivers/media/pci/intel/ipu3/Kconfig
 @@ -15,3 +15,19 @@ config VIDEO_IPU3_CIO2
@@ -661,7 +660,7 @@ index 715f77651482..44ebcbb98c75 100644
 +	  Say Y or M here if you have a Skylake/Kaby Lake SoC with a MIPI
 +	  camera.	The module will be called ipu3-imgu.
 diff --git a/drivers/media/pci/intel/ipu3/Makefile b/drivers/media/pci/intel/ipu3/Makefile
-index 20186e3ff2ae..60bd5dbb8ffb 100644
+index 20186e3ff2ae9..60bd5dbb8ffb6 100644
 --- a/drivers/media/pci/intel/ipu3/Makefile
 +++ b/drivers/media/pci/intel/ipu3/Makefile
 @@ -1 +1,13 @@
@@ -680,7 +679,7 @@ index 20186e3ff2ae..60bd5dbb8ffb 100644
 +obj-$(CONFIG_VIDEO_IPU3_IMGU) += ipu3-imgu.o
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-abi.h b/drivers/media/pci/intel/ipu3/ipu3-abi.h
 new file mode 100644
-index 000000000000..21703da7da75
+index 0000000000000..21703da7da75d
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-abi.h
 @@ -0,0 +1,2011 @@
@@ -2696,7 +2695,7 @@ index 000000000000..21703da7da75
 +
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-cio2.c b/drivers/media/pci/intel/ipu3/ipu3-cio2.c
-index a9300890fc33..6c492c24e843 100644
+index a9300890fc337..6c492c24e8434 100644
 --- a/drivers/media/pci/intel/ipu3/ipu3-cio2.c
 +++ b/drivers/media/pci/intel/ipu3/ipu3-cio2.c
 @@ -1738,6 +1738,7 @@ static int cio2_pci_probe(struct pci_dev *pci_dev,
@@ -2743,7 +2742,7 @@ index a9300890fc33..6c492c24e843 100644
  	/* Start stream */
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-fw.c b/drivers/media/pci/intel/ipu3/ipu3-css-fw.c
 new file mode 100644
-index 000000000000..55861aa8fb03
+index 0000000000000..55861aa8fb037
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-fw.c
 @@ -0,0 +1,265 @@
@@ -3014,7 +3013,7 @@ index 000000000000..55861aa8fb03
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-fw.h b/drivers/media/pci/intel/ipu3/ipu3-css-fw.h
 new file mode 100644
-index 000000000000..07d8bb8b25f3
+index 0000000000000..07d8bb8b25f35
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-fw.h
 @@ -0,0 +1,188 @@
@@ -3208,7 +3207,7 @@ index 000000000000..07d8bb8b25f3
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-params.c b/drivers/media/pci/intel/ipu3/ipu3-css-params.c
 new file mode 100644
-index 000000000000..7843631ac923
+index 0000000000000..7843631ac9236
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-params.c
 @@ -0,0 +1,2936 @@
@@ -6150,7 +6149,7 @@ index 000000000000..7843631ac923
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-params.h b/drivers/media/pci/intel/ipu3/ipu3-css-params.h
 new file mode 100644
-index 000000000000..f3a0a47117a4
+index 0000000000000..f3a0a47117a49
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-params.h
 @@ -0,0 +1,28 @@
@@ -6184,7 +6183,7 @@ index 000000000000..f3a0a47117a4
 +#endif /*__IPU3_PARAMS_H */
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-pool.c b/drivers/media/pci/intel/ipu3/ipu3-css-pool.c
 new file mode 100644
-index 000000000000..eab41c35f849
+index 0000000000000..eab41c35f849c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-pool.c
 @@ -0,0 +1,136 @@
@@ -6326,7 +6325,7 @@ index 000000000000..eab41c35f849
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css-pool.h b/drivers/media/pci/intel/ipu3/ipu3-css-pool.h
 new file mode 100644
-index 000000000000..71e48d13ac6a
+index 0000000000000..71e48d13ac6a2
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css-pool.h
 @@ -0,0 +1,56 @@
@@ -6388,7 +6387,7 @@ index 000000000000..71e48d13ac6a
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css.c b/drivers/media/pci/intel/ipu3/ipu3-css.c
 new file mode 100644
-index 000000000000..753913c06cee
+index 0000000000000..753913c06cee3
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css.c
 @@ -0,0 +1,2407 @@
@@ -8801,7 +8800,7 @@ index 000000000000..753913c06cee
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-css.h b/drivers/media/pci/intel/ipu3/ipu3-css.h
 new file mode 100644
-index 000000000000..11b143769682
+index 0000000000000..11b1437696829
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-css.h
 @@ -0,0 +1,215 @@
@@ -9022,7 +9021,7 @@ index 000000000000..11b143769682
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.c b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
 new file mode 100644
-index 000000000000..93a393d4e15e
+index 0000000000000..93a393d4e15e5
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.c
 @@ -0,0 +1,270 @@
@@ -9298,7 +9297,7 @@ index 000000000000..93a393d4e15e
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-dmamap.h b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
 new file mode 100644
-index 000000000000..b9d224a33273
+index 0000000000000..b9d224a332733
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-dmamap.h
 @@ -0,0 +1,22 @@
@@ -9326,7 +9325,7 @@ index 000000000000..b9d224a33273
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.c b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
 new file mode 100644
-index 000000000000..b66734a4ceb7
+index 0000000000000..b66734a4ceb7c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.c
 @@ -0,0 +1,560 @@
@@ -9892,7 +9891,7 @@ index 000000000000..b66734a4ceb7
 +}
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-mmu.h b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
 new file mode 100644
-index 000000000000..8fe63b4c6e1c
+index 0000000000000..8fe63b4c6e1c4
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-mmu.h
 @@ -0,0 +1,35 @@
@@ -9933,7 +9932,7 @@ index 000000000000..8fe63b4c6e1c
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-tables.c b/drivers/media/pci/intel/ipu3/ipu3-tables.c
 new file mode 100644
-index 000000000000..334517987eba
+index 0000000000000..334517987eba1
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-tables.c
 @@ -0,0 +1,9609 @@
@@ -19548,7 +19547,7 @@ index 000000000000..334517987eba
 +};
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-tables.h b/drivers/media/pci/intel/ipu3/ipu3-tables.h
 new file mode 100644
-index 000000000000..6563782cbd22
+index 0000000000000..6563782cbd22d
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-tables.h
 @@ -0,0 +1,66 @@
@@ -19620,7 +19619,7 @@ index 000000000000..6563782cbd22
 +#endif
 diff --git a/drivers/media/pci/intel/ipu3/ipu3-v4l2.c b/drivers/media/pci/intel/ipu3/ipu3-v4l2.c
 new file mode 100644
-index 000000000000..8f75f0133eea
+index 0000000000000..8f75f0133eead
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3-v4l2.c
 @@ -0,0 +1,1436 @@
@@ -21062,7 +21061,7 @@ index 000000000000..8f75f0133eea
 +EXPORT_SYMBOL_GPL(ipu3_v4l2_buffer_done);
 diff --git a/drivers/media/pci/intel/ipu3/ipu3.c b/drivers/media/pci/intel/ipu3/ipu3.c
 new file mode 100644
-index 000000000000..dcf58afcc180
+index 0000000000000..dcf58afcc180c
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3.c
 @@ -0,0 +1,834 @@
@@ -21902,7 +21901,7 @@ index 000000000000..dcf58afcc180
 +MODULE_DESCRIPTION("Intel ipu3_imgu PCI driver");
 diff --git a/drivers/media/pci/intel/ipu3/ipu3.h b/drivers/media/pci/intel/ipu3/ipu3.h
 new file mode 100644
-index 000000000000..8abae6d31747
+index 0000000000000..8abae6d317479
 --- /dev/null
 +++ b/drivers/media/pci/intel/ipu3/ipu3.h
 @@ -0,0 +1,169 @@
@@ -22076,7 +22075,7 @@ index 000000000000..8abae6d31747
 +
 +#endif
 diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
-index a38bc4ac3eb8..a6eef2326e2f 100644
+index 71e2c6b475160..95b45bfafaf54 100644
 --- a/drivers/media/v4l2-core/v4l2-ioctl.c
 +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
 @@ -1339,6 +1339,8 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
@@ -22089,7 +22088,7 @@ index a38bc4ac3eb8..a6eef2326e2f 100644
  	default:
  		/* Compressed formats */
 diff --git a/drivers/platform/x86/intel_telemetry_debugfs.c b/drivers/platform/x86/intel_telemetry_debugfs.c
-index b998d7da97fb..8889f3b9b56a 100644
+index b998d7da97fbd..8889f3b9b56ac 100644
 --- a/drivers/platform/x86/intel_telemetry_debugfs.c
 +++ b/drivers/platform/x86/intel_telemetry_debugfs.c
 @@ -477,17 +477,7 @@ static int telem_pss_states_show(struct seq_file *s, void *unused)
@@ -22178,7 +22177,7 @@ index b998d7da97fb..8889f3b9b56a 100644
  		goto out;
 diff --git a/include/uapi/linux/intel-ipu3.h b/include/uapi/linux/intel-ipu3.h
 new file mode 100644
-index 000000000000..7ad42b63342e
+index 0000000000000..7ad42b63342ed
 --- /dev/null
 +++ b/include/uapi/linux/intel-ipu3.h
 @@ -0,0 +1,2827 @@
@@ -25010,7 +25009,7 @@ index 000000000000..7ad42b63342e
 +};
 +#endif
 diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
-index 986104702b6c..3ede0a6c08e3 100644
+index fe636f3cda0f2..6ef1e3fa2a0fa 100644
 --- a/include/uapi/linux/videodev2.h
 +++ b/include/uapi/linux/videodev2.h
 @@ -762,6 +762,10 @@ struct v4l2_pix_format {
@@ -25025,5 +25024,5 @@ index 986104702b6c..3ede0a6c08e3 100644
  #define V4L2_PIX_FMT_PRIV_MAGIC		0xfeedcafe
  
 -- 
-2.23.0
+2.26.2
 

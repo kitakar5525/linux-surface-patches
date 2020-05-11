@@ -1,22 +1,30 @@
-From 42ea9d8f7b019136bed3c4a49e3242c4629976da Mon Sep 17 00:00:00 2001
-From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Date: Thu, 12 Dec 2019 21:14:30 +0900
-Subject: [PATCH] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
+From 5fd8827015485419025ad0686e0da840a3d65b2e Mon Sep 17 00:00:00 2001
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Date: Wed, 28 Nov 2018 13:45:29 +0200
+Subject: [PATCH 1/4] i2c: acpi: Introduce i2c_acpi_get_i2c_resource() helper
 
 Besides current two users one more is coming. Definitely makes sense to
 introduce a helper.
 
 No functional change intended.
 
-From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
-Update to apply cleanly for chromeos-4.19
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+
+(cherry picked from commit 0d5102fe85302aa06a3e5fd8e63b09294aed4c48)
+[Reason for cherry-picking this commit:
+  to apply the incoming commit without conflicts]
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/i2c/i2c-core-acpi.c | 41 ++++++++++++++++++++++++++-----------
  include/linux/acpi.h        | 11 ++++++++++
  2 files changed, 40 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/i2c/i2c-core-acpi.c b/drivers/i2c/i2c-core-acpi.c
-index 6ffec257a043..e63b4adf3157 100644
+index ed3349a70aeb0..6c5c06abb19c5 100644
 --- a/drivers/i2c/i2c-core-acpi.c
 +++ b/drivers/i2c/i2c-core-acpi.c
 @@ -46,6 +46,33 @@ struct i2c_acpi_lookup {
@@ -66,7 +74,7 @@ index 6ffec257a043..e63b4adf3157 100644
  		return 1;
  
  	if (lookup->index != -1 && lookup->n++ != lookup->index)
-@@ -561,13 +584,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
+@@ -569,13 +592,7 @@ i2c_acpi_space_handler(u32 function, acpi_physical_address command,
  		goto err;
  	}
  
@@ -82,10 +90,10 @@ index 6ffec257a043..e63b4adf3157 100644
  		goto err;
  	}
 diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 289abd5b383c..4c13fceb4648 100644
+index 7f90be0194241..312caf4d5fab2 100644
 --- a/include/linux/acpi.h
 +++ b/include/linux/acpi.h
-@@ -1072,6 +1072,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
+@@ -1064,6 +1064,17 @@ static inline int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
  }
  #endif
  
@@ -104,5 +112,5 @@ index 289abd5b383c..4c13fceb4648 100644
  
  #ifdef CONFIG_ACPI
 -- 
-2.24.1
+2.26.2
 

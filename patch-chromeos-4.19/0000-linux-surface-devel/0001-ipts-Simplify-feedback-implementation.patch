@@ -1,0 +1,160 @@
+From 8b45a31eb5977d79ec2099e80c0c3bddf7b38aee Mon Sep 17 00:00:00 2001
+From: Dorian Stoll <dorian.stoll@tmsp.io>
+Date: Fri, 3 Apr 2020 10:32:38 +0200
+Subject: [PATCH 01/10] ipts: Simplify feedback implementation
+
+This implementation originated from the new IPTS driver for linux 5.4
+and newer. Reportedly, the new driver is way more stable on gen4 devices
+(SB1 + SP4) than this driver, without needing the no_feedback hack.
+
+Normally, the feedback data is provided by the GuC. The driver takes
+this data, copies it into the feedback data buffer, and then tells the
+ME about it. The data inside of the buffer is completely opaque to the
+driver itself, it is not touched except for copying it.
+
+In the new driver it is impossible to use the GuC for touch processing,
+therefor it is also impossible to receive feedback data from it. The new
+driver just uses an empty buffer and only fills in the parts that are
+definitly required: The type of feedback we are sending, and the buffer
+/ transaction ID. This seems to work just fine.
+
+Signed-off-by: Dorian Stoll <dorian.stoll@tmsp.io>
+---
+ drivers/misc/ipts/hid.c         | 53 +++++++--------------------------
+ drivers/misc/ipts/msg-handler.c | 21 +++++++++----
+ 2 files changed, 25 insertions(+), 49 deletions(-)
+
+diff --git a/drivers/misc/ipts/hid.c b/drivers/misc/ipts/hid.c
+index 1a487b633fdde..1b7ad2a774a86 100644
+--- a/drivers/misc/ipts/hid.c
++++ b/drivers/misc/ipts/hid.c
+@@ -356,10 +356,11 @@ int ipts_handle_hid_data(struct ipts_info *ipts,
+ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
+ {
+ 	struct kernel_output_buffer_header *out_buf_hdr;
+-	struct ipts_buffer_info *output_buf, *fb_buf = NULL;
++	struct ipts_buffer_info *output_buf;
+ 	u8 *input_report, *payload;
+-	u32 tr_id;
+-	int i, payload_size, ret = 0, header_size;
++	u8 tr_id;
++	int i, payload_size, header_size;
++	bool send_feedback = false;
+ 
+ 	header_size = sizeof(struct kernel_output_buffer_header);
+ 	output_buf = ipts_get_output_buffers_by_parallel_id(ipts,
+@@ -372,6 +373,9 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
+ 		if (out_buf_hdr->length < header_size)
+ 			continue;
+ 
++		tr_id = *(u8 *)&out_buf_hdr->hid_private_data.transaction_id;
++		send_feedback = true;
++
+ 		payload_size = out_buf_hdr->length - header_size;
+ 		payload = out_buf_hdr->data;
+ 
+@@ -394,12 +398,7 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
+ 			break;
+ 		}
+ 		case OUTPUT_BUFFER_PAYLOAD_FEEDBACK_BUFFER: {
+-			// send feedback data for raw data mode
+-			fb_buf = ipts_get_feedback_buffer(ipts, parallel_idx);
+-			tr_id = out_buf_hdr->hid_private_data.transaction_id;
+-
+-			memcpy(fb_buf->addr, payload, payload_size);
+-
++			// Ignored
+ 			break;
+ 		}
+ 		case OUTPUT_BUFFER_PAYLOAD_ERROR: {
+@@ -429,42 +428,10 @@ static int handle_outputs(struct ipts_info *ipts, int parallel_idx)
+ 		}
+ 	}
+ 
+-	/*
+-	 * XXX: Calling the "ipts_send_feedback" function repeatedly seems to
+-	 * be what is causing touch to crash (found by sebanc, see the link
+-	 * below for the comment) on some models, especially on Surface Pro 4
+-	 * and Surface Book 1.
+-	 * The most desirable fix could be done by raising IPTS GuC priority.
+-	 * Until we find a better solution, use this workaround.
+-	 *
+-	 * The decision which devices have no_feedback enabled by default is
+-	 * made by the companion driver. If no companion driver was loaded,
+-	 * no_feedback is disabled and the default behaviour is used.
+-	 *
+-	 * Link to the comment where sebanc found this workaround:
+-	 * https://github.com/jakeday/linux-surface/issues/374#issuecomment-508234110
+-	 * (Touch and pen issue persists · Issue #374 · jakeday/linux-surface)
+-	 *
+-	 * Link to the usage from kitakar5525 who made this change:
+-	 * https://github.com/jakeday/linux-surface/issues/374#issuecomment-517289171
+-	 * (Touch and pen issue persists · Issue #374 · jakeday/linux-surface)
+-	 */
+-	if (fb_buf) {
+-		// A negative value means "decide by dmi table"
+-		if (ipts_modparams.no_feedback < 0) {
+-			if (ipts_get_quirks() & IPTS_QUIRK_NO_FEEDBACK)
+-				ipts_modparams.no_feedback = true;
+-			else
+-				ipts_modparams.no_feedback = false;
+-		}
+ 
+-		if (ipts_modparams.no_feedback)
+-			return 0;
+ 
+-		ret = ipts_send_feedback(ipts, parallel_idx, tr_id);
+-		if (ret)
+-			return ret;
+-	}
++	if (send_feedback)
++		return ipts_send_feedback(ipts, parallel_idx, tr_id);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/misc/ipts/msg-handler.c b/drivers/misc/ipts/msg-handler.c
+index b2b382ea4675c..9431b1dfc6e06 100644
+--- a/drivers/misc/ipts/msg-handler.c
++++ b/drivers/misc/ipts/msg-handler.c
+@@ -42,16 +42,24 @@ int ipts_handle_cmd(struct ipts_info *ipts, u32 cmd, void *data, int data_size)
+ int ipts_send_feedback(struct ipts_info *ipts, int buffer_idx,
+ 		u32 transaction_id)
+ {
+-	int cmd_len = sizeof(struct touch_sensor_feedback_ready_cmd_data);
+-	struct touch_sensor_feedback_ready_cmd_data fb_ready_cmd;
++	struct ipts_buffer_info feedback_buffer;
++	struct touch_feedback_hdr *feedback;
++	struct touch_sensor_feedback_ready_cmd_data cmd;
+ 
+-	memset(&fb_ready_cmd, 0, cmd_len);
++	feedback_buffer = ipts->resource.feedback_buffer[buffer_idx];
++	feedback = (struct touch_feedback_hdr *)feedback_buffer.addr;
+ 
+-	fb_ready_cmd.feedback_index = buffer_idx;
+-	fb_ready_cmd.transaction_id = transaction_id;
++	memset(feedback, 0, sizeof(struct touch_feedback_hdr));
++	memset(&cmd, 0, sizeof(struct touch_sensor_feedback_ready_cmd_data));
++
++	feedback->feedback_cmd_type = TOUCH_FEEDBACK_CMD_TYPE_NONE;
++	feedback->buffer_id = transaction_id;
++
++	cmd.feedback_index = buffer_idx;
++	cmd.transaction_id = transaction_id;
+ 
+ 	return ipts_handle_cmd(ipts, TOUCH_SENSOR_FEEDBACK_READY_CMD,
+-		&fb_ready_cmd, cmd_len);
++		&cmd, sizeof(struct touch_sensor_feedback_ready_cmd_data));
+ }
+ 
+ int ipts_send_sensor_quiesce_io_cmd(struct ipts_info *ipts)
+@@ -339,6 +347,7 @@ int ipts_handle_resp(struct ipts_info *ipts,
+ 	}
+ 	case TOUCH_SENSOR_FEEDBACK_READY_RSP: {
+ 		if (rsp_status != TOUCH_STATUS_COMPAT_CHECK_FAIL &&
++				rsp_status != TOUCH_STATUS_INVALID_PARAMS &&
+ 				rsp_status != 0) {
+ 			rsp_failed(ipts, cmd, rsp_status);
+ 			break;
+-- 
+2.26.2
+

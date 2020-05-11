@@ -1,0 +1,215 @@
+From eeda2609a689171ac15011ae59ca87bafe3395e1 Mon Sep 17 00:00:00 2001
+From: Dorian Stoll <dorian.stoll@tmsp.io>
+Date: Mon, 6 Apr 2020 14:09:05 +0200
+Subject: [PATCH 03/10] ipts: Remove quirk implementation
+
+Since there are no users for quirks anymore, the quirk stuff is just
+dead code. So remove it to keep the code as simple as possible.
+
+In case it is required to readd quirks in the future this commit can
+simply be reverted.
+
+Signed-off-by: Dorian Stoll <dorian.stoll@tmsp.io>
+---
+ drivers/misc/ipts/companion.c              | 19 -----
+ drivers/misc/ipts/companion.h              |  1 -
+ drivers/misc/ipts/companion/ipts-surface.c | 89 +++-------------------
+ include/linux/ipts-companion.h             |  1 -
+ 4 files changed, 11 insertions(+), 99 deletions(-)
+
+diff --git a/drivers/misc/ipts/companion.c b/drivers/misc/ipts/companion.c
+index c8199d8be5d67..8f66b852f1371 100644
+--- a/drivers/misc/ipts/companion.c
++++ b/drivers/misc/ipts/companion.c
+@@ -209,22 +209,3 @@ int ipts_request_firmware_config(struct ipts_info *ipts,
+ 	return ret;
+ 
+ }
+-
+-unsigned int ipts_get_quirks(void)
+-{
+-	unsigned int ret;
+-
+-	// Make sure that access to the companion is synchronized
+-	mutex_lock(&ipts_companion_lock);
+-
+-	// If the companion is ignored, or doesn't exist, assume that
+-	// the device doesn't have any quirks
+-	if (ipts_modparams.ignore_companion || ipts_companion == NULL)
+-		ret = IPTS_QUIRK_NONE;
+-	else
+-		ret = ipts_companion->get_quirks(ipts_companion);
+-
+-	mutex_unlock(&ipts_companion_lock);
+-
+-	return ret;
+-}
+diff --git a/drivers/misc/ipts/companion.h b/drivers/misc/ipts/companion.h
+index bb3368b41a380..7a1e4b388c40a 100644
+--- a/drivers/misc/ipts/companion.h
++++ b/drivers/misc/ipts/companion.h
+@@ -15,7 +15,6 @@
+ #include "ipts.h"
+ 
+ bool ipts_companion_available(void);
+-unsigned int ipts_get_quirks(void);
+ 
+ int ipts_request_firmware(const struct firmware **fw, const char *name,
+ 		struct device *device);
+diff --git a/drivers/misc/ipts/companion/ipts-surface.c b/drivers/misc/ipts/companion/ipts-surface.c
+index a86777c068e5a..4c296334a4b31 100644
+--- a/drivers/misc/ipts/companion/ipts-surface.c
++++ b/drivers/misc/ipts/companion/ipts-surface.c
+@@ -26,53 +26,6 @@
+ 	MODULE_FIRMWARE("intel/ipts/" X "/vendor_desc.bin");		\
+ 	MODULE_FIRMWARE("intel/ipts/" X "/vendor_kernel.bin")
+ 
+-struct ipts_surface_data {
+-	const char *hid;
+-	unsigned int quirks;
+-};
+-
+-// Surface Book 1 / Surface Studio
+-static const struct ipts_surface_data ipts_surface_mshw0076 = {
+-	.hid = "MSHW0076",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Surface Pro 4
+-static const struct ipts_surface_data ipts_surface_mshw0078 = {
+-	.hid = "MSHW0078",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Surface Laptop 1 / 2
+-static const struct ipts_surface_data ipts_surface_mshw0079 = {
+-	.hid = "MSHW0079",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Surface Pro 5 / 6
+-static const struct ipts_surface_data ipts_surface_mshw0101 = {
+-	.hid = "MSHW0101",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Surface Book 2 15"
+-static const struct ipts_surface_data ipts_surface_mshw0102 = {
+-	.hid = "MSHW0102",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Unknown, but firmware exists
+-static const struct ipts_surface_data ipts_surface_mshw0103 = {
+-	.hid = "MSHW0103",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+-// Surface Book 2 13"
+-static const struct ipts_surface_data ipts_surface_mshw0137 = {
+-	.hid = "MSHW0137",
+-	.quirks = IPTS_QUIRK_NONE,
+-};
+-
+ /*
+  * Checkpatch complains about the following lines because it sees them as
+  * header files mixed with .c files. However, forward declaration is perfectly
+@@ -119,7 +72,6 @@ static struct ipts_bin_fw_info *ipts_surface_fw_config[] = {
+ static struct ipts_companion ipts_surface_companion = {
+ 	.firmware_request = &ipts_surface_request_firmware,
+ 	.firmware_config = ipts_surface_fw_config,
+-	.get_quirks = &ipts_surface_get_quirks,
+ 	.name = "ipts_surface",
+ };
+ 
+@@ -128,44 +80,26 @@ int ipts_surface_request_firmware(struct ipts_companion *companion,
+ 		struct device *device)
+ {
+ 	char fw_path[MAX_IOCL_FILE_PATH_LEN];
+-	struct ipts_surface_data *data;
+ 
+ 	if (companion == NULL || companion->data == NULL)
+ 		return -ENOENT;
+ 
+-	data = (struct ipts_surface_data *)companion->data;
+-
+ 	snprintf(fw_path, MAX_IOCL_FILE_PATH_LEN, IPTS_SURFACE_FW_PATH_FMT,
+-		data->hid, name);
++		(const char *)companion->data, name);
+ 	return request_firmware(fw, fw_path, device);
+ }
+ 
+-unsigned int ipts_surface_get_quirks(struct ipts_companion *companion)
+-{
+-	struct ipts_surface_data *data;
+-
+-	// In case something went wrong, assume that the
+-	// device doesn't have any quirks
+-	if (companion == NULL || companion->data == NULL)
+-		return IPTS_QUIRK_NONE;
+-
+-	data = (struct ipts_surface_data *)companion->data;
+-
+-	return data->quirks;
+-}
+-
+ static int ipts_surface_probe(struct platform_device *pdev)
+ {
+ 	int r;
+-	const struct ipts_surface_data *data =
+-		acpi_device_get_match_data(&pdev->dev);
++	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
+ 
+-	if (!data) {
++	if (!adev) {
+ 		dev_err(&pdev->dev, "Unable to find ACPI info for device\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	ipts_surface_companion.data = (void *)data;
++	ipts_surface_companion.data = (void *)acpi_device_hid(adev);
+ 
+ 	r = ipts_add_companion(&ipts_surface_companion);
+ 	if (r) {
+@@ -189,13 +123,13 @@ static int ipts_surface_remove(struct platform_device *pdev)
+ }
+ 
+ static const struct acpi_device_id ipts_surface_acpi_match[] = {
+-	{ "MSHW0076", (unsigned long)&ipts_surface_mshw0076 },
+-	{ "MSHW0078", (unsigned long)&ipts_surface_mshw0078 },
+-	{ "MSHW0079", (unsigned long)&ipts_surface_mshw0079 },
+-	{ "MSHW0101", (unsigned long)&ipts_surface_mshw0101 },
+-	{ "MSHW0102", (unsigned long)&ipts_surface_mshw0102 },
+-	{ "MSHW0103", (unsigned long)&ipts_surface_mshw0103 },
+-	{ "MSHW0137", (unsigned long)&ipts_surface_mshw0137 },
++	{ "MSHW0076", 0 }, // Surface Book 1 / Surface Studio
++	{ "MSHW0078", 0 }, // Surface Pro 4
++	{ "MSHW0079", 0 }, // Surface Laptop 1 / 2
++	{ "MSHW0101", 0 }, // Surface Book 2 15"
++	{ "MSHW0102", 0 }, // Surface Pro 5 / 6
++	{ "MSHW0103", 0 }, // Unknown
++	{ "MSHW0137", 0 }, // Surface Book 2
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(acpi, ipts_surface_acpi_match);
+@@ -220,5 +154,4 @@ IPTS_SURFACE_FIRMWARE("MSHW0079");
+ IPTS_SURFACE_FIRMWARE("MSHW0101");
+ IPTS_SURFACE_FIRMWARE("MSHW0102");
+ IPTS_SURFACE_FIRMWARE("MSHW0103");
+-
+ IPTS_SURFACE_FIRMWARE("MSHW0137");
+diff --git a/include/linux/ipts-companion.h b/include/linux/ipts-companion.h
+index 1f606a5fb5f2a..de31f5e0b186b 100644
+--- a/include/linux/ipts-companion.h
++++ b/include/linux/ipts-companion.h
+@@ -14,7 +14,6 @@
+ #include <linux/ipts-binary.h>
+ 
+ struct ipts_companion {
+-	unsigned int (*get_quirks)(struct ipts_companion *companion);
+ 	int (*firmware_request)(struct ipts_companion *companion,
+ 		const struct firmware **fw,
+ 		const char *name, struct device *device);
+-- 
+2.26.2
+
