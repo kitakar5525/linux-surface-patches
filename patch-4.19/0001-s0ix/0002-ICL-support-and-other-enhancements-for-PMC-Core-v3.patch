@@ -1,7 +1,9 @@
-From 04aaeef96a17cfef9c8c67c6a305ddd0f36e824f Mon Sep 17 00:00:00 2001
-From: "Hayataka@kitakar5525" <34676735+kitakar5525@users.noreply.github.com>
+From 5121a0eab783d3700c74f7db378319aba6c1445c Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
 Date: Mon, 25 Mar 2019 09:47:11 +0900
-Subject: [PATCH] v3-ICL-support-and-other-enhancements-for-PMC-Core-419
+Subject: [PATCH 2/2] ICL support and other enhancements for PMC Core (v3)
+
+(patches from https://patchwork.kernel.org/cover/10812541/)
 
 Changes in v3:
  * Dropped reference to coreboot project as suggested by Thomas and Boris.
@@ -19,11 +21,10 @@ Changes in v2:
 
 This series:
  - Adds ICL U/Y CPUID to intel-family.h
- - Enables PMC driver for ICL 
+ - Enables PMC driver for ICL
  - Introduces a new "package cstate show" feature
  - Fixes a customer issue related to S0ix on latest HP laptops
- - Fixes some minor bugs  
-
+ - Fixes some minor bugs
 
 Rajneesh Bhardwaj (5):
   x86/cpu: Add Icelake to Intel family
@@ -32,13 +33,15 @@ Rajneesh Bhardwaj (5):
   platform/x86: intel_pmc_core: Add Package cstates residency info
   platform/x86: intel_pmc_core: Quirk to ignore XTAL shutdown
 
+[Resolved conflicts for v4.19]
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/platform/x86/intel_pmc_core.c | 144 ++++++++++++++++++++++----
  drivers/platform/x86/intel_pmc_core.h |  10 ++
  2 files changed, 133 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/platform/x86/intel_pmc_core.c b/drivers/platform/x86/intel_pmc_core.c
-index dca51060..e86e2512 100644
+index cc1c0c7eccc80..374cb7e7615e5 100644
 --- a/drivers/platform/x86/intel_pmc_core.c
 +++ b/drivers/platform/x86/intel_pmc_core.c
 @@ -24,6 +24,7 @@
@@ -194,7 +197,7 @@ index dca51060..e86e2512 100644
  static inline u8 pmc_core_reg_read_byte(struct pmc_dev *pmcdev, int offset)
  {
  	return readb(pmcdev->regbase + offset);
-@@ -686,6 +733,25 @@ static int pmc_core_ltr_show(struct seq_file *s, void *unused)
+@@ -687,6 +734,25 @@ static int pmc_core_ltr_show(struct seq_file *s, void *unused)
  }
  DEFINE_SHOW_ATTRIBUTE(pmc_core_ltr);
  
@@ -220,7 +223,7 @@ index dca51060..e86e2512 100644
  static void pmc_core_dbgfs_unregister(struct pmc_dev *pmcdev)
  {
  	debugfs_remove_recursive(pmcdev->dbgfs_dir);
-@@ -712,6 +778,9 @@ static int pmc_core_dbgfs_register(struct pmc_dev *pmcdev)
+@@ -713,6 +779,9 @@ static int pmc_core_dbgfs_register(struct pmc_dev *pmcdev)
  
  	debugfs_create_file("ltr_show", 0644, dir, pmcdev, &pmc_core_ltr_fops);
  
@@ -230,7 +233,7 @@ index dca51060..e86e2512 100644
  	if (pmcdev->map->pll_sts)
  		debugfs_create_file("pll_status", 0444, dir, pmcdev,
  				    &pmc_core_pll_fops);
-@@ -744,11 +813,12 @@ static inline void pmc_core_dbgfs_unregister(struct pmc_dev *pmcdev)
+@@ -745,11 +814,12 @@ static inline void pmc_core_dbgfs_unregister(struct pmc_dev *pmcdev)
  #endif /* CONFIG_DEBUG_FS */
  
  static const struct x86_cpu_id intel_pmc_core_ids[] = {
@@ -248,7 +251,7 @@ index dca51060..e86e2512 100644
  	{}
  };
  
-@@ -759,6 +829,37 @@ static const struct pci_device_id pmc_pci_ids[] = {
+@@ -760,6 +830,37 @@ static const struct pci_device_id pmc_pci_ids[] = {
  	{ 0, },
  };
  
@@ -286,7 +289,7 @@ index dca51060..e86e2512 100644
  static int __init pmc_core_probe(void)
  {
  	struct pmc_dev *pmcdev = &pmc;
-@@ -800,6 +901,7 @@ static int __init pmc_core_probe(void)
+@@ -805,6 +906,7 @@ static int __init pmc_core_probe(void)
  		return err;
  	}
  
@@ -295,7 +298,7 @@ index dca51060..e86e2512 100644
  	return 0;
  }
 diff --git a/drivers/platform/x86/intel_pmc_core.h b/drivers/platform/x86/intel_pmc_core.h
-index 7c1defdf..ed75c099 100644
+index 8b93bd8d630f1..b73f8d488ba06 100644
 --- a/drivers/platform/x86/intel_pmc_core.h
 +++ b/drivers/platform/x86/intel_pmc_core.h
 @@ -34,6 +34,7 @@
@@ -344,5 +347,5 @@ index 7c1defdf..ed75c099 100644
  
  /**
 -- 
-2.21.0
+2.26.2
 

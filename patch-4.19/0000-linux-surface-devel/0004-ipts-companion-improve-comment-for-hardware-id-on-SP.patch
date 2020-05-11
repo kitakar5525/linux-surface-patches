@@ -1,0 +1,36 @@
+From cdb761ba965d1908e2527e09d9db0f799e9db22b Mon Sep 17 00:00:00 2001
+From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
+Date: Mon, 6 Apr 2020 22:46:24 +0900
+Subject: [PATCH 04/10] ipts: companion: improve comment for hardware id on SP4
+
+According to acpidump, MSHW0103 that is currently commented as "Unknown"
+is also used on some SP4 [1].
+
+This commit improves the comment.
+
+[1] https://github.com/linux-surface/acpidumps/blob/cbe3115807a595d9148f57757adc42e9875ca5b8/surface_pro_4/dsdt.dsl#L16669-L16682
+---
+ drivers/misc/ipts/companion/ipts-surface.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/misc/ipts/companion/ipts-surface.c b/drivers/misc/ipts/companion/ipts-surface.c
+index 4c296334a4b31..a717dfcdfeba7 100644
+--- a/drivers/misc/ipts/companion/ipts-surface.c
++++ b/drivers/misc/ipts/companion/ipts-surface.c
+@@ -124,11 +124,11 @@ static int ipts_surface_remove(struct platform_device *pdev)
+ 
+ static const struct acpi_device_id ipts_surface_acpi_match[] = {
+ 	{ "MSHW0076", 0 }, // Surface Book 1 / Surface Studio
+-	{ "MSHW0078", 0 }, // Surface Pro 4
++	{ "MSHW0078", 0 }, // some Surface Pro 4
+ 	{ "MSHW0079", 0 }, // Surface Laptop 1 / 2
+ 	{ "MSHW0101", 0 }, // Surface Book 2 15"
+ 	{ "MSHW0102", 0 }, // Surface Pro 5 / 6
+-	{ "MSHW0103", 0 }, // Unknown
++	{ "MSHW0103", 0 }, // some Surface Pro 4
+ 	{ "MSHW0137", 0 }, // Surface Book 2
+ 	{ },
+ };
+-- 
+2.26.2
+
