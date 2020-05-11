@@ -1,0 +1,149 @@
+From 4d602307783b45db5d193d371f2991bd20bb8c06 Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Mon, 20 Apr 2020 23:35:53 +0900
+Subject: [PATCH 2/3] mwifiex_pcie: powercycle: add dmi table and apply quirks
+ only to Surface devices
+
+This powercycle quirk seems to be needed only on Surface series devices.
+So, apply the quirk only to Surface devices.
+
+Currently, powercycle quirk only supports gen4+ devices.
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 91 ++++++++++++++++++++-
+ 1 file changed, 90 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 9b2991d8f021b..1560f74c84dee 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -17,6 +17,7 @@
+  * this warranty disclaimer.
+  */
+ 
++#include <linux/dmi.h>
+ #include <linux/firmware.h>
+ 
+ #include "decl.h"
+@@ -31,6 +32,9 @@
+ #define PCIE_VERSION	"1.0"
+ #define DRV_NAME        "Marvell mwifiex PCIe"
+ 
++static const struct dmi_system_id flr_surface_dmi_table[];
++static bool powercycle_d3cold;
++
+ static struct mwifiex_if_ops pcie_ops;
+ 
+ static const struct of_device_id mwifiex_pcie_of_match_table[] = {
+@@ -247,6 +251,9 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
+ 	 * Surface devices */
+ 	parent_pdev->bridge_d3 = false;
+ 
++	/* check if quirk is needed to reset properly */
++	dmi_check_system(flr_surface_dmi_table);
++
+ 	pr_debug("info: vendor=0x%4.04X device=0x%4.04X rev=%d\n",
+ 		 pdev->vendor, pdev->device, pdev->revision);
+ 
+@@ -286,6 +293,87 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
+ 	return 0;
+ }
+ 
++static int dmi_powercycle_d3cold(const struct dmi_system_id *d)
++{
++	powercycle_d3cold = true;
++	pr_info("%s detected: using powercycle_d3cold quirk\n", d->ident);
++
++	return 0;
++}
++
++static const struct dmi_system_id flr_surface_dmi_table[] = {
++	/*
++	 * Surface devices are needed to be taken care of on FLR
++	 */
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Pro 4",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Pro 5",
++		.matches = {
++			/* match for SKU here due to generic product name "Surface Pro" */
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Pro 5 (LTE)",
++		.matches = {
++			/* match for SKU here due to generic product name "Surface Pro" */
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Pro 6",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Book 1",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Book 2",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Laptop 1",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
++		},
++	},
++	{
++		.callback = dmi_powercycle_d3cold,
++		.ident = "Surface Laptop 2",
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
++		},
++	},
++	{}
++};
++
+ static int mwifiex_pcie_powercycle_quirk(struct pci_dev *pdev)
+ {
+ 	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
+@@ -440,7 +528,8 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
+ 	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
+ 	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
+ 
+-	mwifiex_pcie_powercycle_quirk(pdev);
++	if (powercycle_d3cold)
++		mwifiex_pcie_powercycle_quirk(pdev);
+ 
+ 	adapter->pci_reset_ongoing = true;
+ }
+-- 
+2.26.2
+

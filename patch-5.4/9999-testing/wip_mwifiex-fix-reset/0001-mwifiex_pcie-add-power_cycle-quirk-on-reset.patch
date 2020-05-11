@@ -1,0 +1,104 @@
+From 8247cec587f4f623633098167763d5ea47cce80d Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Mon, 20 Apr 2020 23:31:01 +0900
+Subject: [PATCH 1/3] mwifiex_pcie: add power_cycle quirk on reset
+
+To reset mwifiex on Surface devices, it seems that putting the wifi
+device into D3cold is needed according to errata.inf file on Windows
+installation (Windows/INF/errata.inf).
+
+So, this patch adds function that performs power-cycle (put into D3cold
+then D0) and call the function at the end of reset prepare path.
+
+NOTE_1: I understand that this kind of quirk should be added to
+drivers/pci/quirks.c instead, like this patch I made before
+(https://github.com/linux-surface/kernel/issues/20#issuecomment-569255827).
+However, I did within mwifiex driver because it's useful if everything
+is on the driver side when building it as external module against upstream
+linux kernel.
+
+NOTE_2: I need to also reset the parent device (bridge) of wifi on SB1;
+it might be because the bridge of wifi (and also nvme) always reports
+it's in D3hot. When I tried to reset only wifi device (not touching to
+parent), it gave me the following error and resetting failed:
+
+    acpi device:4b: Cannot transition to power state D0 for parent in D3hot
+    mwifiex_pcie 0000:03:00.0: can't change power state from D3cold to D0 (config space inaccessible)
+
+TODO: Regarding NOTE_2, it is maybe related to commit ce4ceb3c4915ce
+("mwifiex_pcie: disable parent bridge_d3") but not sure yet.
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 48 +++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 5f5464d2f90ce..9b2991d8f021b 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -286,6 +286,52 @@ static int mwifiex_pcie_probe(struct pci_dev *pdev,
+ 	return 0;
+ }
+ 
++static int mwifiex_pcie_powercycle_quirk(struct pci_dev *pdev)
++{
++	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
++	int ret;
++
++	/* Power cycle (put into D3cold then D0) */
++	dev_info(&pdev->dev, "Using power-cycle quirk to perform FW "
++			 "re-download\n");
++
++	dev_info(&pdev->dev, "putting into D3cold...\n");
++	pci_save_state(pdev);
++	if (pci_is_enabled(pdev))
++		pci_disable_device(pdev);
++	pci_set_power_state(pdev, PCI_D3cold);
++
++	/* Also power-cycle parent because on some devices, OS can't know
++	 * the real power state of the parent (bridge) device of wifi. When
++	 * I tried to power-cycle only wifi device, resetting failed saying
++	 * that "Cannot transition to power state D0 for parent in D3hot". */
++	dev_info(&parent_pdev->dev, "putting into D3cold...\n");
++	pci_save_state(parent_pdev);
++	if (pci_is_enabled(parent_pdev))
++		pci_disable_device(parent_pdev);
++	pci_set_power_state(parent_pdev, PCI_D3cold);
++
++	dev_info(&parent_pdev->dev, "putting into D0...\n");
++	pci_set_power_state(parent_pdev, PCI_D0);
++	ret = pci_enable_device(parent_pdev);
++	if (ret) {
++		dev_err(&parent_pdev->dev, "pci_enable_device failed\n");
++		return ret;
++	}
++	pci_restore_state(parent_pdev);
++
++	dev_info(&pdev->dev, "putting into D0...\n");
++	pci_set_power_state(pdev, PCI_D0);
++	ret = pci_enable_device(pdev);
++	if (ret) {
++		dev_err(&pdev->dev, "pci_enable_device failed\n");
++		return ret;
++	}
++	pci_restore_state(pdev);
++
++	return 0;
++}
++
+ /*
+  * This function removes the interface and frees up the card structure.
+  */
+@@ -394,6 +440,8 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
+ 	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
+ 	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
+ 
++	mwifiex_pcie_powercycle_quirk(pdev);
++
+ 	adapter->pci_reset_ongoing = true;
+ }
+ 
+-- 
+2.26.2
+

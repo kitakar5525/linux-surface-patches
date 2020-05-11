@@ -1,0 +1,145 @@
+From f506e066a79c65c7a533db512685d306e6f34921 Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Mon, 20 Apr 2020 23:24:15 +0900
+Subject: [PATCH] mwifiwx_pcie: avoid deadlock on reset failure
+
+When a reset performed but even the reset failed, a hang happens on
+cancel_work_sync().
+
+    # reset performed after firmware went into bad state
+    kernel: mwifiex_pcie 0000:01:00.0: WLAN FW already running! Skip FW dnld
+    kernel: mwifiex_pcie 0000:01:00.0: WLAN FW is active
+    # but even the reset failed
+    kernel: mwifiex_pcie 0000:01:00.0: mwifiex_cmd_timeout_func: Timeout cmd id = 0xfa, act = 0xa000
+    kernel: mwifiex_pcie 0000:01:00.0: num_data_h2c_failure = 0
+    kernel: mwifiex_pcie 0000:01:00.0: num_cmd_h2c_failure = 0
+    kernel: mwifiex_pcie 0000:01:00.0: is_cmd_timedout = 1
+    kernel: mwifiex_pcie 0000:01:00.0: num_tx_timeout = 0
+    kernel: mwifiex_pcie 0000:01:00.0: last_cmd_index = 2
+    kernel: mwifiex_pcie 0000:01:00.0: last_cmd_id: 16 00 a4 00 fa 00 a4 00 7f 00
+    kernel: mwifiex_pcie 0000:01:00.0: last_cmd_act: 00 00 00 00 00 a0 00 00 00 00
+    kernel: mwifiex_pcie 0000:01:00.0: last_cmd_resp_index = 0
+    kernel: mwifiex_pcie 0000:01:00.0: last_cmd_resp_id: 16 80 7f 80 16 80 a4 80 7f 80
+    kernel: mwifiex_pcie 0000:01:00.0: last_event_index = 1
+    kernel: mwifiex_pcie 0000:01:00.0: last_event: 58 00 58 00 58 00 58 00 58 00
+    kernel: mwifiex_pcie 0000:01:00.0: data_sent=0 cmd_sent=1
+    kernel: mwifiex_pcie 0000:01:00.0: ps_mode=0 ps_state=0
+    kernel: mwifiex_pcie 0000:01:00.0: info: _mwifiex_fw_dpc: unregister device
+    # mwifiex_pcie_work hung
+    kernel: INFO: task kworker/0:0:24857 blocked for more than 122 seconds.
+    kernel:       Tainted: G        W  OE     5.3.11-arch1-1 #1
+    kernel: "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+    kernel: kworker/0:0     D    0 24857      2 0x80004000
+    kernel: Workqueue: events mwifiex_pcie_work [mwifiex_pcie]
+    kernel: Call Trace:
+    kernel:  ? __schedule+0x27f/0x6d0
+    kernel:  schedule+0x43/0xd0
+    kernel:  schedule_timeout+0x299/0x3d0
+    kernel:  ? __switch_to_asm+0x40/0x70
+    kernel:  wait_for_common+0xeb/0x190
+    kernel:  ? wake_up_q+0x60/0x60
+    kernel:  __flush_work+0x130/0x1e0
+    kernel:  ? flush_workqueue_prep_pwqs+0x130/0x130
+    kernel:  __cancel_work_timer+0x123/0x1b0
+    kernel:  mwifiex_cleanup_pcie+0x28/0xd0 [mwifiex_pcie]
+    kernel:  mwifiex_free_adapter+0x24/0xe0 [mwifiex]
+    kernel:  _mwifiex_fw_dpc+0x28d/0x520 [mwifiex]
+    kernel:  mwifiex_reinit_sw+0x15d/0x2c0 [mwifiex]
+    kernel:  mwifiex_pcie_reset_done+0x50/0x80 [mwifiex_pcie]
+    kernel:  pci_try_reset_function+0x38/0x70
+    kernel:  process_one_work+0x1d1/0x3a0
+    kernel:  worker_thread+0x4a/0x3d0
+    kernel:  kthread+0xfb/0x130
+    kernel:  ? process_one_work+0x3a0/0x3a0
+    kernel:  ? kthread_park+0x80/0x80
+    kernel:  ret_from_fork+0x35/0x40
+
+This commit skips the cancel_work_sync() when reset is ongoing.
+
+NOTE_1: After this commit, when reset fails, the following output is
+expected to be shown:
+
+    kernel: mwifiex_pcie 0000:03:00.0: info: _mwifiex_fw_dpc: unregister device
+    kernel: mwifiex: Failed to bring up adapter: -5
+    kernel: mwifiex_pcie 0000:03:00.0: reinit failed: -5
+
+NOTE_2: For reference, on remove() path, cancel_work_sync() gets called
+with the following call trace:
+
+Call Trace:
+ dump_stack+0x66/0x90
+ mwifiex_cleanup_pcie+0x21/0xf0 [mwifiex_pcie]
+ mwifiex_free_adapter+0x24/0xe0 [mwifiex]
+ mwifiex_remove_card+0x65/0x80 [mwifiex]
+ pci_device_remove+0x3b/0xa0
+ device_release_driver_internal+0xe4/0x1c0
+ driver_detach+0x44/0x82
+ bus_remove_driver+0x58/0xcc
+ pci_unregister_driver+0x3b/0x90
+ __x64_sys_delete_module+0x19c/0x2f0
+ do_syscall_64+0x4e/0x150
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/main.h |  3 +++
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 15 ++++++++++++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
+index fa5634af40f7..ffc6c235fe7e 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.h
++++ b/drivers/net/wireless/marvell/mwifiex/main.h
+@@ -1053,6 +1053,9 @@ struct mwifiex_adapter {
+ 	void *devdump_data;
+ 	int devdump_len;
+ 	struct timer_list devdump_timer;
++
++	/* Indicates a reset is ongoing or not */
++	bool pci_reset_ongoing;
+ };
+ 
+ void mwifiex_process_tx_queue(struct mwifiex_adapter *adapter);
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index b3380ed75431..5cfc32ccd8c4 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -383,6 +383,8 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
+ 	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
+ 	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
+ 	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
++
++	adapter->pci_reset_ongoing = true;
+ }
+ 
+ /*
+@@ -411,6 +413,8 @@ static void mwifiex_pcie_reset_done(struct pci_dev *pdev)
+ 		dev_err(&pdev->dev, "reinit failed: %d\n", ret);
+ 	else
+ 		mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
++
++	adapter->pci_reset_ongoing = false;
+ }
+ 
+ static const struct pci_error_handlers mwifiex_pcie_err_handler = {
+@@ -3001,7 +3005,16 @@ static void mwifiex_cleanup_pcie(struct mwifiex_adapter *adapter)
+ 	int ret;
+ 	u32 fw_status;
+ 
+-	cancel_work_sync(&card->work);
++	if (!adapter->pci_reset_ongoing) {
++		/* We perform the cancel_work_sync() only when we're not
++		 * resetting the card. It's because that function never returns
++		 * if we're in reset path. */
++		pci_warn(pdev, "DEBUG: performing cancel_work_sync()\n");
++		cancel_work_sync(&card->work);
++	} else {
++		pci_warn(pdev, "skipping cancel_work_sync() to avoid deadlock "
++				"on reset failure path...\n");
++	}
+ 
+ 	ret = mwifiex_read_reg(adapter, reg->fw_status, &fw_status);
+ 	if (fw_status == FIRMWARE_READY_PCIE) {
+-- 
+2.26.1
+
