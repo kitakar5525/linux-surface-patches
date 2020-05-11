@@ -1,0 +1,41 @@
+From c54751f7a509bda2c0c6d7caa836172bf7128318 Mon Sep 17 00:00:00 2001
+From: sebanc <sebanc.xda@gmail.com>
+Date: Tue, 28 Jan 2020 19:50:57 +0100
+Subject: [PATCH] chromeos: brunch-framework: report a single device name from
+ dmi to ensure matching with the unibuild config file
+
+(`am -p2` from commit https://github.com/sebanc/brunch/commit/10a4205edbbb070fe08d4d7ac44f8a7baec817ed)
+
+ChromeOS unibuild configs match with the product_name from dmi. Export
+the same dmi for everyone ("Brunch") to ensure a simple unibuild
+configuration mechanism.
+
+(Adding commit message)
+So, the product_name will be "Brunch".
+    $ cat /sys/devices/virtual/dmi/id/product_name
+    Brunch
+[Changed commit title]
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/firmware/dmi-id.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/firmware/dmi-id.c b/drivers/firmware/dmi-id.c
+index ff39f64f2aae3..bb1aa69df923c 100644
+--- a/drivers/firmware/dmi-id.c
++++ b/drivers/firmware/dmi-id.c
+@@ -25,7 +25,10 @@ static ssize_t sys_dmi_field_show(struct device *dev,
+ {
+ 	int field = to_dmi_dev_attr(attr)->field;
+ 	ssize_t len;
+-	len = scnprintf(page, PAGE_SIZE, "%s\n", dmi_get_system_info(field));
++	if (field == DMI_PRODUCT_NAME)
++		len = scnprintf(page, PAGE_SIZE, "Brunch\n");
++	else
++		len = scnprintf(page, PAGE_SIZE, "%s\n", dmi_get_system_info(field));
+ 	page[len-1] = '\n';
+ 	return len;
+ }
+-- 
+2.26.2
+

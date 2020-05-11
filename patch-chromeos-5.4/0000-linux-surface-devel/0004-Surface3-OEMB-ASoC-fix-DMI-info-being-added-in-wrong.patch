@@ -1,0 +1,42 @@
+From 7437a21986b2b495020bb4ca81546d2300b15284 Mon Sep 17 00:00:00 2001
+From: Chih-Wei Huang <cwhuang@linux.org.tw>
+Date: Mon, 23 Mar 2020 12:40:08 +0800
+Subject: [PATCH 04/10] Surface3-OEMB: ASoC: fix DMI info being added in wrong
+ place
+
+I didn't realize I messed up the brackets. Many thanks to youling257
+who pointed it out.
+
+Fixes: 18e2e857c576 ("ASoC: add quirk for Surface 3 with bad DMI table")
+
+===
+(Commit message from kitakar5525 <34676735+kitakar5525@users.noreply.github.com>)
+
+(am from http://git.osdn.net/view?p=android-x86/kernel.git;a=commit;h=066cc1de12be0ce8748bbd2863be0ace66327345)
+(Changed commit title from "ASoC: fix quirks of Surface 3")
+
+Fixes: fb3e7b53d61574 ("Surface3-OEMB: ASoC: add quirk for Surface 3 with broken DMI table")
+Link to issue: https://github.com/linux-surface/linux-surface/issues/127
+
+(cherry picked from commit 41bf1556902c8425173c870136478781bb99fbf1)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ sound/soc/intel/common/soc-acpi-intel-cht-match.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/sound/soc/intel/common/soc-acpi-intel-cht-match.c b/sound/soc/intel/common/soc-acpi-intel-cht-match.c
+index de2583918afd2..0e938713cb133 100644
+--- a/sound/soc/intel/common/soc-acpi-intel-cht-match.c
++++ b/sound/soc/intel/common/soc-acpi-intel-cht-match.c
+@@ -26,6 +26,8 @@ static const struct dmi_system_id cht_table[] = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
+ 			DMI_MATCH(DMI_PRODUCT_NAME, "Surface 3"),
+ 		},
++	},
++	{
+ 		.callback = cht_surface_quirk_cb,
+ 		.matches = {
+ 			DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
+-- 
+2.26.2
+

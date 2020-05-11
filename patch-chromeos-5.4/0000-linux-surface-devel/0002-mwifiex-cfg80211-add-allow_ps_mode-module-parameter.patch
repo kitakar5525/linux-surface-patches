@@ -1,7 +1,7 @@
-From 7be7d5350a91ce949c7455afd2776f09d54aa2fd Mon Sep 17 00:00:00 2001
+From 1d736079050656a7bca9a619aac9078c427cc81f Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 27 Feb 2020 16:52:04 +0900
-Subject: [PATCH 2/3] mwifiex: cfg80211: add allow_ps_mode module parameter
+Subject: [PATCH 02/10] mwifiex: cfg80211: add allow_ps_mode module parameter
 
 Add allow_ps_mode module parameter to allow ps_mode if needed.
 Disallowed by default.
@@ -11,12 +11,15 @@ like iw command that setting power_save to be enabled is not permitted.
 Examlpe run:
         $ sudo iw dev mlan0 set power_save on
         command failed: Operation not permitted (-1)
+
+(cherry picked from commit c75702bdad2395e17bbc4be603f429cfc9009ca8)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  .../net/wireless/marvell/mwifiex/cfg80211.c    | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index d89684168500..b6c8389323ab 100644
+index d896841685008..b6c8389323abd 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 @@ -25,6 +25,11 @@
@@ -52,5 +55,5 @@ index d89684168500..b6c8389323ab 100644
  }
  
 -- 
-2.25.1
+2.26.2
 
