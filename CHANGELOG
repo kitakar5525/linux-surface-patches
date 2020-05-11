@@ -1,3 +1,15 @@
+v4.0.1
+518d1b2 - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patches: add testing patches
+f4d41ff - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-chromeos-5.4: Update to linux-surface/linux-surface@93dd316b7b6215
+c4e8909 - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-chromeos-4.19: Update to linux-surface/linux-surface@93dd316b7b6215
+6499f1c - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-5.6: Update to linux-surface/linux-surface@93dd316b7b6215
+ab124fe - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-5.6: rename from rc
+e74685c - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-5.5: move to OLD dir
+8bb4a60 - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-5.4: Update to linux-surface/linux-surface@93dd316b7b6215
+021435c - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-4.19: Update to linux-surface/linux-surface@93dd316b7b6215
+af25cea - Tsuchiya Yuto (kitakar5525), 2020-05-11 : chromeos: config: remove from this repo
+21f00e1 - Tsuchiya Yuto (kitakar5525), 2020-05-08 : README: update comment
+
 v4.0
 851e7c7 - kitakar5525, 2020-03-25 : patch-5.4-series: add ipts patch from 5.5 dir
 90893ac - kitakar5525, 2020-03-25 : patch-chromeos-5.4: Update to linux-surface/linux-surface@239f75d22d99a12c31dd269823bf503980ca0990
