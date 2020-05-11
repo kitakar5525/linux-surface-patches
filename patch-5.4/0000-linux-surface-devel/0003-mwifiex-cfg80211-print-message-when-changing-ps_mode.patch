@@ -1,16 +1,19 @@
-From dbc083e6d5a22fbac88f179912f438c7e3eea974 Mon Sep 17 00:00:00 2001
+From 9b1f6f3aeaf2362451ef71f0150adf11c36c003c Mon Sep 17 00:00:00 2001
 From: kitakar5525 <34676735+kitakar5525@users.noreply.github.com>
 Date: Thu, 27 Feb 2020 18:03:02 +0900
-Subject: [PATCH 3/3] mwifiex: cfg80211: print message when changing ps_mode
+Subject: [PATCH 03/10] mwifiex: cfg80211: print message when changing ps_mode
 
 Notify user of ps_mode status change. Especially, print a warning when
 user enabled ps_mode.
+
+(cherry picked from commit 4a41ec65831aff164aed9ae6791014f26f34f6ac)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/net/wireless/marvell/mwifiex/cfg80211.c | 8 ++++++++
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
-index b6c8389323ab..108d7ac6a0dd 100644
+index b6c8389323abd..108d7ac6a0dd9 100644
 --- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 +++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
 @@ -457,6 +457,14 @@ mwifiex_cfg80211_set_power_mgmt(struct wiphy *wiphy,
@@ -29,5 +32,5 @@ index b6c8389323ab..108d7ac6a0dd 100644
  }
  
 -- 
-2.25.1
+2.26.2
 
