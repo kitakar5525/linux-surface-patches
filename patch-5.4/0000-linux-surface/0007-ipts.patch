@@ -1,16 +1,14 @@
-From c88d3e47d75aed3ca4ec331e61e47246361988ec Mon Sep 17 00:00:00 2001
+From 08f34dc84753960c03b6d4a7838752d890ef2b3b Mon Sep 17 00:00:00 2001
 From: Dorian Stoll <dorian.stoll@tmsp.io>
 Date: Mon, 27 Jan 2020 21:16:20 +0100
-Subject: [PATCH 10/10] ipts
+Subject: [PATCH 7/7] ipts
 
-(cherry picked from commit 2d21385d7ef82db2f15f99170c105faaad11096e)
-Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/input/touchscreen/Kconfig             |   2 +
  drivers/input/touchscreen/Makefile            |   1 +
  drivers/input/touchscreen/ipts/Kconfig        |  16 ++
  drivers/input/touchscreen/ipts/Makefile       |  17 ++
- drivers/input/touchscreen/ipts/context.h      |  61 ++++
+ drivers/input/touchscreen/ipts/context.h      |  60 ++++
  drivers/input/touchscreen/ipts/control.c      |  94 +++++++
  drivers/input/touchscreen/ipts/control.h      |  18 ++
  drivers/input/touchscreen/ipts/data.c         | 107 +++++++
@@ -38,12 +36,12 @@ Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
  drivers/input/touchscreen/ipts/resources.h    |  11 +
  drivers/input/touchscreen/ipts/singletouch.c  |  64 +++++
  drivers/input/touchscreen/ipts/singletouch.h  |  14 +
- drivers/input/touchscreen/ipts/stylus.c       | 191 +++++++++++++
+ drivers/input/touchscreen/ipts/stylus.c       | 179 ++++++++++++
  drivers/input/touchscreen/ipts/stylus.h       |  14 +
  drivers/misc/mei/hw-me-regs.h                 |   2 +
  drivers/misc/mei/pci-me.c                     |   2 +
  include/uapi/linux/input.h                    |   1 +
- 37 files changed, 1735 insertions(+)
+ 37 files changed, 1722 insertions(+)
  create mode 100644 drivers/input/touchscreen/ipts/Kconfig
  create mode 100644 drivers/input/touchscreen/ipts/Makefile
  create mode 100644 drivers/input/touchscreen/ipts/context.h
@@ -147,10 +145,10 @@ index 0000000000000..0f7c904e73171
 +ipts-objs += stylus.o
 diff --git a/drivers/input/touchscreen/ipts/context.h b/drivers/input/touchscreen/ipts/context.h
 new file mode 100644
-index 0000000000000..13ea03b6482ef
+index 0000000000000..ab26552579a5c
 --- /dev/null
 +++ b/drivers/input/touchscreen/ipts/context.h
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,60 @@
 +/* SPDX-License-Identifier: GPL-2.0-or-later */
 +
 +#ifndef _IPTS_CONTEXT_H_
@@ -208,7 +206,6 @@ index 0000000000000..13ea03b6482ef
 +
 +	struct input_dev *stylus;
 +	struct input_dev *singletouch;
-+	u16 stylus_tool;
 +};
 +
 +#endif /* _IPTS_CONTEXT_H_ */
@@ -1804,10 +1801,10 @@ index 0000000000000..53207497a4628
 +#endif /* _IPTS_SINGLETOUCH_H_ */
 diff --git a/drivers/input/touchscreen/ipts/stylus.c b/drivers/input/touchscreen/ipts/stylus.c
 new file mode 100644
-index 0000000000000..dbb4fe0bf559e
+index 0000000000000..987fa756fec33
 --- /dev/null
 +++ b/drivers/input/touchscreen/ipts/stylus.c
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,179 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +
 +#include <linux/input.h>
@@ -1821,7 +1818,6 @@ index 0000000000000..dbb4fe0bf559e
 +static void ipts_stylus_handle_stylus_data(struct ipts_context *ipts,
 +		struct ipts_stylus_report_data *data)
 +{
-+	u16 tool;
 +	u8 prox = data->mode & IPTS_STYLUS_REPORT_MODE_PROX;
 +	u8 touch = data->mode & IPTS_STYLUS_REPORT_MODE_TOUCH;
 +	u8 button = data->mode & IPTS_STYLUS_REPORT_MODE_BUTTON;
@@ -1837,20 +1833,9 @@ index 0000000000000..dbb4fe0bf559e
 +				data->azimuth, &tx, &ty);
 +	}
 +
-+	if (prox && rubber)
-+		tool = BTN_TOOL_RUBBER;
-+	else
-+		tool = BTN_TOOL_PEN;
-+
-+	// Fake proximity out to switch tools
-+	if (ipts->stylus_tool != tool) {
-+		input_report_key(ipts->stylus, ipts->stylus_tool, 0);
-+		input_sync(ipts->stylus);
-+		ipts->stylus_tool = tool;
-+	}
-+
 +	input_report_key(ipts->stylus, BTN_TOUCH, touch);
-+	input_report_key(ipts->stylus, ipts->stylus_tool, prox);
++	input_report_key(ipts->stylus, BTN_TOOL_PEN, prox && !rubber);
++	input_report_key(ipts->stylus, BTN_TOOL_RUBBER, prox && rubber);
 +	input_report_key(ipts->stylus, BTN_STYLUS, button);
 +
 +	input_report_abs(ipts->stylus, ABS_X, data->x);
