@@ -1,0 +1,64 @@
+From 568edc3dc70266166bc323bb99edbf52b4e7371b Mon Sep 17 00:00:00 2001
+From: "Tsuchiya Yuto (kitakar5525)" <kitakar@gmail.com>
+Date: Wed, 13 May 2020 20:30:39 +0900
+Subject: [PATCH] surface_sam: hps: use result of pci_enable_device()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When building with CONFIG_ENABLE_MUST_CHECK=y (y is the default value
+but some distributions don't set), the compiler gives the following
+warnings:
+
+    drivers/platform/x86/surface_sam/surface_sam_hps.c: In function ‘__shps_dgpu_rp_set_power_unlocked’:
+    drivers/platform/x86/surface_sam/surface_sam_hps.c:378:4: warning: ignoring return value of ‘pci_enable_device’, declared with attribute warn_unused_result [-Wunused-result]
+      378 |    pci_enable_device(rp);
+          |    ^~~~~~~~~~~~~~~~~~~~~
+    drivers/platform/x86/surface_sam/surface_sam_hps.c: In function ‘shps_dgpu_powered_on’:
+    drivers/platform/x86/surface_sam/surface_sam_hps.c:782:3: warning: ignoring return value of ‘pci_enable_device’, declared with attribute warn_unused_result [-Wunused-result]
+      782 |   pci_enable_device(rp);
+          |   ^~~~~~~~~~~~~~~~~~~~~
+
+Looking at the other usages of pci_enable_device() in the Linux kernel,
+many callers use the result. So, let's use the result here, too.
+
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ drivers/platform/x86/surface_sam/surface_sam_hps.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/platform/x86/surface_sam/surface_sam_hps.c b/drivers/platform/x86/surface_sam/surface_sam_hps.c
+index 4fba5ee75a66..b5bd933f57e1 100644
+--- a/drivers/platform/x86/surface_sam/surface_sam_hps.c
++++ b/drivers/platform/x86/surface_sam/surface_sam_hps.c
+@@ -374,8 +374,11 @@ static int __shps_dgpu_rp_set_power_unlocked(struct platform_device *pdev, enum
+ 
+ 		pci_restore_state(rp);
+ 
+-		if (!pci_is_enabled(rp))
+-			pci_enable_device(rp);
++		if (!pci_is_enabled(rp)) {
++			status = pci_enable_device(rp);
++			if (status)
++				return status;
++		}
+ 
+ 		pci_set_master(rp);
+ 		clear_bit(SHPS_STATE_BIT_RPPWRON_SYNC, &drvdata->state);
+@@ -778,8 +781,11 @@ static int shps_dgpu_powered_on(struct platform_device *pdev)
+ 	if (drvdata->dgpu_root_port_state)
+ 		pci_load_and_free_saved_state(rp, &drvdata->dgpu_root_port_state);
+ 	pci_restore_state(rp);
+-	if (!pci_is_enabled(rp))
+-		pci_enable_device(rp);
++	if (!pci_is_enabled(rp)) {
++		status = pci_enable_device(rp);
++		if (status)
++			return status;
++	}
+ 	pci_set_master(rp);
+ 	dbg_dump_drvsta(pdev, "shps_dgpu_powered_on.2");
+ 	dbg_dump_power_states(pdev, "shps_dgpu_powered_on.2");
+-- 
+2.26.2
+
