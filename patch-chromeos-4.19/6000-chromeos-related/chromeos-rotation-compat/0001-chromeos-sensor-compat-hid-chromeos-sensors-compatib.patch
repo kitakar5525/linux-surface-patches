@@ -1,23 +1,30 @@
-From 0cb14d4f0b67c3da24293f4f223d9fa6fe09d587 Mon Sep 17 00:00:00 2001
+From 8a055b2e2a1a055959bf943d17e837fafe149b04 Mon Sep 17 00:00:00 2001
 From: sebanc <sebanc.xda@gmail.com>
-Date: Sat, 21 Mar 2020 19:44:22 +0900
+Date: Sun, 24 May 2020 00:06:24 +0900
 Subject: [PATCH] chromeos: sensor-compat: hid: chromeos sensors compatibility
+ driver
 
-(patch from sebanc)
+(latest patch from sebanc.
+Reference commit (old): https://github.com/sebanc/brunch/commit/d9c46c812046d48772ec31498792dab6a4419b25)
+
+ChromeOS sensors management framework is not natively compatible with
+hid sensors reported values. This module makes hid accelerometer and
+ambient light sensors work under ChromeOS.
+
 [Changed commit title]
 Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/hid/hid-sensor-hub.c                  |    4 +-
  drivers/iio/common/hid-sensors/Makefile       |    2 +
- .../hid-sensors/hid-sensor-cros-compat.c      | 1063 +++++++++++++++++
- 3 files changed, 1066 insertions(+), 3 deletions(-)
+ .../hid-sensors/hid-sensor-cros-compat.c      | 1062 +++++++++++++++++
+ 3 files changed, 1065 insertions(+), 3 deletions(-)
  create mode 100644 drivers/iio/common/hid-sensors/hid-sensor-cros-compat.c
 
 diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 94c7398b5c279..229b10f62d5d0 100644
+index 7d36fc0ea6cb..dadb93e2aa03 100644
 --- a/drivers/hid/hid-sensor-hub.c
 +++ b/drivers/hid/hid-sensor-hub.c
-@@ -679,9 +679,7 @@ static int sensor_hub_probe(struct hid_device *hdev,
+@@ -685,9 +685,7 @@ static int sensor_hub_probe(struct hid_device *hdev,
  			if (last_hsdev)
  				last_hsdev->end_collection_index = i;
  			last_hsdev = hsdev;
@@ -29,7 +36,7 @@ index 94c7398b5c279..229b10f62d5d0 100644
  				hid_err(hdev, "Failed MFD device name\n");
  				ret = -ENOMEM;
 diff --git a/drivers/iio/common/hid-sensors/Makefile b/drivers/iio/common/hid-sensors/Makefile
-index 64b01a81fcb2d..3d9154efc2964 100644
+index 64b01a81fcb2..3d9154efc296 100644
 --- a/drivers/iio/common/hid-sensors/Makefile
 +++ b/drivers/iio/common/hid-sensors/Makefile
 @@ -6,3 +6,5 @@
@@ -40,10 +47,10 @@ index 64b01a81fcb2d..3d9154efc2964 100644
 +obj-$(CONFIG_HID_SENSOR_IIO_COMMON) += hid-sensor-cros-compat.o
 diff --git a/drivers/iio/common/hid-sensors/hid-sensor-cros-compat.c b/drivers/iio/common/hid-sensors/hid-sensor-cros-compat.c
 new file mode 100644
-index 0000000000000..ee858457aa233
+index 000000000000..76e50015f76d
 --- /dev/null
 +++ b/drivers/iio/common/hid-sensors/hid-sensor-cros-compat.c
-@@ -0,0 +1,1063 @@
+@@ -0,0 +1,1062 @@
 +/*
 + * This program is free software; you can redistribute it and/or modify it
 + * under the terms and conditions of the GNU General Public License,
@@ -66,7 +73,6 @@ index 0000000000000..ee858457aa233
 +#include <linux/irq.h>
 +#include <linux/slab.h>
 +#include <linux/delay.h>
-+#include <linux/dmi.h>
 +#include <linux/hid-sensor-hub.h>
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>

@@ -1,10 +1,10 @@
-From 8154b51290ae01cd302f4b45b52da67e60eeafc8 Mon Sep 17 00:00:00 2001
+From 41692cfda8014798a74e1747a748cfcb24c93102 Mon Sep 17 00:00:00 2001
 From: sebanc <sebanc.xda@gmail.com>
-Date: Thu, 19 Mar 2020 23:43:50 +0900
+Date: Sun, 24 May 2020 00:13:12 +0900
 Subject: [PATCH 1/2] tablet_mode: sysfs: tablet mode switch sysfs trigger
 
 (patch from sebanc)
-[Resolved conflict in Makefile on 5.5]
+
 Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/input/misc/Makefile             |   1 +
@@ -13,7 +13,7 @@ Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
  create mode 100644 drivers/input/misc/tablet_mode_switch.c
 
 diff --git a/drivers/input/misc/Makefile b/drivers/input/misc/Makefile
-index 02e9edcde799a..9aca7bf3b2222 100644
+index 02e9edcde799..9aca7bf3b222 100644
 --- a/drivers/input/misc/Makefile
 +++ b/drivers/input/misc/Makefile
 @@ -82,3 +82,4 @@ obj-$(CONFIG_INPUT_WM831X_ON)		+= wm831x-on.o
@@ -23,7 +23,7 @@ index 02e9edcde799a..9aca7bf3b2222 100644
 +obj-m					+= tablet_mode_switch.o
 diff --git a/drivers/input/misc/tablet_mode_switch.c b/drivers/input/misc/tablet_mode_switch.c
 new file mode 100644
-index 0000000000000..48aa1ea43aa18
+index 000000000000..6f641d760425
 --- /dev/null
 +++ b/drivers/input/misc/tablet_mode_switch.c
 @@ -0,0 +1,100 @@
@@ -91,7 +91,7 @@ index 0000000000000..48aa1ea43aa18
 +	if (!idev)
 +		return -ENOMEM;
 +
-+	idev->id.bustype = BUS_HOST;
++	idev->id.bustype = BUS_VIRTUAL;
 +	idev->id.version = 1;
 +	idev->id.product = 0;
 +	idev->name = input_device_name;
