@@ -1,8 +1,10 @@
-From f109cbf36e5acdf7829d19b642e4a23ef6476ce4 Mon Sep 17 00:00:00 2001
+From d439257093463ecfcaa20a7869ed0bf1eeb7bb9d Mon Sep 17 00:00:00 2001
 From: Chih-Wei Huang <cwhuang@linux.org.tw>
 Date: Tue, 18 Sep 2018 11:01:37 +0800
-Subject: [PATCH 03/10] surface3-oemb
+Subject: [PATCH 3/9] surface3-oemb
 
+(cherry picked from commit c9fd73ef014ee91d0cda46c2c456ae579ba3b4e0)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/platform/x86/surface3-wmi.c               | 7 +++++++
  sound/soc/codecs/rt5645.c                         | 9 +++++++++
@@ -28,10 +30,10 @@ index 25b176996cb7..58d11877677f 100644
  	{ }
  };
 diff --git a/sound/soc/codecs/rt5645.c b/sound/soc/codecs/rt5645.c
-index 7e3b47eeea04..85c0731dfd4b 100644
+index c64b07cd88b0..1c86bd5ad699 100644
 --- a/sound/soc/codecs/rt5645.c
 +++ b/sound/soc/codecs/rt5645.c
-@@ -3706,6 +3706,15 @@ static const struct dmi_system_id dmi_platform_data[] = {
+@@ -3681,6 +3681,15 @@ static const struct dmi_system_id dmi_platform_data[] = {
  		},
  		.driver_data = (void *)&intel_braswell_platform_data,
  	},
@@ -48,7 +50,7 @@ index 7e3b47eeea04..85c0731dfd4b 100644
  		/*
  		 * Match for the GPDwin which unfortunately uses somewhat
 diff --git a/sound/soc/intel/common/soc-acpi-intel-cht-match.c b/sound/soc/intel/common/soc-acpi-intel-cht-match.c
-index 91bb99b69601..8418938b32ad 100644
+index 30ba81c0fbbd..78b1103249bf 100644
 --- a/sound/soc/intel/common/soc-acpi-intel-cht-match.c
 +++ b/sound/soc/intel/common/soc-acpi-intel-cht-match.c
 @@ -36,6 +36,14 @@ static const struct dmi_system_id cht_table[] = {
@@ -67,5 +69,5 @@ index 91bb99b69601..8418938b32ad 100644
  };
  
 -- 
-2.26.0
+2.26.2
 

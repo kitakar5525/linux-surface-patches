@@ -1,8 +1,10 @@
-From 91a78cc8ef8f5b822dc5e0367d11321e64251667 Mon Sep 17 00:00:00 2001
+From d4ff5d4842e1db330c90182ed92202da848a835d Mon Sep 17 00:00:00 2001
 From: qzed <qzed@users.noreply.github.com>
 Date: Mon, 26 Aug 2019 01:15:40 +0200
-Subject: [PATCH 05/10] surface-sam
+Subject: [PATCH 5/9] surface-sam
 
+(cherry picked from commit 09f283be44830292c64b4af888e3ddc9fff46c11)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
 ---
  drivers/acpi/acpica/dsopcode.c                |    2 +-
  drivers/acpi/acpica/exfield.c                 |   26 +-
@@ -106,10 +108,10 @@ index b272c329d45d..cf547883a993 100644
  		} else {	/* IPMI */
  
 diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
-index 2ad19dc64a4a..7cee1015981d 100644
+index f616fe304152..79fc1cf8c273 100644
 --- a/drivers/platform/x86/Kconfig
 +++ b/drivers/platform/x86/Kconfig
-@@ -1250,6 +1250,8 @@ config INTEL_ATOMISP2_PM
+@@ -1260,6 +1260,8 @@ config INTEL_ATOMISP2_PM
  	  To compile this driver as a module, choose M here: the module
  	  will be called intel_atomisp2_pm.
  
@@ -119,10 +121,10 @@ index 2ad19dc64a4a..7cee1015981d 100644
  
  config PMC_ATOM
 diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
-index 2ea90039a3e4..cbea9579c1d2 100644
+index 35a74d374f1b..fae477eb612b 100644
 --- a/drivers/platform/x86/Makefile
 +++ b/drivers/platform/x86/Makefile
-@@ -94,3 +94,4 @@ obj-$(CONFIG_INTEL_TURBO_MAX_3) += intel_turbo_max_3.o
+@@ -95,3 +95,4 @@ obj-$(CONFIG_INTEL_TURBO_MAX_3) += intel_turbo_max_3.o
  obj-$(CONFIG_INTEL_CHTDC_TI_PWRBTN)	+= intel_chtdc_ti_pwrbtn.o
  obj-$(CONFIG_I2C_MULTI_INSTANTIATE)	+= i2c-multi-instantiate.o
  obj-$(CONFIG_INTEL_ATOMISP2_PM)	+= intel_atomisp2_pm.o
@@ -7548,5 +7550,5 @@ index c66a04d24f1d..6b48fdfb2005 100644
  	if (!ctrl->serdev)
  		return -ENODEV;
 -- 
-2.26.0
+2.26.2
 

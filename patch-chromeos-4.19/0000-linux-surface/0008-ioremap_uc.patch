@@ -1,0 +1,26 @@
+From e118ffaf1516ddb03fe812c8437624b2ed8daea4 Mon Sep 17 00:00:00 2001
+From: Tuowen Zhao <ztuowen@gmail.com>
+Date: Wed, 16 Oct 2019 15:06:28 -0600
+Subject: [PATCH 8/9] ioremap_uc
+
+(cherry picked from commit 6d8ed96cfeb08b584fd429eb603e0d5d00e476a6)
+Signed-off-by: Tsuchiya Yuto (kitakar5525) <kitakar@gmail.com>
+---
+ Documentation/driver-model/devres.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 43681ca0837f..7b1ee4190208 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -294,6 +294,7 @@ IOMAP
+   devm_ioport_unmap()
+   devm_ioremap()
+   devm_ioremap_nocache()
++  devm_ioremap_uc()
+   devm_ioremap_wc()
+   devm_ioremap_resource() : checks resource, requests memory region, ioremaps
+   devm_iounmap()
+-- 
+2.26.2
+
