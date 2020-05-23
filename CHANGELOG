@@ -1,3 +1,13 @@
+v4.0.2
+8736e11 - Tsuchiya Yuto (kitakar5525), 2020-05-24 : patch-chromeos-4.19: update chromeos specific patches
+462eb1f - Tsuchiya Yuto (kitakar5525), 2020-05-24 : patch-chromeos-5.4: update chromeos specific patches
+9b14c50 - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-chromeos: re-add "surface_sam: hps: use result of pci_enable_device()"
+e23b86e - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-chromeos-5.4: update patches
+1c3a122 - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-chromeos-4.19: update patches
+e70c164 - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-5.6: update patches via linux-surface/linux-surface@3d3c2d4bc005ef
+0cd5fc1 - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-5.4: update patches via linux-surface/linux-surface@09ab0b74bdfc01
+ab92e26 - Tsuchiya Yuto (kitakar5525), 2020-05-23 : patch-4.19: update patches via linux-surface/linux-surface@c7caeec62c7059
+
 v4.0.1
 518d1b2 - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patches: add testing patches
 f4d41ff - Tsuchiya Yuto (kitakar5525), 2020-05-11 : patch-chromeos-5.4: Update to linux-surface/linux-surface@93dd316b7b6215
