@@ -1,3 +1,9 @@
+I won't update this repo anymore because managing patches are a little bit complicated now.
+Instead, take a look at my kernel repo:
+- https://github.com/kitakar5525/linux-kernel
+
+---
+
 [linux-surface/kernel](https://github.com/linux-surface/kernel) patches + my modifications.
 If you just want to run patched linux kernel for Surface devices, you may want to take a look at [linux-surface](https://github.com/linux-surface/linux-surface) repo.
 
